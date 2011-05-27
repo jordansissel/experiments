@@ -31,6 +31,11 @@ But on the performance note, what should I expect? Let's test.
 For rubinius (rbx), I had to use eventmachine built from the master branch plus
 this patch to fix memory management: <https://github.com/eventmachine/eventmachine/pull/202>
 
+For sending input, I used this:
+
+    while true; do yes "<13>May 19 18:30:17 snack jls: foo bar 32" | nc localhost 3334; sleep 0.2; done
+
+This just spammed a given tcp connection with tons of syslog lines as fast as possible.
 
 # basic.rb results
 
