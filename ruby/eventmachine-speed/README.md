@@ -49,7 +49,7 @@ when given the '--netty' flag:
 I also ran the basic test here with Rubinius, but after 2.5 minutes, still
 not complete, and using more than 500MB of ram and growing, I aborted.
 
-# porter.rb results (--wire raw --iterations 1_000_000)
+# porter.rb results (--wire syslog --iterations 1_000_000)
 
      implementation |  platform     | duration | rate
        eventmachine |  ruby/  1.9.2 |   150.75 | 13266.58
@@ -59,6 +59,11 @@ not complete, and using more than 500MB of ram and growing, I aborted.
        eventmachine | jruby/  1.8.7 |    64.13 | 31187.62        (--fast)
        eventmachine | jruby/  1.8.7 |    62.70 | 31898.44
            netty-em | jruby/  1.8.7 |    61.09 | 32740.73        (--fast)
+
+The 'syslog' wire format in logporter does RFC3164 parsing (with regexp) and
+time parsing (using a custom time parser because Time.strptime and
+DateTime.strptime are wicked slow, see
+<https://github.com/jordansissel/experiments/tree/master/ruby/time-parsing-is-slow>
 
 # porter.rb results (--wire raw --iterations 10_000_000)
 
@@ -71,6 +76,9 @@ not complete, and using more than 500MB of ram and growing, I aborted.
        eventmachine | jruby/  1.8.7 |    90.15 | 110923.77
        eventmachine | jruby/  1.8.7 |    86.39 | 115756.82   (--fast)
        eventmachine | jruby/  1.9.2 |    82.98 | 120508.06   (--fast --1.9)
+
+The 'raw' wire format n logporter doesn't parse anything on receipt. It just
+create an event with the current time, client address, etc.
 
 # Conclusions
 
