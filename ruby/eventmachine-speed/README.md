@@ -28,9 +28,9 @@ But on the performance note, what should I expect? Let's test.
 * eventmachine (0.12.10)
 * logporter (0.1.4)
 
-rbx took so long I gave up running it. I'm not sure what the deal was here.
-Version info is rubinius 1.2.4dev (1.8.7 6eefb1b6 yyyy-mm-dd JI)
-[x86_64-unknown-linux-gnu]
+For rubinius (rbx), I had to use eventmachine built from the master branch plus
+this patch to fix memory management: <https://github.com/eventmachine/eventmachine/pull/202>
+
 
 # basic.rb results
 
@@ -38,6 +38,7 @@ The 'basic.rb' code results are here; the 'netty-em' implementation is used
 when given the '--netty' flag:
 
      implementation |  platform     | duration | rate
+       eventmachine |   rbx/  1.8.7 |   165.45 | 60442.31
        eventmachine |  ruby/  1.8.7 |   104.72 | 95491.90
        eventmachine |  ruby/  1.9.2 |    86.13 | 116097.87
            netty-em | jruby/  1.9.2 |    74.81 | 133673.76   (--1.9)
@@ -48,6 +49,7 @@ when given the '--netty' flag:
        eventmachine | jruby/  1.9.2 |    61.95 | 161420.50   (--1.9 --fast)
        eventmachine | jruby/  1.8.7 |    60.71 | 164714.80
 
+
 I also ran the basic test here with Rubinius, but after 2.5 minutes, still
 not complete, and using more than 500MB of ram and growing, I aborted.
 
@@ -56,11 +58,13 @@ not complete, and using more than 500MB of ram and growing, I aborted.
      implementation |  platform     | duration | rate
        eventmachine |  ruby/  1.9.2 |   150.75 | 13266.58
        eventmachine |  ruby/  1.8.7 |   139.86 | 14299.82
+       eventmachine |   rbx/  1.8.7 |    94.07 | 10629.89
            netty-em | jruby/  1.9.2 |    68.18 | 29334.55        (--1.9 --fast)
            netty-em | jruby/  1.8.7 |    65.80 | 30395.60
        eventmachine | jruby/  1.8.7 |    64.13 | 31187.62        (--fast)
        eventmachine | jruby/  1.8.7 |    62.70 | 31898.44
            netty-em | jruby/  1.8.7 |    61.09 | 32740.73        (--fast)
+
 
 The 'syslog' wire format in logporter does RFC3164 parsing (with regexp) and
 time parsing (using a custom time parser because Time.strptime and
@@ -71,6 +75,7 @@ DateTime.strptime are wicked slow, see
 
      implementation |  platform     | duration | rate
        eventmachine |  ruby/  1.8.7 |   211.38 | 47307.64
+       eventmachine |   rbx/  1.8.7 |   178.33 | 56075.73
        eventmachine |  ruby/  1.9.2 |   143.48 | 69698.22
            netty-em | jruby/  1.8.7 |    94.93 | 105338.56   (--fast)
        eventmachine | jruby/  1.9.2 |    94.18 | 106176.27
@@ -78,6 +83,7 @@ DateTime.strptime are wicked slow, see
        eventmachine | jruby/  1.8.7 |    90.15 | 110923.77
        eventmachine | jruby/  1.8.7 |    86.39 | 115756.82   (--fast)
        eventmachine | jruby/  1.9.2 |    82.98 | 120508.06   (--fast --1.9)
+
 
 The 'raw' wire format in logporter doesn't parse anything on receipt. It just
 create an event with the current time, client address, etc.
@@ -90,3 +96,9 @@ was testing on was not totally idle while running these tests.
 Anyway, JRuby continues to be the winner in most of my benchmarkings. Comparing
 my netty-eventmachine with the current eventmachine for jruby, netty loses
 slightly in some cases. This could be due to my newbie-knowledge of Netty.
+
+Another interesting note is that comparing 'basic.rb' with 'porter.rb --wire
+raw' runs, Rubinius by far had the least performance change, which is a pretty
+neat win - the differences between 'basic.rb' and 'porter.rb --wire raw' isn't
+much, some additional object creation and general pure-ruby code (parsing by
+line, creating an event object for each line with the current timestamp).
