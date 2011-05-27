@@ -17,19 +17,19 @@ class TubeAddress
 
   def include?(addr)
     addr_int = self.class.ip_to_num(addr)
-    #printf "base: %08x\n", @base
-    #printf "addr: %08x\n", addr_int
-    #printf "mask: %08x\n", cidr_mask
-    #printf "full: %08x\n", (addr_int & cidr_mask)
     return addr_int & cidr_mask == @base
   end # def include?
+
+  def include_int?(addr_int)
+    return addr_int & cidr_mask == @base
+  end # def include_int?
 
   def self.ip_to_num(addr)
     return addr.split(".").reduce(0) { |s,c| s = (s << 8) + (c.to_i) }
   end # def self.ip_to_num
 
   def to_s
-    return "#{@address}/#{cidr}"
+    return "#{@address}/#{@cidr}"
   end
 end # class TubeAddress
 
@@ -46,9 +46,13 @@ require "ipaddr"
 tube = TubeAddress.new("192.168.0.0/16")
 ipaddr = IPAddr.new("192.168.0.0/16")
 
+addr = "192.168.3.4"
+addr_int = TubeAddress.ip_to_num(addr)
+
 iterations = 50000
-tube_time = time(iterations) { tube.include?("192.168.3.4") }
-ipaddr_time = time(iterations) { ipaddr.include?("192.168.3.4") }
+tube_time = time(iterations) { tube.include?(addr) }
+tube2_time = time(iterations) { tube.include_int?(addr_int) }
+ipaddr_time = time(iterations) { ipaddr.include?(addr) }
 
 def result(name, duration, iterations)
   engine = (RUBY_ENGINE rescue "ruby")
@@ -57,4 +61,5 @@ def result(name, duration, iterations)
 end
 
 result("tubeaddr", tube_time, iterations)
+result("tubeaddr2", tube2_time, iterations)
 result("ipaddr", ipaddr_time, iterations)
