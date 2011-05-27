@@ -13,6 +13,8 @@ Notably, it doesn't support SSL right now. Netty comes with SSL support and is
 an event system just like EventMachine, so implementing EM with Netty should be
 easy.
 
+The netty-eventmachine project is here: <https://github.com/jordansissel/ruby-netty-eventmachine>
+
 But on the performance note, what should I expect? Let's test.
 
 # Test System
