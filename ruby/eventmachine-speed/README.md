@@ -79,7 +79,7 @@ DateTime.strptime are wicked slow, see
        eventmachine | jruby/  1.8.7 |    86.39 | 115756.82   (--fast)
        eventmachine | jruby/  1.9.2 |    82.98 | 120508.06   (--fast --1.9)
 
-The 'raw' wire format n logporter doesn't parse anything on receipt. It just
+The 'raw' wire format in logporter doesn't parse anything on receipt. It just
 create an event with the current time, client address, etc.
 
 # Conclusions
