@@ -54,12 +54,12 @@ when given the '--netty' flag:
        eventmachine | jruby/  1.9.2 |    61.95 | 161420.50   (--1.9 --fast)
        eventmachine | jruby/  1.8.7 |    60.71 | 164714.80
 
-# porter.rb results (--wire syslog --iterations 1_000_000)
+# porter.rb results (--wire syslog --iterations 2_000_000)
 
      implementation |  platform     | duration | rate
+       eventmachine |   rbx/  1.8.7 |   184.71 | 10827.69
        eventmachine |  ruby/  1.9.2 |   150.75 | 13266.58
        eventmachine |  ruby/  1.8.7 |   139.86 | 14299.82
-       eventmachine |   rbx/  1.8.7 |    94.07 | 10629.89
            netty-em | jruby/  1.9.2 |    68.18 | 29334.55        (--1.9 --fast)
            netty-em | jruby/  1.8.7 |    65.80 | 30395.60
        eventmachine | jruby/  1.8.7 |    64.13 | 31187.62        (--fast)
@@ -99,7 +99,8 @@ my netty-eventmachine with the current eventmachine for jruby, netty loses
 slightly in some cases. This could be due to my newbie-knowledge of Netty.
 
 Another interesting note is that comparing 'basic.rb' with 'porter.rb --wire
-raw' runs, Rubinius by far had the least performance change, which is a pretty
-neat win - the differences between 'basic.rb' and 'porter.rb --wire raw' isn't
-much, some additional object creation and general pure-ruby code (parsing by
-line, creating an event object for each line with the current timestamp).
+raw' runs, Rubinius and JRuby by far had the least performance change, which is
+a pretty neat win - the differences between 'basic.rb' and 'porter.rb --wire
+raw' isn't much, some additional object creation and general pure-ruby code
+(parsing by line, creating an event object for each line with the current
+timestamp).
