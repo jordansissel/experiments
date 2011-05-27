@@ -49,10 +49,6 @@ when given the '--netty' flag:
        eventmachine | jruby/  1.9.2 |    61.95 | 161420.50   (--1.9 --fast)
        eventmachine | jruby/  1.8.7 |    60.71 | 164714.80
 
-
-I also ran the basic test here with Rubinius, but after 2.5 minutes, still
-not complete, and using more than 500MB of ram and growing, I aborted.
-
 # porter.rb results (--wire syslog --iterations 1_000_000)
 
      implementation |  platform     | duration | rate
