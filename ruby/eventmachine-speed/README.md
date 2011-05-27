@@ -63,14 +63,14 @@ not complete, and using more than 500MB of ram and growing, I aborted.
 # porter.rb results (--wire raw --iterations 10_000_000)
 
      implementation |  platform     | duration | rate
-           netty-em | jruby/  1.8.7 |    94.93 | 105338.56   (--fast)
-           netty-em | jruby/  1.9.2 |    90.42 | 110590.11   (--fast --1.9)
-       eventmachine | jruby/  1.9.2 |    82.98 | 120508.06   (--fast --1.9)
-       eventmachine | jruby/  1.8.7 |    86.39 | 115756.82   (--fast)
-       eventmachine | jruby/  1.8.7 |    90.15 | 110923.77
-       eventmachine | jruby/  1.9.2 |    94.18 | 106176.27
-       eventmachine |  ruby/  1.9.2 |   143.48 | 69698.22
        eventmachine |  ruby/  1.8.7 |   211.38 | 47307.64
+       eventmachine |  ruby/  1.9.2 |   143.48 | 69698.22
+           netty-em | jruby/  1.8.7 |    94.93 | 105338.56   (--fast)
+       eventmachine | jruby/  1.9.2 |    94.18 | 106176.27
+           netty-em | jruby/  1.9.2 |    90.42 | 110590.11   (--fast --1.9)
+       eventmachine | jruby/  1.8.7 |    90.15 | 110923.77
+       eventmachine | jruby/  1.8.7 |    86.39 | 115756.82   (--fast)
+       eventmachine | jruby/  1.9.2 |    82.98 | 120508.06   (--fast --1.9)
 
 # Conclusions
 
