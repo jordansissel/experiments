@@ -17,6 +17,17 @@ code, and some of the puppet 'custome type and provider' docs.
 
 Second, for calling chef from Ruby, I used this gist by adamhjk as a starting point: <https://gist.github.com/654054>
 
+## Where's the code hiding?
+
+It's in this git repo.
+
+I implement a custom provider (called "chef") for the existing "package"
+resource type.
+
+The code is in a module, like this:
+
+    modules/swedishchef/plugins/puppet/provider/package/chef.rb
+
 ## swedishchef in action.
 
 ### Install nagios3
