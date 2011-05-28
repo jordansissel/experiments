@@ -8,13 +8,22 @@ It would be pretty trivial to use any of the other chef stuff as a puppet
 provider. With enough cleverness, you could likely run entire chef cookbooks
 from puppet with whatever 'chef_cookbook' type/provider you want to write.
 
+How'd I do this?
+
+First, the puppet docs on writing custom providers is a mixed bag of good and
+meh. I used the existing puppet code, masterzen's [network-device
+provider](https://github.com/masterzen/puppet/tree/feature%2Fnetwork-device/lib/puppet/provider)
+code, and some of the puppet 'custome type and provider' docs.
+
+Second, for calling chef from Ruby, I used this gist by adamhjk as a starting point: <https://gist.github.com/654054>
+
 ## swedishchef in action.
 
 ### Install nagios3
 
     % sudo puppet apply --modulepath ./modules -e '
       package { 
-        "nagios#":
+        "nagios3":
           provider => "chef",
           ensure => present;
       }'
