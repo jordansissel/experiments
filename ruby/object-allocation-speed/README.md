@@ -2,7 +2,7 @@
 
 While profiling some code in JRuby, I noticed Java's GC was reclaiming 40MB
 every 100ms. That's 400mb/sec of temporary or short-lived objects. What did
-it look like in jvisualvm? See this image: [jruby-jvisualvm.png](./jruby-visualvm.png)
+it look like in jvisualvm? See this image: [jruby-jvisualvm.png](https://github.com/jordansissel/experiments/blob/master/ruby/object-allocation-speed/jruby-jvisualvm.png)
 
 That's bad.
 
@@ -40,8 +40,8 @@ How is GC affected by this simple object reuse?
 I took screenshots of jvisualvm's memory graph for roughly the same time frame.
 Notice that the 'with_existing' implementation has a flatter 'used heap' curve.
 
-* find_user memory usage <./find_user.memory.png>
-* find_user_with_existing memory usage <./find_user_with_existing.memory.png>
+* find_user memory usage [find_user.memory.png](https://github.com/jordansissel/experiments/blob/master/ruby/object-allocation-speed/find_user.memory.png))
+* find_user_with_existing memory usage [find_user.memory.png](https://github.com/jordansissel/experiments/blob/master/ruby/object-allocation-speed/find_user_with_existing.memory.png))
 
 How about java's GC logs?
 
