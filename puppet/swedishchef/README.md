@@ -44,6 +44,9 @@ Second, for calling chef from Ruby, I used this gist by adamhjk as a starting po
 
 ### Try to install an invalid version
 
+Chef will toss an exception if you try to install a package for a version that
+doesn't exist.
+
     % sudo puppet apply --modulepath modules -e 'package { "nagios3": provider => "chef", ensure => "42"; }'  
     notice: Puppet::Type::Package::ProviderChef: Initializing chef...
     [Sat, 28 May 2011 01:04:29 -0700] INFO: Installing package[nagios3] version 42
