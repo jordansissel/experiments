@@ -2,7 +2,7 @@
 
 While profiling some code in JRuby, I noticed Java's GC was reclaiming 40MB
 every 100ms. That's 400mb/sec of temporary or short-lived objects. What did
-it look like in jvisualvm? See this image: <./jruby-jvisualvm.png>
+it look like in jvisualvm? See this image: (jruby-jvisualvm.png)[./jruby-visualvm.png]
 
 That's bad.
 
