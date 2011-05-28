@@ -36,7 +36,7 @@ def find_user_with_existing(name, user)
   return user
 end
 
-iterations = 10_000_000
+iterations = 10_000_000_000
 ENGINE = (RUBY_ENGINE rescue "ruby")
 
 def time(name, iterations, &block)
@@ -49,9 +49,9 @@ def time(name, iterations, &block)
   printf("%25.25s | %5s/%7s | %8.2f | %6d\n", name, ENGINE, RUBY_VERSION, duration, rate)
 end
 
-time("find_user", iterations) do
-  find_user("jls")
-end
+#time("find_user", iterations) do
+  #find_user("jls")
+#end
 
 reuser = User.new
 time("find_user_with_existing", iterations) do

@@ -35,7 +35,32 @@ there's less crap to reclaim every run.
 
 # GC?
 
-TBD
+How is GC affected by this simple object reuse?
+
+I took screenshots of jvisualvm's memory graph for roughly the same time frame.
+Notice that the 'with_existing' implementation has a flatter 'used heap' curve.
+
+* find_user memory usage <find_user.memory.png>
+* find_user_with_existing memory usage <find_user_with_existing.memory.png>
+
+How about java's GC logs?
+
+The main take away from the following logs is to look at the "PSYoungGen" GC
+data, where XXXX->YYYY(ZZZZ) represents Start->End(Delta) in size.
+
+* find_user gc log output <find_user.gc.log>
+* find_user_with_existing gc log output <find_user_with_existing.gc.log
+
+Analysis:
+
+I ignore the first 20 seconds of runtime because of JVM and JRuby's ramp-up  loading code, doing JIT analysis, etc.
+
+Average size reclaimed for YoungGen:
+
+* find_user: 42mb
+* find_user_with_existing: 17mb
+
+I think the above analysis is right, though I might be off. This is mostly my first time digging in with jvisualvm, java gc debuggiing, etc.
 
 # Conclusions
 
@@ -49,3 +74,6 @@ in over each socket at any given time - so it would be safe for me to reuse
 that Event object for every client connection, and depending on the threading
 model used, it might be safe to reuse only one Event instance for the entire
 application.
+
+Seems like any system with high throughput would benefit from not wasting any
+unnecessary time creating objects.
