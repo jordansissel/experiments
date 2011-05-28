@@ -77,3 +77,5 @@ application.
 
 Seems like any system with high throughput would benefit from not wasting any
 unnecessary time creating objects.
+
+Profile first, though. Don't make extra work for yourself ;)
