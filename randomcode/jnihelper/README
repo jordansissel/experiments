@@ -1,0 +1,21 @@
+Sometimes your java code calls JNI code and that code calls abort(). No stack trace.
+
+This tool (jnihelper) runs like 'java' (the program) and overrides libc's
+abort() and will give you a stack trace before crashing.
+
+Example (in samples/):
+  % make
+  % java -Djava.library.path=. JNIHelperExample
+  Hello!
+  zsh: abort      java -Djava.library.path=. JNIHelperExample
+
+Notice the lack of stacktrace.
+
+% ../jnihelper -Djava.library.path=. JNIHelperExample
+Hello!
+java.lang.Exception: Stack trace
+        at java.lang.Thread.dumpStack(Thread.java:1206)
+        at JNIHelperExample.abort(Native Method)
+        at JNIHelperExample.main(JNIHelperExample.java:8)
+aborting!
+zsh: abort      ../jnihelper -Djava.library.path=. JNIHelperExample

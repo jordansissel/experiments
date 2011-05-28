@@ -1,0 +1,6 @@
+#define DQUOTE(X) { #X }
+#define CAPTURE_ID_LEN 4
+#define CAPTURE_FORMAT ("%0"  CAPTURE_ID_LEN "x")
+
+
+DQUOTE(CAPTURE_ID_LEN)
