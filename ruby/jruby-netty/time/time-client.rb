@@ -55,14 +55,15 @@ class TimeClient
   end # def initialize
 
   def start
-    @bootstrap.connect(java.net.InetSocketAddress.new(@host, @port));
-  end
+    address = java.net.InetSocketAddress.new(@host, @port)
+    return @bootstrap.connect(address)
+  end # def start
 
   def self.main(args)
     host = args[0]
     port = args[1].to_i
     TimeClient.new(host, port).start
-  end
+  end # def self.main
 end # class TimeClient
 
 if __FILE__ == $0

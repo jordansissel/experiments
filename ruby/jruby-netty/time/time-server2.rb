@@ -17,10 +17,10 @@ end # class ChannelFutureHandler
 
 class TimeEncoder < org.jboss.netty.channel.SimpleChannelHandler
   def writeRequested(context, event)
-    time = event.getMessage
-    p time.class
+    # time is a java.util.Date instance
+    time = event.getMessage 
     buffer = org.jboss.netty.buffer.ChannelBuffers.buffer(4)
-    buffer.writeInt(time.to_i)
+    buffer.writeInt(time.getTime / 1000)
     org.jboss.netty.channel.Channels.write(context, event.getFuture, buffer)
   end # def writeRequested
 end # class TimeEncoder
@@ -37,7 +37,10 @@ class TimeServerHandler < org.jboss.netty.channel.SimpleChannelHandler
   def channelConnected(context, event)
     # event is a ChannelStateEvent
     channel = event.channel
-    time = Time.now
+    #time = Time.now   
+    # For some reason pushing a 'Time' instance through
+    #netty results in a java.util.Date, so use that directly.
+    time = java.util.Date.new()  
     future = channel.write(time)
 
     # Remember, writes are asynchronous. So any "when you are done writing"

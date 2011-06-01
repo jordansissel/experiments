@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 #
-# The "1.8" section in the netty guide for Time Client
+# The "1.8/1.9" section in the netty guide for Time Client
+#   Handles safe shutdown and cleanup
+#   Uses objects instead of direct message decoding
 
 require "java"
 require File.join(File.dirname(__FILE__), "..", "netty-3.2.4.Final.jar")
@@ -39,16 +41,15 @@ class TimeClientHandler < org.jboss.netty.channel.SimpleChannelHandler
   end # def exceptionCaught
 end # class TimeClientHandler
 
-
 class TimeClient
 
   def initialize(host, port)
-    factory = org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory.new(
+    @factory = org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory.new(
       java.util.concurrent.Executors.newCachedThreadPool(),
       java.util.concurrent.Executors.newCachedThreadPool()
     )
 
-    @bootstrap = org.jboss.netty.bootstrap.ClientBootstrap.new(factory)
+    @bootstrap = org.jboss.netty.bootstrap.ClientBootstrap.new(@factory)
     @bootstrap.setPipelineFactory(TimeClientHandler)
     @bootstrap.setOption("child.tcpNoDelay", true);
     @bootstrap.setOption("child.keepAlive", true);
@@ -58,14 +59,28 @@ class TimeClient
   end # def initialize
 
   def start
-    @bootstrap.connect(java.net.InetSocketAddress.new(@host, @port));
-  end
+    address = java.net.InetSocketAddress.new(@host, @port)
+    return @bootstrap.connect(address)
+  end # def start
+
+  def run
+    future = start
+
+    future.awaitUninterruptibly
+    if !future.isSuccess
+      future.getCause().printStackTrace()
+    end
+
+    # Clean up
+    future.getChannel().getCloseFuture().awaitUninterruptibly();
+    @factory.releaseExternalResources();
+  end # def run
 
   def self.main(args)
     host = args[0]
     port = args[1].to_i
-    TimeClient.new(host, port).start
-  end
+    TimeClient.new(host, port).run
+  end # def self.main
 end # class TimeClient
 
 if __FILE__ == $0
