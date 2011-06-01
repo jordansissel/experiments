@@ -1,6 +1,6 @@
 # This aims to be a more "rubyish" way of doing the discard server example
 require "java"
-require "./netty-3.2.4.Final.jar"
+require File.join(File.dirname(__FILE__), "..", "netty-3.2.4.Final.jar")
 
 java_import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
 java_import java.util.concurrent.Executors

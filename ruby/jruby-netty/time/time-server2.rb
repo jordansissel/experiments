@@ -1,7 +1,10 @@
-# This aims to be a more "rubyish" way of doing the discard server example
+#!/usr/bin/env ruby
+#
+# The "1.8" section in the netty guide for Time Server
+#
+
 require "java"
 require File.join(File.dirname(__FILE__), "..", "netty-3.2.4.Final.jar")
-
 
 # Ruby block-friendly wrapper for ChannelFuture events
 def On(future, method, &callback)
@@ -12,20 +15,29 @@ def On(future, method, &callback)
   end)
 end # class ChannelFutureHandler
 
+class TimeEncoder < org.jboss.netty.channel.SimpleChannelHandler
+  def writeRequested(context, event)
+    time = event.getMessage
+    p time.class
+    buffer = org.jboss.netty.buffer.ChannelBuffers.buffer(4)
+    buffer.writeInt(time.to_i)
+    org.jboss.netty.channel.Channels.write(context, event.getFuture, buffer)
+  end # def writeRequested
+end # class TimeEncoder
+
 class TimeServerHandler < org.jboss.netty.channel.SimpleChannelHandler
 
   class << self
     include org.jboss.netty.channel.ChannelPipelineFactory
     def getPipeline
-      return org.jboss.netty.channel.Channels.pipeline(self.new)
+      return org.jboss.netty.channel.Channels.pipeline(self.new, TimeEncoder.new)
     end # def getPipeline
   end # class << self 
 
   def channelConnected(context, event)
     # event is a ChannelStateEvent
     channel = event.channel
-    time = org.jboss.netty.buffer.ChannelBuffers.buffer(4)
-    time.writeInt(Time.now.to_i)
+    time = Time.now
     future = channel.write(time)
 
     # Remember, writes are asynchronous. So any "when you are done writing"
