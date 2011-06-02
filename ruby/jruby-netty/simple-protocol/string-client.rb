@@ -7,8 +7,9 @@
 require "java"
 require File.join(File.dirname(__FILE__), "..", "netty-3.2.4.Final.jar")
 
+# This decoder class will process a simple protocol that consists of 
+# a 4 byte 'length' field followed by that many bytes of a string.
 class StringDecoder < org.jboss.netty.handler.codec.replay.ReplayingDecoder
-
   # States in ReplayingDecoder must be Enums, so let's create some enums now.
   # We have to create subclasses because the Enum constructor is protected.
   READ_LENGTH = Class.new(java.lang.Enum) { def initialize; super("READ_LENGTH", 1); end; }.new
