@@ -9,21 +9,13 @@ Receiver:
 
 Issue:
 
-After around 1MB written, it stalls and channel.isWritable() always returns true.
-Even if I skip the 'isWritable' check, it always stalls out.
+  I can't seem to exceed ~1.5MB/sec writing.
 
-Output:
+Reproducing it:
 
-Ready
-busy... 1 sleep_ms, 999810 bytes written
-busy... 2 sleep_ms, 999810 bytes written
-busy... 4 sleep_ms, 999810 bytes written
-busy... 8 sleep_ms, 999810 bytes written
-busy... 16 sleep_ms, 999810 bytes written
-busy... 32 sleep_ms, 999810 bytes written
-busy... 64 sleep_ms, 999810 bytes written
-busy... 128 sleep_ms, 999810 bytes written
-busy... 256 sleep_ms, 999810 bytes written
-busy... 512 sleep_ms, 999810 bytes written
+  Run the 'run' and 'receiver' above, after about 30 seconds, kill the java one.
+  You'll see 'dd' output the rates, something like this:
+
+  18427416 bytes (18 MB) copied, 11.0958 s, 1.7 MB/s
 
 
