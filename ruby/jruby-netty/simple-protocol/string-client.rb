@@ -43,7 +43,18 @@ class StringClientHandler < org.jboss.netty.channel.SimpleChannelHandler
     end # def getPipeline
   end # class << self 
 
+  def initialize
+    super()
+    @count = 0
+    @start = Time.now
+  end
+
   def messageReceived(context, event)
+    @count += 1
+    if @count % 10000 == 0
+      rate = @count / (Time.now - @start)
+      p :rate => rate
+    end
     string = event.getMessage
     p :string => string
   end # def messageReceived
