@@ -58,7 +58,7 @@ void publisher(void *data) {
   zmq_close(socket);
 }
 
-void sub(void *data) {
+void subscriber(void *data) {
   void *zmq = data;
 
   printf("Sub starting\n");
@@ -113,16 +113,13 @@ void sub(void *data) {
 
 int main() {
   void *zmq = zmq_init(1);
-  pthread_t publisher, subscriber;
+  pthread_t publisher_thread, subscriber_thread;
 
-  pthread_create(&publisher, NULL, pub, zmq);
-  pthread_create(&subscriber, NULL, sub, zmq);
+  pthread_create(&publisher_thread, NULL, publisher, zmq);
+  pthread_create(&subscriber_thread, NULL, subscriber, zmq);
 
-  pthread_join(publisher, NULL);
-  pthread_join(subscriber, NULL);
-  printf("EXITING\n");
-
-  sleep(100);
+  pthread_join(publisher_thread, NULL);
+  pthread_join(subscriber_thread, NULL);
   zmq_term(zmq);
   return 0;
 }
