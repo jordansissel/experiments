@@ -24,6 +24,8 @@ void publisher(void *data) {
   int rc;
 
   printf("Pub starting\n");
+
+  /* Create a 'PUB' socket, bind it to our target (see ZMQTARGET) */
   void *socket = zmq_socket(zmq, ZMQ_PUB);
   rc = zmq_bind(socket, ZMQTARGET);
   assert(rc == 0);
@@ -41,6 +43,8 @@ void publisher(void *data) {
   msgpack_pack_raw_body(pk, "MessagePack", 11);
 
   int i;
+
+  /* Send a bunch of fabricated messages */
   for (i = 0; i < ITERATIONS; i++) {
     zmq_msg_t message;
     //printf("%zd: %.*s\n", buffer->size, buffer->size, buffer->data);
@@ -52,7 +56,6 @@ void publisher(void *data) {
       abort();
     }
     zmq_msg_close (&message);
-    //sleep(1);
   }
 
   zmq_close(socket);
@@ -60,32 +63,37 @@ void publisher(void *data) {
 
 void subscriber(void *data) {
   void *zmq = data;
+  int rc;
+  struct timespec start;
+  struct timespec now;
+  int bytes = 0;
+  int count = 0;
+  int i;
+  zmq_msg_t message;
+  void *socket;
 
   printf("Sub starting\n");
-  void *socket = zmq_socket(zmq, ZMQ_SUB);
+
+  /* Create a SUBSCRIBE socket */
+  socket = zmq_socket(zmq, ZMQ_SUB);
   assert (socket);
-  int rc;
+
+  /* Connect to our target address */
   rc = zmq_connect(socket, ZMQTARGET);
   assert (rc == 0);
   zmq_setsockopt(socket, ZMQ_SUBSCRIBE, "", 0);
 
-  struct timespec start;
-  struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &start);
 
-  int bytes = 0;
-  int count = 0;
-  zmq_msg_t message;
-
   msgpack_unpacked msg;
-  int i;
   for (i = 0; i < ITERATIONS; i++) {
+    int size;
     zmq_msg_init (&message);
     //printf("sub: receiving\n");
     zmq_recv(socket, &message, 0);
     msgpack_unpacked_init(&msg);
 
-    int size = zmq_msg_size(&message);
+    size = zmq_msg_size(&message);
     msgpack_unpack_next(&msg, zmq_msg_data(&message), size, NULL);
 
     count++;
