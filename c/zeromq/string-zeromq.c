@@ -28,21 +28,16 @@ void publisher(void *data) {
   rc = zmq_bind(socket, ZMQTARGET);
   assert(rc == 0);
 
-  char *string = "hello world";
+  char *string = "Jun  3 00:00:00 snack nagios3: CURRENT SERVICE STATE: localhost;Total Processes;OK;HARD;1;PROCS OK: 248 processes";
   size_t length = strlen(string);
   int i;
+
   /* Send a bunch of fabricated messages */
   for (i = 0; i < ITERATIONS; i++) {
     zmq_msg_t message;
-    //zmq_msg_init_data(&message, string, length, NULL, NULL);
-    zmq_msg_init_size(&message, length);
-    memcpy(zmq_msg_data(&message), string, length);
+    zmq_msg_init_data(&message, string, length, NULL, NULL);
     rc = zmq_send(socket, &message, 0);
-    if (rc != 0) {
-      printf("error: %d\n", rc);
-      perror("zmq_send");
-      abort();
-    }
+    assert(rc == 0);
     zmq_msg_close (&message);
   }
 
@@ -76,9 +71,7 @@ void subscriber(void *data) {
   for (i = 0; i < ITERATIONS; i++) {
     int size;
     zmq_msg_init (&message);
-    //printf("sub: receiving\n");
     zmq_recv(socket, &message, 0);
-
     size = zmq_msg_size(&message);
 
     count++;
@@ -86,12 +79,13 @@ void subscriber(void *data) {
 
     /* Every N messages, output progress. */
     if (count % CHECKINTERVAL == 0) {
-      printf("\n");
 
       clock_gettime(CLOCK_MONOTONIC, &now);
       if (start.tv_sec != now.tv_sec) {
-        double rate = bytes / (now.tv_sec - start.tv_sec);
-        printf("Duration: %ld - Rate (bytes/sec): %f\n", now.tv_sec - start.tv_sec, rate);
+        double rate_bytes = bytes / (now.tv_sec - start.tv_sec);
+        double rate_msgs = count / (now.tv_sec - start.tv_sec);
+        printf("Duration: %ld - Rate (bytes/sec): %lf / %lf\n",
+               now.tv_sec - start.tv_sec, rate_bytes, rate_msgs);
       }
     }
     zmq_msg_close (&message);
@@ -102,7 +96,7 @@ void subscriber(void *data) {
 
 
 int main() {
-  void *zmq = zmq_init(1);
+  void *zmq = zmq_init(2);
   pthread_t publisher_thread, subscriber_thread;
 
   pthread_create(&publisher_thread, NULL, publisher, zmq);

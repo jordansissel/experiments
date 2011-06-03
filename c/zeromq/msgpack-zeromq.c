@@ -38,9 +38,11 @@ void publisher(void *data) {
   /* serializes ["Hello", "MessagePack"]. */
   msgpack_pack_array(pk, 2);
   msgpack_pack_raw(pk, 5);
-  msgpack_pack_raw_body(pk, "Hello", 5);
-  msgpack_pack_raw(pk, 11);
-  msgpack_pack_raw_body(pk, "MessagePack", 11);
+  msgpack_pack_raw_body(pk, "foobar", 5);
+
+  char string[] = "Jun  3 00:00:00 snack nagios3: CURRENT SERVICE STATE: localhost;Total Processes;OK;HARD;1;PROCS OK: 248 processes";
+  msgpack_pack_raw(pk, strlen(string));
+  msgpack_pack_raw_body(pk, string, strlen(string));
 
   int i;
 
@@ -107,8 +109,10 @@ void subscriber(void *data) {
 
       clock_gettime(CLOCK_MONOTONIC, &now);
       if (start.tv_sec != now.tv_sec) {
-        double rate = bytes / (now.tv_sec - start.tv_sec);
-        printf("Duration: %ld - Rate (bytes/sec): %f\n", now.tv_sec - start.tv_sec, rate);
+        double rate_bytes = bytes / (now.tv_sec - start.tv_sec);
+        double rate_msgs = count / (now.tv_sec - start.tv_sec);
+        printf("Duration: %ld - Rate (bytes/sec): %lf / %lf\n",
+               now.tv_sec - start.tv_sec, rate_bytes, rate_msgs);
       }
     }
     msgpack_unpacked_destroy(&msg);
@@ -120,7 +124,7 @@ void subscriber(void *data) {
 
 
 int main() {
-  void *zmq = zmq_init(1);
+  void *zmq = zmq_init(3);
   pthread_t publisher_thread, subscriber_thread;
 
   pthread_create(&publisher_thread, NULL, publisher, zmq);
