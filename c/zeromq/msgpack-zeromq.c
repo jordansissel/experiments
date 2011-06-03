@@ -1,3 +1,10 @@
+/*
+ * This is an example of (probably improperly) using zeromq to transport
+ * msgpack'd messages.
+ *
+ * It leaks memory, I haven't found why (valgrid isn't helpful).
+ */
+
 #include <zmq.h>
 #include <msgpack.h>
 #include <unistd.h>
@@ -12,15 +19,16 @@
 #define ZMQTARGET "tcp://*:3383"
 //#define ZMQTARGET "inproc://foobar"
 
-void pub(void *data) {
+void publisher(void *data) {
   void *zmq = data;
   int rc;
-  char string[] = "hello world blah blah fizzledeeboop";
+
+  printf("Pub starting\n");
   void *socket = zmq_socket(zmq, ZMQ_PUB);
   rc = zmq_bind(socket, ZMQTARGET);
-  printf("Pub starting\n");
   assert(rc == 0);
 
+  /* These msgpack bits are from the msgpack quick start guide */
   /* creates buffer and serializer instance. */
   msgpack_sbuffer* buffer = msgpack_sbuffer_new();
   msgpack_packer* pk = msgpack_packer_new(buffer, msgpack_sbuffer_write);
@@ -33,7 +41,6 @@ void pub(void *data) {
   msgpack_pack_raw_body(pk, "MessagePack", 11);
 
   int i;
-  //usleep(10000000);
   for (i = 0; i < ITERATIONS; i++) {
     zmq_msg_t message;
     //printf("%zd: %.*s\n", buffer->size, buffer->size, buffer->data);
