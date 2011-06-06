@@ -44,20 +44,41 @@ public class SyslogServer {
     READ_PRI_START,
     READ_PRI_END,
     READ_DATE, /* NOT CURRENTLY SUPPORTED */
+    START_MESSAGE,
     READ_MESSAGE,
   }
+
+  class Range {
+    public int start;
+    public int end;
+
+    public void clear() {
+      this.start = this.end = 0;
+    }
+
+    public int length() {
+      return this.end - this.start;
+    }
+
+    public String toString() {
+      return "[" + this.start + " .. " + this.end + "]";
+    }
+  } /* class Range */
 
   class SyslogDecoder extends ReplayingDecoder<SyslogParserState> {
     private ChannelBuffer cumulator;
     private SyslogEvent event;
 
-    private int pri_start;
-    private int date_start;
-    private int message_start;
+    private Range pri;
+    private Range date;
+    private Range message;
 
     public SyslogDecoder() {
       super(SyslogParserState.START);
       cumulator = ChannelBuffers.dynamicBuffer();
+      pri = new Range();
+      date = new Range();
+      message = new Range();
     }
 
     protected Object decode(ChannelHandlerContext context, Channel channel, 
@@ -69,52 +90,51 @@ public class SyslogServer {
         case START:
           this.cumulator.clear();
           this.event = new SyslogEvent();
+          this.pri.clear();
+          this.date.clear();
+          this.message.clear();
           /* fall through */
         case READ_PRI_START:
           b = buffer.readByte();
           this.cumulator.writeByte(b);
           if (b != '<') { /* is not '<' (for <123> priority header */
-            this.checkpoint(SyslogParserState.READ_MESSAGE);
+            /* Invalid pri header, entire line is the message */
+            this.message.start = this.cumulator.readerIndex();
+            this.checkpoint(SyslogParserState.START_MESSAGE);
             break;
           }
+          this.pri.start = this.cumulator.writerIndex(); /* start after '<' */
           this.checkpoint(SyslogParserState.READ_PRI);
           /* fall through */
         case READ_PRI:
           b = buffer.readByte();
+          this.cumulator.writeByte(b);
 
           if (b >= '0' && b <= '9') {  /* [0-9] */
-            this.cumulator.writeByte(b);
-            if (this.cumulator.readableBytes() - this.pri_start == 3) {
-              /* max length of a <134> pri value is 3 digits (RFC3164) */
-              this.checkpoint(SyslogParserState.READ_PRI_END);
+            if (this.cumulator.readableBytes() - this.pri.start > 3) {
+              /* invalid pri value, max length of pri is 3 digits, "<123>" */
+              /* The entire line is a message, then */
+              this.message.start = this.cumulator.readerIndex();
+              this.checkpoint(SyslogParserState.START_MESSAGE);
             }
           } else if (b == '>') {
-            /* Back up to reprocess the '>' */
-            buffer.readerIndex(buffer.readerIndex() - 1);
-            this.checkpoint(SyslogParserState.READ_PRI_END);
+            this.pri.end = this.cumulator.writerIndex() - 1;
+            if (this.pri.length() == 0) {
+              /* invalid pri, got "<>" */
+              this.message.start = this.cumulator.readerIndex();
+            } else {
+              this.event.setPriorityFromBuffer(this.cumulator.slice(this.pri.start, this.pri.length()));
+              this.message.start = this.cumulator.writerIndex();
+            }
+            this.checkpoint(SyslogParserState.START_MESSAGE);
           } else {
             /* Invalid pri value */
-            ChannelBuffer copy = this.cumulator.copy();
-            this.cumulator.clear();
-            this.cumulator.writeByte('<');
-            this.cumulator.writeBytes(copy);
-            this.cumulator.writeByte(b);
-            this.checkpoint(SyslogParserState.READ_MESSAGE);
+            /* The entire line is a message, then */
+            this.message.start = this.cumulator.readerIndex();
+            this.checkpoint(SyslogParserState.START_MESSAGE);
           }
           break;
-        case READ_PRI_END:
-          b = buffer.readByte();
-          if (b == '>') {
-            this.event.setPriorityFromBuffer(this.cumulator);
-            this.cumulator.clear();
-          } else {
-            /* Invalid message, expected '>' from '<123>' but got something else. */
-            ChannelBuffer copy = this.cumulator.copy();
-            this.cumulator.clear();
-            this.cumulator.writeByte('<');
-            this.cumulator.writeBytes(copy);
-            this.cumulator.writeByte(b);
-          }
+        case START_MESSAGE:
           this.checkpoint(SyslogParserState.READ_MESSAGE);
           /* fall through */
         case READ_MESSAGE:
@@ -127,7 +147,10 @@ public class SyslogServer {
               break;
             }
           } /* read until newline */
-          this.event.message = cumulator.toString(Charset.defaultCharset());
+          this.message.end = cumulator.writerIndex();
+          //System.out.println("Range: " + this.message);
+          this.event.message = cumulator.slice(this.message.start, this.message.length()).
+            toString(Charset.defaultCharset());
           this.checkpoint(SyslogParserState.START);
           return this.event;
       } /* switch (state) */
