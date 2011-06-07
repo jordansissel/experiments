@@ -4,7 +4,7 @@ Goal: maximize message parsing rate
 
 ## Results
 
-Pure-java + Netty dominates. All implementations used netty.
+Pure-java + Netty dominates. All implementations used netty. Tests were run on my thinkpad x201 laptop (i5, 2.4gHz)
 
 Because netty lets us use multiple threads (one per connection/worker), the
 'rate' scales per cpu.
