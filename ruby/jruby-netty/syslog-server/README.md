@@ -12,12 +12,23 @@ my thinkpad x201 laptop (i5, 2.4gHz)
 Because netty lets us use multiple threads (one per connection/worker), the
 'rate' scales per cpu.
 
+These results are from the output of the program itself: 
+
     implementation   | rate (events/sec) | footprint (resident memory)
          pure java   | 375000            | 81mb
-       java + jruby  | 155000            | 265mb
+       java + jruby  | 185000            | 265mb
          pure jruby  | slow.             | ---
 
-The bulk energy spent in the code is parsing of syslog messages.
+Using syslog-ng's loggen tool also confirms these results: 
+
+    % loggen -r 500000 -iS -s 120 -I 50  localhost 3000
+
+    implementation   | loggen output
+         pure java   | average rate = 367747.47 msg/sec, count=18387440, time=50.001, msg size=120, bandwidth=43095.41 kB/sec
+       java + jruby  | average rate = 190592.18 msg/sec, count=9529638, time=50.001, msg size=120, bandwidth=22335.02 kB/sec
+
+The bulk energy spent in the code is parsing of syslog
+messages.
 
 ## Implementation information
 
