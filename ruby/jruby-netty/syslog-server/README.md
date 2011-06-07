@@ -41,6 +41,12 @@ SyslogDecoder implemented in Java.
 "pure jruby" was implementing SyslogDecoder in pure JRuby while still using
 Netty.
 
+## Running it yourself
+
+* 'make java-run' will run the pure-java server
+* 'make ruby-run' will run the jruby server using the pure-java SyslogDecoder
+* 'make feed' will flood the server with tcp syslog messages.
+
 ## Conclusion
 
 This particular project at loggly needs to parse syslog messages and ship them
