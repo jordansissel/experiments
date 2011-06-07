@@ -1,10 +1,11 @@
 
 CLASSBASE=com/loggly/syslog
+
 %.class: %.java
 	javac -cp ../netty-3.2.4.Final.jar:. $<
 
 $(CLASSBASE)/SyslogServer.class: $(CLASSBASE)/SyslogDecoder.class $(CLASSBASE)/SyslogEvent.class $(CLASSBASE)/Range.class $(CLASSBASE)/SyslogParserState.class
-	
+
 java-run: $(CLASSBASE)/SyslogServer.class
 	java -cp ../netty-3.2.4.Final.jar:. com.loggly.syslog.SyslogServer 127.0.0.1 3000
 
