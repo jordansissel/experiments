@@ -25,3 +25,22 @@
 
 
 Crash :(
+
+GDB
+
+    Reading symbols from /home/jls/projects/experiments/objc/foo/obj/test...done.
+    (gdb) r
+    Starting program: /home/jls/projects/experiments/objc/foo/obj/test 
+    [Thread debugging using libthread_db enabled]
+
+    Program received signal SIGABRT, Aborted.
+    0x00007ffff6b6aba5 in raise () from /lib/libc.so.6
+    (gdb) where
+    #0  0x00007ffff6b6aba5 in raise () from /lib/libc.so.6
+    #1  0x00007ffff6b6e6b0 in abort () from /lib/libc.so.6
+    #2  0x00007ffff7366d70 in objc_exception_throw () from /usr/lib/libobjc.so.2
+    #3  0x0000000000400cc9 in main (argc=7255, argv=0x1c57) at main.m:16
+    (gdb) frame 3
+    #3  0x0000000000400cc9 in main (argc=7255, argv=0x1c57) at main.m:16
+    16            @throw(exception);
+
