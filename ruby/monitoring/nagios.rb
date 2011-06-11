@@ -1,22 +1,21 @@
 # Parses output of nagios plugins and tries to make it something less crappy.
 #
-
-# run a command, take the output.
-# nagios says first line is
-# message | perfdata
-# message2
-# ...
-# messageN | perfdata2
-# perfdata3
-# ...
-# perfdata4
+# When talking monitoring, the #1 reason folks use nagios appears to be due
+# to the ease of writing plugins. This is reasonable. So let's make 
+# nagios plugins usable elsewhere.
 #
 
-require "./subprocess.rb"
+require "./subprocess"
+require "./nagiosperfdata"
 
 class NagiosPlugin
+  attr_reader :text
+  attr_reader :perfdata
+  attr_reader :errors
+
   public
   def initialize(*args)
+    # accept array of args, or invoked as NagiosPlugin.new(arg1, arg2, arg3, ...)
     args = args.first if args.first.is_a?(Array)
     @subprocess = Subprocess.new(args)
     @started = false
@@ -26,13 +25,13 @@ class NagiosPlugin
 
   public
   def start
-    @subprocess.start if !@started
+    @subprocess.start unless @started
     @started = true
   end # def start
 
   public
   def run
-    start if !@started
+    start
     parse
     error_messages = @subprocess.stderr.read
     @subprocess.stderr.close
@@ -44,6 +43,7 @@ class NagiosPlugin
     p :error_messages => error_messages
     p :text => @text
     p :perfdata => @perfdata
+    p :status => status
   end # def run
 
   private
@@ -85,89 +85,24 @@ class NagiosPlugin
     end
     @subprocess.stdout.close
   end # def parse
+
+  public
+  def status
+    start
+    codes = {
+      0 => :ok,
+      1 => :warning,
+      2 => :critical,
+      3 => :unknown,
+    }
+
+    code = @subprocess.status.exitstatus
+
+    return (codes[code] or :unknown)
+  end # def status
 end # class NagiosPlugin
 
-class NagiosPerfData
-  @@perfdata_re = nil
 
-  public
-  def self.initialize
-    # from http://nagiosplug.sourceforge.net/developer-guidelines.html#AEN201
-    # 'label'=value[UOM];[warn];[crit];[min];[max]
-    #   label can be quoted (especially if it has '=' or ' ')
-    #
-    #   UOM is the unit, and can be
-    #     * nothing
-    #     * 's' 'ms' 'us' (timing)
-    #     * B, KB, MB, GB, TB, etc
-    #     * 'c' a counter
-    #     * '%' a percentage
-    # http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT
-    # 'warn' and 'crit' are in "range" format, documented above, but I've never
-    # seen it in use. If you use it, let me (jordan) know.
-    q = "'(?:[^']+|\\.)+'"
-    qq = "\"(?:[^\"]+|\\.)+\""
-    label = "(#{q}|#{qq}|[^ =]+)"
-    value = "([0-9-]+)"
-    min = max = "(?:;([0-9-]+)?)?"
-    warn = crit = "(?:;([0-9-]+)?)?"
-    uom = "([mu]?s|[KMGTP]B|c|%)?"
-    @@perfdata_re = /#{label}=#{value}#{uom}#{warn}#{crit}#{min}#{max}/
-  end # def self.initialize
-
-  public
-  def self.ready
-    return !@@perfdata_re.nil?
-  end # def self.ready
-
-  # The name of this metric
-  attr_reader :label
-
-  # The current value of this metric
-  attr_reader :value
-
-  # The unit for this metric ("%", "MB", "c" (counter), etc)
-  attr_reader :unit
- 
-  # 'warning' threshold level
-  attr_reader :warn
-
-  # 'critical' threshold level
-  attr_reader :critical
-
-  # minimum value possible for this metric
-  attr_reader :min
-
-  # maximum value possible for this metric
-  attr_reader :max
-
-  public
-  def initialize(options)
-    @label = options[:label]
-    @value = options[:value]
-    @unit = options[:unit]
-    @warn = options[:warn]
-    @critical = options[:critical]
-    @min = options[:min]
-    @max = options[:max]
-  end # def initialize
-
-  def self.parse(string, &block)
-    initialize unless ready
-    string.scan(@@perfdata_re) do |captures|
-      label, value, unit, warn, critical, min, max = captures
-      yield NagiosPerfData.new(
-        :label => label,
-        :value => value.to_f,
-        :unit => unit,
-        :warn => warn.to_f,
-        :critical => critical.to_f,
-        :min => min.to_f,
-        :max => max.to_f
-      )
-    end
-  end # def self.parse
-end # class NagiosPerfData
-
-plugin = NagiosPlugin.new("/home/jls/bin/check_disk", "-w", "99", "-c", "99")
+#plugin = NagiosPlugin.new("/home/jls/bin/check_disk", "-w", "99", "-c", "99")
+plugin = NagiosPlugin.new(*ARGV)
 plugin.run

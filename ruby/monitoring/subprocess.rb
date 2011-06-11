@@ -48,7 +48,6 @@ class Subprocess
 
   public
   def wait
-    p :waiting => @pid
     Process.waitpid(@pid)
     @status = $?
   end # def wait
