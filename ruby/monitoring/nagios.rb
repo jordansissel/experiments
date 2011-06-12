@@ -6,7 +6,7 @@
 #
 
 require "./subprocess"
-require "./nagiosperfdata"
+require "./nagiosmetric"
 
 class NagiosPlugin
   attr_reader :text
@@ -49,7 +49,7 @@ class NagiosPlugin
   private
   def parse_perfdata(data)
     return if data.nil?
-    NagiosPerfData.parse(data) do |perf|
+    NagiosMetric.parse(data) do |perf|
       @perfdata[perf.label] = perf
     end
   end # def parse_perfdata

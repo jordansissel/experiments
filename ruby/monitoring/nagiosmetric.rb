@@ -1,5 +1,5 @@
 
-class NagiosPerfData
+class NagiosMetric
   @@perfdata_re = nil
 
   public
@@ -66,10 +66,9 @@ class NagiosPerfData
 
   def self.parse(string, &block)
     initialize unless ready
-    p :parsing => string
     string.scan(@@perfdata_re) do |captures|
       label, value, unit, warn, critical, min, max = captures
-      yield NagiosPerfData.new(
+      yield NagiosMetric.new(
         :label => label,
         :value => value.to_f,
         :unit => unit,
@@ -80,4 +79,4 @@ class NagiosPerfData
       )
     end
   end # def self.parse
-end # class NagiosPerfData
+end # class NagiosMetric
