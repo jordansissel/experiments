@@ -29,13 +29,17 @@ public class ServerTest {
       this.start = System.currentTimeMillis();
     }
 
+    public void channelConnected(ChannelHandlerContext context, ChannelStateEvent event) {
+      System.out.println("New connection");
+    }
+
     public void messageReceived(ChannelHandlerContext context, MessageEvent event) {
       count += 1;
-      if (count % 100000 == 0) {
+      //if (count % 100000 == 0) {
         System.out.println(event.getMessage());
         double rate = (double)this.count / (((double)System.currentTimeMillis() - this.start) / 1000.);
         System.out.println("Rate: " + rate + " (total: " + this.count);
-      }
+      //}
       //context.sendUpstream(event);
     }
 
@@ -78,7 +82,7 @@ public class ServerTest {
     );
 
     /* Listen on lots of ports */
-    for (int port = start_port; port < (start_port + 2000); port++) {
+    for (int port = start_port; port < (start_port + 10000); port++) {
       ServerTest server = new ServerTest(factory, port);
       server.start();
     }
