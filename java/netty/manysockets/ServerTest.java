@@ -82,7 +82,7 @@ public class ServerTest {
     );
 
     /* Listen on lots of ports */
-    for (int port = start_port; port < (start_port + 10000); port++) {
+    for (int port = start_port; port < (start_port + 1000); port++) {
       ServerTest server = new ServerTest(factory, port);
       server.start();
     }
