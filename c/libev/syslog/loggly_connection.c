@@ -44,7 +44,9 @@ void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents) {
     } /* bytes checking */
 
     /* Get here, and we have data. */
-    printf("Received %d bytes: '%.*s'\n", (int)bytes, (int)bytes, connection->buffer);
+    /* TODO(sissel): Pass the buffer to the parser */
+    printf("Received %d bytes: '%.*s'\n", (int)bytes, (int)bytes,
+           connection->buffer);
   } /* while true */
 } /* loggly_input_stream_cb */
 

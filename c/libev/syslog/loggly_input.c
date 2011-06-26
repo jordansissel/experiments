@@ -78,5 +78,4 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
     ev_io_init(&connection->io, loggly_input_stream_cb, client_fd, EV_READ);
     ev_io_start(loop, &connection->io);
   }
-}
-
+} /* loggly_input_connect_cb */

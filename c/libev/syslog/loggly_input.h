@@ -33,5 +33,4 @@ void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_datagram_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 
-
 #endif /* _LOGGLY_INPUT_H_ */
