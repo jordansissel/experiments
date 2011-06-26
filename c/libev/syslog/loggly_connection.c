@@ -32,19 +32,19 @@ void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents) {
     bytes = read(watcher->fd, connection->buffer, connection->buffer_len);
     if (bytes == 0) {
       loggly_input_connection_stop(EV_A_ connection); /* EOF, close it. */
-      done = 1;
+      break;
     } else if (bytes < 0) {
-      done = 1;
       if (errno == EAGAIN) {
         /* read would block, finished reading for now. */
       } else {
         /* Some other error, close this connection */
         loggly_input_connection_stop(EV_A_ connection);
       } /* errno checking */
+      break;
     } /* bytes checking */
 
     /* Get here, and we have data. */
-    printf("Received %d bytes: '%.*s'\n", bytes, bytes, connection->buffer);
+    printf("Received %d bytes: '%.*s'\n", (int)bytes, (int)bytes, connection->buffer);
   } /* while true */
 } /* loggly_input_stream_cb */
 
