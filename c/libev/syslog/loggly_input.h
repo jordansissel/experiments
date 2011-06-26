@@ -2,6 +2,9 @@
 #define _LOGGLY_INPUT_H_
 
 #include <ev.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 typedef enum {
   UNUSED_CODE,

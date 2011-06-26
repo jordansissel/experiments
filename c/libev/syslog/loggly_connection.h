@@ -1,7 +1,6 @@
 #ifndef _LOGGLY_CONNECTION_H_
 #define _LOGGLY_CONNECTION_H_
 
-#include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>

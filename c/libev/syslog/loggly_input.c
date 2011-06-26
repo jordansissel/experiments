@@ -1,6 +1,11 @@
 #include "loggly_input.h"
-
+#include "loggly_connection.h"
+#include "insist.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 loggly_input *loggly_input_new(void) {
   loggly_input *input;
