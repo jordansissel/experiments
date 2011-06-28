@@ -3,17 +3,21 @@
 #include <string.h>
 
 #include "insist.h"
+#include "syslog_rfc3164.h"
+
 %%{
   machine syslog_rfc3164;
 
   action message {
-    printf("got message: <%d>%.*s\n", parser->priority, parser->message_pos, parser->message);
+    /* Emit the message */
+    parser->callback(&parser);
   }
 
   action initialize {
     /* start of new message */
     parser->priority = 0;
     parser->message_pos = 0;
+    parser->timestamp_pos = 0;
     parser->eof = NULL;
   }
   
@@ -29,15 +33,23 @@
       parser->message_size *= 2;
       parser->message = realloc(parser->message, parser->message_size);
     }
-  }
+  } 
 
   action read_timestamp {
     parser->timestamp[parser->timestamp_pos] = fc;
     parser->timestamp_pos++;
+    if (parser->timestamp_pos > 15) {
+      fprintf(stderr, "timestamp_pos == %d, fail\n", parser->timestamp_pos);
+      return -1;
+    }
   }
 
   action default_pri {
     parser->priority = 13;
+  }
+
+  action reset_message {
+    parser->message_pos = 0;
   }
 
   month = ( "Jan" | "Feb" | "Mar" | "Apr" | "May" | "Jun"
@@ -50,14 +62,14 @@
 
   time = ( hour ":" minute ":" second ) ;
 
-  pri_num = [0-9] $read_priority @{ parser->message_pos = 0; } ;
-  pri = ( "<" pri_num{1,3}  ">" ) @lerr(default_pri);
+  pri_num = [0-9] $read_priority ;
+  pri = ( "<" pri_num{1,3}  ">" ) @reset_message @lerr(default_pri);
   message = [^\n]+ $read_message;
   timestamp = ( month " " day " " time ) $read_timestamp ;
 
   RFC3164 =
     ( 
-      pri (timestamp " " %{ parser->message_pos = 0; }) message
+      pri (timestamp " " %reset_message) message
       | (pri %{ parser->message_pos = 0; }) message
       | message
     ) %message >initialize
@@ -67,27 +79,9 @@
   main := ( TCP_RFC3164* ) ;
 }%%
 
-struct syslog_event {
-  short priority;
-  /* timestamp ? */
-  char *message;
-};
-
-struct parser {
-  int cs; /* current state */
-  int priority; /* syslog priority */
-  char *message;
-  ssize_t message_size;
-  ssize_t message_pos;
-
-  char *timestamp; /* no 'size' since we know max length */
-  ssize_t timestamp_pos;
-  char *eof; /* eof pointer, null if no EOF */
-};
-
 %% write data;
 
-void init(struct parser *parser) {
+void syslog3164_init(struct parser *parser) {
   int cs = 0;
   const char *eof = NULL;
   %% write init;
@@ -96,13 +90,14 @@ void init(struct parser *parser) {
   parser->message_size = 1024;
   parser->message = malloc(parser->message_size);
   parser->message_pos = 0;
+  parser->count = 0;
 
   /* length of timestamp is constant, "Jan 01 00:00:00" == 15 bytes */
   parser->timestamp = malloc(15);
   parser->timestamp_pos = 0;
-}
+} /* syslog3164_init */
 
-ssize_t parse(struct parser *parser, char *buffer, ssize_t offset, ssize_t buffer_len) {
+ssize_t syslog3164_parse(struct parser *parser, char *buffer, ssize_t offset, ssize_t buffer_len) {
   const char *p; /* buffer position */
   const char *pe; /* buffer end */
   const char *eof = NULL;
@@ -110,25 +105,25 @@ ssize_t parse(struct parser *parser, char *buffer, ssize_t offset, ssize_t buffe
   p = buffer + offset;
   pe = buffer + (buffer_len);
 
-  printf("parsing: '%.*s...'\n", 3, p);
+  //printf("parsing: '%.*s...'\n", 3, p);
 
   %% write exec;
 
   parser->cs = cs;
 
   return (p - (buffer + offset)); /* return bytes consumed */
-} /* parse */
+} /* syslog3164_parse */
 
 int main(int argc, char **argv) {
   struct parser parser;
-  ssize_t buflen = 4096;
+  ssize_t buflen = 16384;
   ssize_t bytes;
-  char buf[4096];
+  char buf[16384];
   int count;
 
   init(&parser);
 
-  for (count = 0; count < 1; count++) {
+  for (count = 0; count < 100000; count++) {
     bytes = read(0, buf, buflen);
     if (bytes == 0) {
       break;
@@ -136,13 +131,13 @@ int main(int argc, char **argv) {
 
     ssize_t offset = 0;
     while (1) {
-      printf("[before offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
+      //printf("[before offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
       offset += parse(&parser, buf, offset, bytes);
-      printf("[after  offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
+      //printf("[after  offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
       /* TODO(sissel): Take any good values from parser */
 
       if (offset == bytes) {
-        printf("End of string reached.\n");
+        //printf("End of string reached.\n");
         break;
       }
       //if (strcmp(message, "Hello world") != 0) {
