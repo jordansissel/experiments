@@ -70,6 +70,9 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
 
     printf("New connect\n");
 
+    /* TODO(sissel): Track this connection so we can close it later if
+     * necessary */
+
     connection = calloc(1, sizeof(loggly_input_connection));
     connection->buffer_len = 4096;
     connection->buffer = malloc(connection->buffer_len);
