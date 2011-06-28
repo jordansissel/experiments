@@ -1,4 +1,5 @@
-CFLAGS?=-g
+#CFLAGS?=-g
+CFLAGS?=-O2
 
 MSGPACK?=/opt/msgpack/0.5.5
 LIBEV?=/opt/libev/4.04

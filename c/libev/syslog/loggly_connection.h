@@ -23,6 +23,8 @@ struct loggly_input_connection {
   struct sockaddr *address;
   socklen_t address_len;
   struct syslog3164_parser *parser;
+
+  /* stats? */
 }; /* struct loggly_input_connection */
 
 typedef struct loggly_input_connection loggly_input_connection;

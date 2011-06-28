@@ -24,6 +24,9 @@ struct loggly_input {
   /* TODO(sissel): Access control */
   /* TODO(sissel): list of active client connections
    * Probably just the libev watchers */
+
+  /* stats? */
+  long long message_count;
 }; /* struct loggly_input */
 
 typedef struct loggly_input loggly_input;

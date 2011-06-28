@@ -72,7 +72,7 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
     printf("New connect\n");
 
     /* TODO(sissel): Track this connection so we can close it later if
-     * necessary */
+     * necessary - getpeername(2) helps */
 
     connection = calloc(1, sizeof(loggly_input_connection));
     connection->buffer_len = 4096;
@@ -81,9 +81,10 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
     connection->address = calloc(1, connection->address_len);
     connection->parser = calloc(1, sizeof(struct syslog3164_parser));
     syslog3164_init(connection->parser);
+    connection->input = input;
 
     connection->parser->callback = loggly_input_event;
-    //connection->parser->data = 
+    connection->parser->data = connection;
 
     ev_io_init(&connection->io, loggly_input_stream_cb, client_fd, EV_READ);
     ev_io_start(loop, &connection->io);
@@ -91,6 +92,17 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
 } /* loggly_input_connect_cb */
 
 void loggly_input_event(struct syslog3164_parser *parser) {
-  printf("<%d>%.*s %.*s\n", parser->priority, parser->timestamp_pos,
-         parser->timestamp, parser->message_pos, parser->message);
+  loggly_input_connection *connection = parser->data;
+  loggly_input *input = connection->input;
+
+  input->message_count++;
+
+  if (input->message_count == 1000000) {
+    printf("Count: %d\n", input->message_count);
+    input->message_count = 0;
+    printf("Got message for input:%d, collection:%s, name:%s, port:%d\n",
+           input->id, input->collection, input->name, input->port);
+    printf("<%d>%.*s %.*s\n", parser->priority, parser->timestamp_pos,
+           parser->timestamp, parser->message_pos, parser->message);
+  }
 } /* loggly_input_event */
