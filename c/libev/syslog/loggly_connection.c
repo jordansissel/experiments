@@ -43,10 +43,16 @@ void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents) {
       break;
     } /* bytes checking */
 
-    /* Get here, and we have data. */
-    /* TODO(sissel): Pass the buffer to the parser */
-    printf("Received %d bytes: '%.*s'\n", (int)bytes, (int)bytes,
-           connection->buffer);
+    /* Parse the blob we got */
+    ssize_t offset = 0;
+    while (1) {
+      offset += syslog3164_parse(connection->parser, connection->buffer, offset, bytes);
+
+      if (offset == bytes) {
+        /* Done reading this blob */
+        break;
+      }
+    }
   } /* while true */
 } /* loggly_input_stream_cb */
 

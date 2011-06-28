@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include "syslog_rfc3164.h"
 
 typedef enum {
   UNUSED_CODE,
@@ -32,5 +33,6 @@ status_code loggly_input_start(loggly_input *input, struct ev_loop *loop);
 void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_datagram_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher, int revents);
+void loggly_input_event(struct syslog3164_parser *parser);
 
 #endif /* _LOGGLY_INPUT_H_ */

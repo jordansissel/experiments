@@ -10,7 +10,7 @@
 
   action message {
     /* Emit the message */
-    parser->callback(&parser);
+    parser->callback(parser);
   }
 
   action initialize {
@@ -81,7 +81,7 @@
 
 %% write data;
 
-void syslog3164_init(struct parser *parser) {
+void syslog3164_init(struct syslog3164_parser *parser) {
   int cs = 0;
   const char *eof = NULL;
   %% write init;
@@ -97,7 +97,7 @@ void syslog3164_init(struct parser *parser) {
   parser->timestamp_pos = 0;
 } /* syslog3164_init */
 
-ssize_t syslog3164_parse(struct parser *parser, char *buffer, ssize_t offset, ssize_t buffer_len) {
+ssize_t syslog3164_parse(struct syslog3164_parser *parser, char *buffer, ssize_t offset, ssize_t buffer_len) {
   const char *p; /* buffer position */
   const char *pe; /* buffer end */
   const char *eof = NULL;
@@ -114,14 +114,14 @@ ssize_t syslog3164_parse(struct parser *parser, char *buffer, ssize_t offset, ss
   return (p - (buffer + offset)); /* return bytes consumed */
 } /* syslog3164_parse */
 
-int main(int argc, char **argv) {
-  struct parser parser;
+static int main(int argc, char **argv) {
+  struct syslog3164_parser parser;
   ssize_t buflen = 16384;
   ssize_t bytes;
   char buf[16384];
   int count;
 
-  init(&parser);
+  syslog3164_init(&parser);
 
   for (count = 0; count < 100000; count++) {
     bytes = read(0, buf, buflen);
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
     ssize_t offset = 0;
     while (1) {
       //printf("[before offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
-      offset += parse(&parser, buf, offset, bytes);
+      offset += syslog3164_parse(&parser, buf, offset, bytes);
       //printf("[after  offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
       /* TODO(sissel): Take any good values from parser */
 

@@ -13,6 +13,7 @@
 #include <netdb.h>
 
 #include "loggly_input.h"
+#include "syslog_rfc3164.h"
 
 struct loggly_input_connection {
   ev_io io;
@@ -21,6 +22,7 @@ struct loggly_input_connection {
   loggly_input *input;
   struct sockaddr *address;
   socklen_t address_len;
+  struct syslog3164_parser *parser;
 }; /* struct loggly_input_connection */
 
 typedef struct loggly_input_connection loggly_input_connection;

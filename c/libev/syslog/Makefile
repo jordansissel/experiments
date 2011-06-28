@@ -15,7 +15,7 @@ CFLAGS+=-Isrc
 
 QUIET?=@
 
-FILES=syslog_server.c loggly_connection.c loggly_input.c
+FILES=syslog_server.c loggly_connection.c loggly_input.c syslog_rfc3164.c
 OBJECTS=$(addprefix build/, $(subst .c,.o,$(FILES)))
 
 VPATH=src
@@ -42,3 +42,9 @@ porter: LDFLAGS+=-Xlinker -rpath=$(ZEROMQ)/lib
 porter: $(OBJECTS)
 	@echo "Linking $@"
 	$(QUIET)$(CC) -o $@ $(LDFLAGS) $^
+
+syslog_rfc3164.c: syslog_rfc3164.rl Makefile
+	ragel -G2 syslog_rfc3164.rl
+
+syslog_rfc3164.o: syslog_rfc3164.c Makefile
+	gcc -O4 syslog_rfc3164.c

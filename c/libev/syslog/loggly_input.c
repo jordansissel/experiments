@@ -57,6 +57,7 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
   int server_fd = watcher->fd;
   /* TODO(sissel): ipv6 support? */
   struct sockaddr_in addr;
+  loggly_input *input = (loggly_input *)watcher;
   socklen_t addrlen = sizeof(struct sockaddr_in);
 
   while (1) {
@@ -78,7 +79,18 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
     connection->buffer = malloc(connection->buffer_len);
     connection->address_len = sizeof(struct sockaddr_in);
     connection->address = calloc(1, connection->address_len);
+    connection->parser = calloc(1, sizeof(struct syslog3164_parser));
+    syslog3164_init(connection->parser);
+
+    connection->parser->callback = loggly_input_event;
+    //connection->parser->data = 
+
     ev_io_init(&connection->io, loggly_input_stream_cb, client_fd, EV_READ);
     ev_io_start(loop, &connection->io);
   }
 } /* loggly_input_connect_cb */
+
+void loggly_input_event(struct syslog3164_parser *parser) {
+  printf("<%d>%.*s %.*s\n", parser->priority, parser->timestamp_pos,
+         parser->timestamp, parser->message_pos, parser->message);
+} /* loggly_input_event */
