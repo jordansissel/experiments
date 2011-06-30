@@ -1,6 +1,9 @@
 #include "loggly_input.h"
 #include "loggly_connection.h"
 #include "insist.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -36,8 +39,8 @@ status_code loggly_input_start(loggly_input *input, struct ev_loop *loop) {
                 rc, strerror(errno));
 
   rc = bind(fd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
-  insist_return(rc == 0, START_FAILURE, "bind returned %d , error: %s",
-                rc, strerror(errno));
+  insist_return(rc == 0, START_FAILURE, "bind port %d returned %d , error: %s",
+                input->port, rc, strerror(errno));
 
   rc = fcntl(fd, F_SETFL, O_NONBLOCK);
   insist_return(rc != -1, START_FAILURE, "fcntl returned %d , error: %s",
@@ -69,12 +72,20 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
       break;
     }
 
-    printf("New connect\n");
+    connection = calloc(1, sizeof(loggly_input_connection));
 
     /* TODO(sissel): Track this connection so we can close it later if
      * necessary - getpeername(2) helps */
+    socklen_t socklen = sizeof(struct sockaddr_in);
+    getpeername(client_fd, (struct sockaddr *)&connection->client_addr, &socklen);
 
-    connection = calloc(1, sizeof(loggly_input_connection));
+    uint32_t mask = 127 << 24;
+    uint32_t addr = connection->client_addr.sin_addr.s_addr;
+
+    printf("localhost: %d\n", connection->client_addr.sin_addr.s_addr & mask == mask);
+
+    /* do any ACL filtering */
+
     connection->buffer_len = 4096;
     connection->buffer = malloc(connection->buffer_len);
     connection->address_len = sizeof(struct sockaddr_in);
