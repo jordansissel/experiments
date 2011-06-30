@@ -24,6 +24,9 @@ struct loggly_input_connection {
   socklen_t address_len;
   struct syslog3164_parser *parser;
 
+  struct sockaddr_in client_addr;
+  //struct sockaddr_in6 remote_ip6
+
   /* stats? */
 }; /* struct loggly_input_connection */
 

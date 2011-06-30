@@ -13,19 +13,21 @@ typedef enum {
 } status_code;
 
 struct loggly_input {
-  ev_io io;
-  short port;
-  char *collection;
-  char *name;
-  int id;
+  ev_io io; /* the server socket io */
+  short port; /** the port to listen on */
+  char *collection; /** the collection id */
+  char *name; /** the name of this input */
+  int id; /** the input id */
 
+  /* The type of input */
   enum { INPUT_TCP, INPUT_UDP, INPUT_TLS } type;
 
-  /* TODO(sissel): Access control */
-  /* TODO(sissel): list of active client connections
-   * Probably just the libev watchers */
+  int discover; /** Are we in discovery mode? */
 
-  /* stats? */
+  ev_io *clients; /** list of client connection watchers  */
+  int num_clients; /** number of active clients */
+
+  /* TODO(sissel): stats? */
   long long message_count;
 }; /* struct loggly_input */
 

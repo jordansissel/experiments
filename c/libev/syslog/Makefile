@@ -1,5 +1,5 @@
-#CFLAGS?=-g
-CFLAGS?=-O2
+CFLAGS?=-g
+#CFLAGS?=-O2
 
 MSGPACK?=/opt/msgpack/0.5.5
 LIBEV?=/opt/libev/4.04
@@ -16,10 +16,12 @@ CFLAGS+=-Isrc
 
 QUIET?=@
 
-FILES=syslog_server.c loggly_connection.c loggly_input.c syslog_rfc3164.c
+FILES=syslog_server.c loggly_connection.c loggly_input.c syslog_rfc3164.c acl.c
+VPATH=src
 OBJECTS=$(addprefix build/, $(subst .c,.o,$(FILES)))
 
-VPATH=src
+acl.c: acl.h
+
 all: default
 default: porter
 
@@ -47,5 +49,9 @@ porter: $(OBJECTS)
 syslog_rfc3164.c: syslog_rfc3164.rl Makefile
 	ragel -G2 syslog_rfc3164.rl
 
-syslog_rfc3164.o: syslog_rfc3164.c Makefile
-	gcc -O4 syslog_rfc3164.c
+syslog_rfc3164.o: CFLAGS+=-O4
+
+# For testing
+acl.so: acl.c | Makefile
+	$(QUIET)$(CC) -g -fPIC -shared -o acl.so $^
+
