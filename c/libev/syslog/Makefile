@@ -26,7 +26,8 @@ default: porter
 
 clean:
 	rm -f $(OBJECTS)
-	rm -r build/
+	rmdir build/
+	rm -f acl.so porter
 
 acl.c: acl.h
 
