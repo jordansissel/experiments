@@ -8,7 +8,7 @@
 #include "syslog_rfc3164.h"
 
 typedef enum {
-  UNUSED_CODE,
+  GREAT_SUCCESS,
   START_FAILURE,
 } status_code;
 
@@ -35,6 +35,7 @@ typedef struct loggly_input loggly_input;
 
 loggly_input *loggly_input_new(void);
 status_code loggly_input_start(loggly_input *input, struct ev_loop *loop);
+status_code loggly_input_listen(loggly_input *input, struct ev_loop *loop);
 void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_datagram_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher, int revents);

@@ -20,7 +20,6 @@ FILES=syslog_server.c loggly_connection.c loggly_input.c syslog_rfc3164.c acl.c
 VPATH=src
 OBJECTS=$(addprefix build/, $(subst .c,.o,$(FILES)))
 
-acl.c: acl.h
 
 all: default
 default: porter
@@ -28,6 +27,8 @@ default: porter
 clean:
 	rm -f $(OBJECTS)
 	rm -r build/
+
+acl.c: acl.h
 
 %.c %.h: Makefile
 

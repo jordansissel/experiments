@@ -35,6 +35,10 @@ int acl_v4_remove_str(acl_v4 *acl, const char *cidr, size_t cidrlen);
 int acl_v4_remove_addr(acl_v4 *acl, struct in_addr addr, uint32_t prefix);
 int acl_v4_remove_entry(acl_v4 *acl, acl_v4_entry *acl_entry);
 
+/** Test an ip address.
+ *
+ * @return ACL_SUCCESS on found, ACL_NOT_FOUND when not
+ */
 int acl_v4_test(acl_v4 *acl, struct in_addr addr);
 
 /** Parse a string CIDR address into an acl_v4 struct */

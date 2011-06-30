@@ -17,12 +17,25 @@ loggly_input *loggly_input_new(void) {
 } /* loggly_input_new */
 
 status_code loggly_input_start(loggly_input *input, struct ev_loop *loop) {
+  int rc;
+  rc = loggly_input_listen(input, loop);
+
+  if (rc == START_FAILURE) {
+    /* TODO(sissel): Schedule a restart of this. */
+  }
+} /* loggly_input_start */
+
+status_code loggly_input_listen(loggly_input *input, struct ev_loop *loop) {
   int fd;
   int rc;
 
-  switch (input->type) { case INPUT_TCP:
+  switch (input->type) {
+    case INPUT_TCP:
       fd = socket(AF_INET, SOCK_STREAM, 0);
       break;
+    //case INPUT_UDP:
+      //fd = socket(AF_INET, SOCK_DGRAM, 0);
+      //break;
     default:
       fprintf(stderr, "Unsupported input type: %d\n", input->type);
   }
@@ -33,25 +46,29 @@ status_code loggly_input_start(loggly_input *input, struct ev_loop *loop) {
   struct sockaddr_in sockaddr;
   sockaddr.sin_family = AF_INET;
   sockaddr.sin_port = htons(input->port);
+
   /* TODO(sissel): Support dns lookups? */
   rc = inet_aton("0.0.0.0", &sockaddr.sin_addr);
-  insist_return(rc != 0, START_FAILURE, "inet_aton returned %d, error: %s",
-                rc, strerror(errno));
+  insist_return(rc != 0, START_FAILURE, "input[%d]: inet_aton returned %d, error: %s",
+                input->id, rc, strerror(errno));
 
   rc = bind(fd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
-  insist_return(rc == 0, START_FAILURE, "bind port %d returned %d , error: %s",
-                input->port, rc, strerror(errno));
+  insist_return(rc == 0, START_FAILURE, "input[%d]: bind port %d returned %d , error: %s",
+                input->id, input->port, rc, strerror(errno));
 
   rc = fcntl(fd, F_SETFL, O_NONBLOCK);
-  insist_return(rc != -1, START_FAILURE, "fcntl returned %d , error: %s",
-                rc, strerror(errno));
+  insist_return(rc != -1, START_FAILURE, "input[%d]: fcntl returned %d , error: %s",
+                input->id, rc, strerror(errno));
 
   rc = listen(fd, 5);
-  insist_return(rc != -1, START_FAILURE, "listen returned %d , error: %s",
-                rc, strerror(errno));
+  insist_return(rc != -1, START_FAILURE, "input[%d]: listen returned %d , error: %s",
+                input->id, rc, strerror(errno));
 
+  printf("input[%d]: ready\n", input->id);
   ev_io_init(&input->io, loggly_input_connect_cb, fd, EV_READ);
   ev_io_start(loop, &input->io);
+
+  return GREAT_SUCCESS;
 } /* loggly_input_start */
 
 void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
@@ -81,8 +98,6 @@ void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher,
 
     uint32_t mask = 127 << 24;
     uint32_t addr = connection->client_addr.sin_addr.s_addr;
-
-    printf("localhost: %d\n", connection->client_addr.sin_addr.s_addr & mask == mask);
 
     /* do any ACL filtering */
 
