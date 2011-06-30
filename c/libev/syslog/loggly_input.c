@@ -13,8 +13,19 @@
 loggly_input *loggly_input_new(void) {
   loggly_input *input;
   input = calloc(1, sizeof(loggly_input));
+
+  input->acl = acl_v4_new();
+
+  input->connections_size = 4;
+  input->connections_size = calloc(input->clients_size,
+                                   sizeof(loggly_input_connection));
+  input->num_connections = 0;
   return input;
 } /* loggly_input_new */
+
+acl_v4 *loggly_input_acl(loggly_input *input) {
+  return input->acl;
+} /* loggly_input_acl */
 
 status_code loggly_input_start(loggly_input *input, struct ev_loop *loop) {
   int rc;
@@ -24,6 +35,15 @@ status_code loggly_input_start(loggly_input *input, struct ev_loop *loop) {
     /* TODO(sissel): Schedule a restart of this. */
   }
 } /* loggly_input_start */
+
+status_code loggly_input_stop(loggly_input *input, struct ev_loop *loop) {
+  /* TODO(sissel): 
+   * stop the input watcher
+   * close server fd
+   * stop all connection watchers
+   * close all connection fds
+   */
+} /* loggly_input_stop */
 
 status_code loggly_input_listen(loggly_input *input, struct ev_loop *loop) {
   int fd;
@@ -132,3 +152,4 @@ void loggly_input_event(struct syslog3164_parser *parser) {
            parser->timestamp, parser->message_pos, parser->message);
   }
 } /* loggly_input_event */
+

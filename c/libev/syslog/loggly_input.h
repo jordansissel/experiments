@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "syslog_rfc3164.h"
+#include "acl.h"
 
 typedef enum {
   GREAT_SUCCESS,
@@ -23,9 +24,11 @@ struct loggly_input {
   enum { INPUT_TCP, INPUT_UDP, INPUT_TLS } type;
 
   int discover; /** Are we in discovery mode? */
+  acl_v4 *acl;
 
-  ev_io *clients; /** list of client connection watchers  */
-  int num_clients; /** number of active clients */
+  loggly_input_connection *connections;
+  size_t num_connections; /** number of active clients */
+  size_t connections_size; /** size of clients */
 
   /* TODO(sissel): stats? */
   long long message_count;
@@ -36,6 +39,7 @@ typedef struct loggly_input loggly_input;
 loggly_input *loggly_input_new(void);
 status_code loggly_input_start(loggly_input *input, struct ev_loop *loop);
 status_code loggly_input_listen(loggly_input *input, struct ev_loop *loop);
+status_code loggly_input_stop(loggly_input *input, struct ev_loop *loop);
 void loggly_input_stream_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_datagram_cb(struct ev_loop *loop, ev_io *watcher, int revents);
 void loggly_input_connect_cb(struct ev_loop *loop, ev_io *watcher, int revents);
