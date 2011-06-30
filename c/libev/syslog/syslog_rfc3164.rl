@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "insist.h"
 #include "syslog_rfc3164.h"
@@ -114,6 +115,11 @@ ssize_t syslog3164_parse(struct syslog3164_parser *parser, char *buffer, ssize_t
   return (p - (buffer + offset)); /* return bytes consumed */
 } /* syslog3164_parse */
 
+
+static void callback(struct syslog3164_parser *parser) {
+  /* do nothing */
+}
+
 static int main(int argc, char **argv) {
   struct syslog3164_parser parser;
   ssize_t buflen = 16384;
@@ -122,8 +128,9 @@ static int main(int argc, char **argv) {
   int count;
 
   syslog3164_init(&parser);
+  parser.callback = callback;
 
-  for (count = 0; count < 100000; count++) {
+  while (1) {
     bytes = read(0, buf, buflen);
     if (bytes == 0) {
       break;
@@ -131,21 +138,16 @@ static int main(int argc, char **argv) {
 
     ssize_t offset = 0;
     while (1) {
-      //printf("[before offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
       offset += syslog3164_parse(&parser, buf, offset, bytes);
-      //printf("[after  offset:%d of %d] cs: %d (want: %d)\n", offset, bytes, parser.cs, syslog_rfc3164_first_final);
       /* TODO(sissel): Take any good values from parser */
 
       if (offset == bytes) {
-        //printf("End of string reached.\n");
         break;
+      } else if (offset > bytes) {
+        fprintf(stderr, "offset > bytes, fail: %d > %d\n", offset, bytes);
+        return 1;
       }
-      //if (strcmp(message, "Hello world") != 0) {
-        //printf("Got invalid message: %s\n", message);
-      //}
-      sleep(1);
     }
-    //printf("Message: %s\n", message);
   }
 
   return 0;
