@@ -10,7 +10,7 @@ STATIC_OBJECTS=$(addprefix build/, $(STATIC_FILES))
 COFFEE=./node_modules/coffee-script/bin/coffee
 
 VPATH=src
-all: $(OBJECTS)
+default: all
 
 clean:
 	rm -f $(OBJECTS)
