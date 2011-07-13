@@ -11,16 +11,25 @@ end
 
 devnull = File.open("/dev/null", "w")
 logger = Logger.new(devnull)
-logger.level = Logger::INFO
+logger.level = Logger::WARN
 
-data = "testing 234"
-time_string = time(100000) do
-  logger.info([ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }])
+1.upto(2) do 
+  data = "testing 234"
+  iterations = 1000000
+  time_string = time(iterations) do
+    logger.info([ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }])
+  end
+
+  time_block = time(iterations) do
+    logger.info { [ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }] }
+  end
+
+  time_doubleblock = time(iterations) do
+    logger.info { (lambda { [ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }] }).call }
+  end
+
+  ruby = RUBY_ENGINE rescue "ruby"
+  printf("%15.15s | %5s/%7s | %8.2f\n", "string", ruby, RUBY_VERSION, time_string)
+  printf("%15.15s | %5s/%7s | %8.2f\n", "block", ruby, RUBY_VERSION, time_block)
+  printf("%15.15s | %5s/%7s | %8.2f\n", "doubleblock", ruby, RUBY_VERSION, time_doubleblock)
 end
-
-time_block = time(100000) do
-  logger.info { [ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }] }
-end
-
-printf("%15.15s | %5s/%7s | %8.2f\n", "string", RUBY_ENGINE, RUBY_VERSION, time_string)
-printf("%15.15s | %5s/%7s | %8.2f\n", "block", RUBY_ENGINE, RUBY_VERSION, time_block)
