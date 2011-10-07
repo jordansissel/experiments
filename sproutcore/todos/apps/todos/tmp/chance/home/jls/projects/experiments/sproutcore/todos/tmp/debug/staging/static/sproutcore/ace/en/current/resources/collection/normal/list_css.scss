@@ -1,0 +1,14 @@
+
+$theme: '.ace';#{$theme}.collection {
+  background: white;
+
+  &.alternating .sc-collection-item.even {
+    background: #eef3f6;
+  }
+  
+  &.alternating .sc-collection-item.even.sel, 
+  .sc-collection-item.sel {
+    color: white;
+    background: #608AB9;
+  }
+}

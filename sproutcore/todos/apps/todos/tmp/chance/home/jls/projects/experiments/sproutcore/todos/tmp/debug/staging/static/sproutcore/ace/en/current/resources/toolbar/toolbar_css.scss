@@ -1,0 +1,10 @@
+
+$theme: '.ace';#{$theme}.toolbar {
+  @extend .__s70_192;
+-chance-offset: "resources/toolbar/toolbar_0_0_1__0_" 0 0;background-repeat: repeat-x;
+  color: #555;
+  text-shadow: 0px 1px 1px white;
+  border-bottom: 1px solid #999;
+  -webkit-box-shadow: 0px 0px 4px rgba(0, 0, 0, .5);
+  z-index: 10;
+}

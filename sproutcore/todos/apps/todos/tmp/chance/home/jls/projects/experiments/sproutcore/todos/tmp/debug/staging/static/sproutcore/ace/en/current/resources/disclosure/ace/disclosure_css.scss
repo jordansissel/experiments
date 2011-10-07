@@ -1,0 +1,29 @@
+
+$theme: '.ace';/* Main */
+#{$theme}.disclosure {
+  
+  border: 0px none;
+  color: black;
+  text-shadow: white 0px 1px 1px;
+  
+  .sc-button-label {
+    left: 18px;
+  }
+  
+  img.disclosure.button {
+    width: 16px;
+    height: 16px;
+    &.open    { @extend .__s61_173;
+-chance-offset: "resources/disclosure/ace/disclosure_open_0_0___0_0" 0 0;background-repeat: no-repeat; }
+    &.closed  { @extend .__s61_174;
+-chance-offset: "resources/disclosure/ace/disclosure_closed_0_0___0_0" 0 0;background-repeat: no-repeat; }
+    
+    &.active {
+      &.open    { @extend .__s61_175;
+-chance-offset: "resources/disclosure/ace/disclosure_open_active_0_0___0_0" 0 0;background-repeat: no-repeat; }
+      &.closed  { @extend .__s61_176;
+-chance-offset: "resources/disclosure/ace/disclosure_closed_active_0_0___0_0" 0 0;background-repeat: no-repeat; }
+    }
+  }
+}
+

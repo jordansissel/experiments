@@ -1,0 +1,20 @@
+
+$theme: '.ace';/* Overriding some of the styles on checkbox */
+
+#{$theme}.sc-list-item-view {
+  #{$theme}.checkbox {
+    background-color: transparent;
+    border: 0 none;
+    margin-top: -9px;
+  }
+
+ #{$theme}.disclosure {
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    margin-top: -8px;
+    
+    width: 18px;
+    height: 18px;
+  }
+}

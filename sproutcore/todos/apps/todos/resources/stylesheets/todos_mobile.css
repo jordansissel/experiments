@@ -1,0 +1,116 @@
+/* Using media queries to override the default styling and target "mobile" devices */
+@media only screen and (max-device-width: 768px) {
+  body, html {
+    color: #5B5B5B;
+    background-color: #FFF;
+  }
+
+  #todos {
+    @include border-radius(0);
+    border-style: none;
+    left: 0;
+    margin-left: 0;
+    margin-top: 0;
+    padding: 0;
+    top: 0;
+    width: auto;
+    right: 0;
+
+    #stats {
+      font-size: 16px;
+      line-height: 40px;
+      margin: 10px 0;
+      padding: 5px 5px 5px 10px;
+      width: auto;
+
+      .sc-button {
+        @include border-radius(5px);
+        float: right;
+        font-size: 11px;
+        line-height: 15px;
+        padding: 5px;
+        text-align: center;
+        text-shadow: rgba(255,255,255, 1.0) 0px -1px 2px;
+        width: 100px;
+      }
+    }
+
+    .sc-checkbox {
+      font-size: 16px;
+      margin-left: 10px;
+  
+      input[type='checkbox'] {
+        position: relative;
+        top: 5px;
+      }
+    }
+
+    input[type='text'] {
+      display: block;
+      font-size: 24px;
+      margin-right: auto;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      margin-left: auto;
+      width: 94%;
+    }
+
+    h1 {
+      position: relative;
+      width: auto;
+    }
+
+    input[type='checkbox'] {
+      width: 28px;
+      height: 28px;
+    }
+
+    input.mark-all-done {
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+
+    ul {
+
+      li {
+        display: block;
+        height: 38px;
+        line-height: 18px;
+
+        .sc-checkbox {
+
+          input[type='checkbox'] {
+            margin-right: 12px;
+          }
+        }
+      }
+
+      li.is-done {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+/* small screen portrait */
+@media only screen and (device-width: 320px) and (orientation:portrait) {
+  #todos {
+  }
+}
+
+/* small screen landscape */
+@media only screen and (device-width: 320px) and (orientation:landscape) {
+  #todos {
+  }
+}
+
+/* medium screen any orientation */
+@media only screen and (device-width: 768px) {
+  #todos {
+
+    #stats {
+      font-size: 20px;
+      line-height: 38px;
+    }
+  }
+}

@@ -1,0 +1,64 @@
+
+$theme: '.ace';#{$theme}.radio-group {
+  line-height: 18px;
+  vertical-align: middle;
+}
+
+#{$theme}.radio {
+  position: relative;
+  display:block;
+  height:18px;
+  padding-left: 20px;
+  margin-bottom:3px;
+  
+  .sc-button-label {
+    line-height: 18px;
+  }
+  
+  .button {
+    @extend .__s44_18;
+-chance-offset: "resources/radio/radio_unselected_0_0___0_0" 0 0;background-repeat: no-repeat;
+    width: 16px;
+    height:16px;
+    vertical-align:middle;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin: 0px;
+  }
+  
+  &.active .button {
+    @extend .__s44_19;
+-chance-offset: "resources/radio/radio_active_0_0___0_0" 0 0;background-repeat: no-repeat;
+  }
+  
+  &.sel .button {
+    @extend .__s44_20;
+-chance-offset: "resources/radio/radio_selected_0_0___0_0" 0 0;background-repeat: no-repeat;
+  }
+  
+  &.mixed .button {
+    @extend .__s44_21;
+-chance-offset: "resources/radio/radio_mixed_0_0___0_0" 0 0;background-repeat: no-repeat;
+  }
+  
+  &.sel.active .button {
+    @extend .__s44_22;
+-chance-offset: "resources/radio/radio_selected_active_0_0___0_0" 0 0;background-repeat: no-repeat;
+  }
+  
+  &.mixed.active .button {
+    @extend .__s44_23;
+-chance-offset: "resources/radio/radio_mixed_active_0_0___0_0" 0 0;background-repeat: no-repeat;
+  }
+  
+  &.disabled {
+    opacity: .5;
+  }
+}
+
+#{$theme}.radio-group.sc-layout-horizontal #{$theme}.radio, #{$theme}.radio.sc-layout-horizontal {
+  display: inline-block;
+  -moz-display: inline-block;
+  margin-right: 14px;  
+}
