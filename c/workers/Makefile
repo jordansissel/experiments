@@ -1,11 +1,14 @@
-CFLAGS=-g -std=c99
+CFLAGS=-g -std=c99 -Wall -Werror
 
+default: evented
 
-server: LDFLAGS=$(shell pkg-config --libs libev 2> /dev/null || echo -lev)
-server: CFLAGS+=$(shell pkg-config --cflags libev 2> /dev/null)
-server: server.o
+server.c: server.h insist.h session.h Makefile
+session.c: insist.h session.h Makefile
 
-default: server
+evented: LDFLAGS=$(shell pkg-config --libs libev 2> /dev/null || echo -lev)
+evented: CFLAGS+=$(shell pkg-config --cflags libev 2> /dev/null)
+evented: session.o server.o evented.o
+	$(CC) -o $@ $(LDFLAGS) $^
 
 clean:
 	-rm -f server server.o
