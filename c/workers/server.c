@@ -34,7 +34,7 @@ typedef struct session {
 typedef enum {
   GREAT_SUCCESS = 0,
   TERRIBLE_FAILURE
-} status;
+} Status;
 
 static void new_session_cb(EV_P_ ev_io *io, int revents);
 
@@ -101,7 +101,7 @@ int server_listen(Server *server) {
 int main(void) {
   struct ev_loop *loop = EV_DEFAULT;
   Server *server = calloc(1, sizeof(*server));
-  status rc;
+  Status rc;
 
   server->address = "0.0.0.0";
   server->port = 7000;
