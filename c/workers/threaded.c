@@ -9,14 +9,11 @@
 #include "server.h"
 #include "status.h"
 
-static void server_connect_cb(EV_P_ ev_io *io, int revents);
-static void session_read_cb(EV_P_ ev_io *io, int revents);
+static void server_accept(Server *server);
 
 /* Called when a new connection occurs. This method sets up handling for the
  * new connection. */
-void server_connect_cb(struct ev_loop *loop, ev_io *io, int revents) {
-  Server *server = (struct server *)io->data;
-
+void server_accept(Server *server) {
   struct sockaddr address;
   socklen_t address_len = sizeof(address);
 
@@ -25,18 +22,16 @@ void server_connect_cb(struct ev_loop *loop, ev_io *io, int revents) {
   while ((fd = accept(server->fd, &address, &address_len)) >= 0) {
     /* Create a new session and set it up with libev */
     Session *session = session_new(fd, &address, address_len);
-    session->io = calloc(1, sizeof(*session->io));
-    session->io->data = session;
     session->data = server;
-    ev_io_init(session->io, session_read_cb, fd, EV_READ);
-    ev_io_start(loop, session->io);
-    //printf("New session from %s:%hu\n", server->address, server->port);
+
+    session_free(session);
+
+    /* TODO(sissel): Start a thread to handle this connection */
   }
 
-  insist_return(fd == -1 && errno == EAGAIN, (void)(0),
-                "Expected accept() to fail eventually and errno to be EAGAIN, "
-                "but fd is %d, errno(%d): %s", fd, errno, strerror(errno));
-} /* server_connect_cb */
+  fprintf(stderr, "accept(%d, ...) failed, errno(%d): %s\n",
+          server->fd, errno, strerror(errno));
+} /* server_accept */
 
 void session_read_cb(struct ev_loop *loop, ev_io *io, int revents) {
   static ssize_t bufsize = 4096;
@@ -67,7 +62,6 @@ void session_read_cb(struct ev_loop *loop, ev_io *io, int revents) {
 } /* session_read_cb */
 
 int main(void) {
-  struct ev_loop *loop = EV_DEFAULT;
   //Server *server = server_new("0.0.0.0", 7000);
   Server *server = server_new("::", 7000);
   Status rc;
@@ -75,13 +69,6 @@ int main(void) {
   rc = server_listen(server);
   insist_return(rc == GREAT_SUCCESS, rc, "Server failed to start listening")
 
-  /* set up the libev callback for new connections to our server */
-  server->io = calloc(1, sizeof(*server->io));
-  server->io->data = server;
-  ev_io_init(server->io, server_connect_cb, server->fd, EV_READ);
-  ev_io_start(loop, server->io);
-  //printf("Server now listening on %s:%hu\n", server->address, server->port);
-
-  ev_run (loop, 0);
+  server_accept();
   return 0;
 } /* main */

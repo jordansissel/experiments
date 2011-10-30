@@ -1,10 +1,14 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
+#ifdef EVENTED
 #include <ev.h>
+#endif
 
 typedef struct server {
+#ifdef EVENTED
   ev_io *io; /* TODO(sissel): move this outside the Server struct */
+#endif
   int fd;
   const char *address;
   unsigned short port;

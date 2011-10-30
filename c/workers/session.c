@@ -38,7 +38,6 @@ Session *session_new(int fd, struct sockaddr *address, socklen_t address_len) {
     return NULL;
   }
 
-  session->io = calloc(1, sizeof(*session->io));
   printf("New server connection from %s:%hu\n", session->peer_address,
          session->peer_port);
   return session;
