@@ -28,17 +28,22 @@ void server_connect_cb(struct ev_loop *loop, ev_io *io, int revents) {
 
   struct sockaddr address;
   socklen_t address_len = sizeof(address);
-  int fd = accept(server->fd, &address, &address_len);
-  insist_return(fd >= 0, (void)(0), "accept() failed, error(%d): %s", errno,
-                strerror(errno));
-  
-  /* Create a new session and set it up with libev */
-  Session *session = session_new(fd, &address, address_len);
-  session->io->data = session;
-  session->data = server;
-  ev_io_init(session->io, session_read_cb, fd, EV_READ);
-  ev_io_start(loop, session->io);
-  //printf("New session from %s:%hu\n", server->address, server->port);
+
+  /* Try to accept all pending connections */
+  int fd;
+  while ((fd = accept(server->fd, &address, &address_len)) >= 0) {
+    /* Create a new session and set it up with libev */
+    Session *session = session_new(fd, &address, address_len);
+    session->io->data = session;
+    session->data = server;
+    ev_io_init(session->io, session_read_cb, fd, EV_READ);
+    ev_io_start(loop, session->io);
+    //printf("New session from %s:%hu\n", server->address, server->port);
+  }
+
+  insist_return(fd == -1 && errno == EAGAIN, (void)(0),
+                "Expected accept() to fail eventually and errno to be EAGAIN, "
+                "but fd is %d, errno(%d): %s", fd, errno, strerror(errno));
 } /* server_connect_cb */
 
 void session_read_cb(struct ev_loop *loop, ev_io *io, int revents) {

@@ -9,7 +9,7 @@
 Session *session_new(int fd, struct sockaddr *address, socklen_t address_len) {
   Session *session = calloc(1, sizeof(*session));
   socklen_t address_size;
-  void *sin_addr;
+  void *sin_addr = NULL;
 
   switch (address->sa_family) {
     case AF_INET: 
@@ -22,6 +22,9 @@ Session *session_new(int fd, struct sockaddr *address, socklen_t address_len) {
       session->peer_port = ntohs(((struct sockaddr_in6 *)address)->sin6_port);
       sin_addr = &((struct sockaddr_in6 *)address)->sin6_addr;
       break;
+    default:
+      fprintf(stderr, "Unsupported address family: %d\n", address->sa_family);
+      abort();
   }
 
   session->fd = fd;

@@ -1,4 +1,4 @@
-CFLAGS=-g -std=c99 -Wall -Werror
+CFLAGS=-g -O2 -std=c99 -Wall -Werror
 
 default: evented
 
@@ -11,4 +11,4 @@ evented: session.o server.o evented.o
 	$(CC) -o $@ $(LDFLAGS) $^
 
 clean:
-	-rm -f server server.o
+	-rm -f server *.o
