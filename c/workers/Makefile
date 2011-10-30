@@ -1,6 +1,8 @@
 CFLAGS=-g -O2 -std=c99 -Wall -Werror
 
-default: evented
+all:
+	make cleanbin
+	echo noop evented threaded | xargs -n1 make clean
 
 server.c: server.h insist.h session.h Makefile
 session.c: insist.h session.h Makefile
@@ -16,5 +18,11 @@ threaded: CFLAGS+=-pthread
 threaded: session.o server.o threaded.o
 	$(CC) -o $@ $(LDFLAGS) $^
 
+noop: session.o server.o noop.o
+	$(CC) -o $@ $(LDFLAGS) $^
+
 clean:
-	-rm -f server *.o
+	-rm -f *.o
+
+cleanbin:
+	-rm -f noop evented threaded

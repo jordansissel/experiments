@@ -68,8 +68,8 @@ void session_read_cb(struct ev_loop *loop, ev_io *io, int revents) {
 
 int main(void) {
   struct ev_loop *loop = EV_DEFAULT;
-  //Server *server = server_new("0.0.0.0", 7000);
-  Server *server = server_new("::", 7000);
+  Server *server = server_new("0.0.0.0", 7000);
+  //Server *server = server_new("", 7000);
   Status rc;
 
   rc = server_listen(server, 1);
