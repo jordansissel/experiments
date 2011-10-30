@@ -82,7 +82,7 @@ int server_listen(Server *server, int nonblocking) {
                   "%d, error(%d): %s", rc, errno, strerror(errno));
   }
 
-  rc = listen(server->fd, 5);
+  rc = listen(server->fd, 100);
   insist_return(rc == 0, TERRIBLE_FAILURE, "listen(%d, 5) failed, "
                 "error(%d): %s", server->fd, errno, strerror(errno));
 
