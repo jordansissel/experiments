@@ -72,7 +72,7 @@ int main(void) {
   Server *server = server_new("::", 7000);
   Status rc;
 
-  rc = server_listen(server);
+  rc = server_listen(server, 1);
   insist_return(rc == GREAT_SUCCESS, rc, "Server failed to start listening")
 
   /* set up the libev callback for new connections to our server */

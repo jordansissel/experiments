@@ -15,6 +15,6 @@ typedef struct server {
 } Server;
 
 Server *server_new(const char *address, unsigned short port);
-int server_listen(Server *server);
+int server_listen(Server *server, int nonblocking);
 
 #endif /* _SERVER_H_ */

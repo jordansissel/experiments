@@ -1,7 +1,11 @@
 #define _BSD_SOURCE /* for inet_aton, etc */
 #include <arpa/inet.h>
 #include <errno.h>
+
+#ifdef EVENTED
 #include <ev.h>
+#endif 
+
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/in.h>
@@ -19,7 +23,7 @@
 #include "status.h"
 
 /* Make this Server listen on the network */
-int server_listen(Server *server) {
+int server_listen(Server *server, int nonblocking) {
   int rc;
 
   /* TODO(sissel): Support dns lookups? */
@@ -71,10 +75,12 @@ int server_listen(Server *server) {
                 "bind on %s:%hu returned %d , error(%d): %s",
                 server->address, server->port, rc, errno, strerror(errno));
 
-  /* Enable non-blocking */
-  rc = fcntl(server->fd, F_SETFL, O_NONBLOCK);
-  insist_return(rc != -1, TERRIBLE_FAILURE, "fcntl to set ON_NONBLOCK returned "
-                "%d, error(%d): %s", rc, errno, strerror(errno));
+  if (nonblocking) {
+    /* Enable non-blocking */
+    rc = fcntl(server->fd, F_SETFL, O_NONBLOCK);
+    insist_return(rc != -1, TERRIBLE_FAILURE, "fcntl to set ON_NONBLOCK returned "
+                  "%d, error(%d): %s", rc, errno, strerror(errno));
+  }
 
   rc = listen(server->fd, 5);
   insist_return(rc == 0, TERRIBLE_FAILURE, "listen(%d, 5) failed, "
@@ -87,6 +93,7 @@ Server *server_new(const char *address, unsigned short port) {
   Server *server = calloc(1, sizeof(Server));
   server->address = address;
   server->port = port;
+  server->fd = -1;
 
   return server;
 } /* server_new */
