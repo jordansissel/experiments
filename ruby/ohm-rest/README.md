@@ -15,6 +15,8 @@ Links and watchers *must* continue working.
 
 # Ohm -> REST mapping example
 
+Start things up with 'ruby ohmrest.rb' then run 'test.sh' - output below:
+
     % sh test.sh
     => curl -XPUT http://localhost:4567/deployment/production
     null
