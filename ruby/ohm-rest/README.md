@@ -29,3 +29,22 @@ Links and watchers *must* continue working.
     => curl -XGET http://localhost:4567/host/testing
     {"id":"testing","state":"booting","links":["/deployment/production","/role/frontend"]}
 
+    # This query is the same as the previous except that 'resolve_all' is requested which
+    # yields a links as a hash of model => object_id => object for all links.
+    => curl -XGET http://localhost:4567/host/testing?resolve_all
+    {
+        "id": "testing",
+        "state": "booting",
+        "links": {
+            "deployment": {
+                "production": {
+                    "id": "production"
+                }
+            },
+            "role": {
+                "frontend": {
+                    "id": "frontend"
+                }
+            }
+        }
+    }
