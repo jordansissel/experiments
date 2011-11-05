@@ -18,82 +18,145 @@ Links and watchers *must* continue working.
 Start things up with 'ruby ohmrest.rb' then run 'test.sh' - output below:
 
     % sh test.sh
-    => curl -XPUT http://localhost:4567/deployment/production
-    null
-    => curl -XPUT http://localhost:4567/role/frontend
-    null
-    => curl -XPUT http://localhost:4567/role/monitor
-    null
-    => curl -XPUT http://localhost:4567/host/testing -d { "state": "booting" }
-    []
-    => curl -XPUT http://localhost:4567/host/testing/link/deployment/production
 
-    => curl -XPUT http://localhost:4567/host/testing/link/role/frontend
-
-    => curl -XPUT http://localhost:4567/host/testing/link/role/monitor
-
-    => curl -XGET http://localhost:4567/host/testing
+Create a deployment named 'production'
+    
+    % curl -s -XPUT http://localhost:4567/deployment/production
     {
-        "id": "testing",
-        "state": "booting",
-        "links": [
-            "/deployment/production",
-            "/role/frontend",
-            "/role/monitor"
-        ]
+      "id": "production"
     }
-
-    => curl -XGET http://localhost:4567/host/testing?resolve_all
+    
+Create a role named 'frontend'
+    
+    % curl -s -XPUT http://localhost:4567/role/frontend
     {
-        "id": "testing",
-        "state": "booting",
-        "links": {
-            "deployment": {
-                "production": {
-                    "id": "production"
-                }
-            },
-            "role": {
-                "frontend": {
-                    "id": "frontend"
-                },
-                "monitor": {
-                    "id": "monitor"
-                }
-            }
-        }
+      "id": "frontend"
     }
-
-    => curl -XGET http://localhost:4567/host/testing/link
-    [
-        {
-            "id": "1",
-            "model": "deployment",
-            "object_id": "production"
+    
+Create a role named 'monitor'
+    
+    % curl -s -XPUT http://localhost:4567/role/monitor
+    {
+      "id": "monitor"
+    }
+    
+Create a host named 'testing' that has state 'booting'
+    
+    % curl -s -XPUT http://localhost:4567/host/testing -d { "state": "booting" }
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": [
+    
+      ]
+    }
+    
+Put the 'testing' host in 'production' deployment
+    
+    % curl -s -XPUT http://localhost:4567/host/testing/link/deployment/production
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": [
+        "/deployment/production"
+      ]
+    }
+    
+Add the 'frontend' role to 'testing' host
+    
+    % curl -s -XPUT http://localhost:4567/host/testing/link/role/frontend
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": [
+        "/deployment/production",
+        "/role/frontend"
+      ]
+    }
+    
+Add the 'monitor' role to 'testing' host
+    
+    % curl -s -XPUT http://localhost:4567/host/testing/link/role/monitor
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": [
+        "/deployment/production",
+        "/role/frontend",
+        "/role/monitor"
+      ]
+    }
+    
+Now show the 'testing' host. This will show the host and the paths to any links
+    
+    % curl -s -XGET http://localhost:4567/host/testing
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": [
+        "/deployment/production",
+        "/role/frontend",
+        "/role/monitor"
+      ]
+    }
+    
+Now show the 'testing' host with all links fully resolved to their objects.
+    
+    % curl -s -XGET http://localhost:4567/host/testing?resolve_all
+    {
+      "id": "testing",
+      "state": "booting",
+      "links": {
+        "deployment": {
+          "production": {
+            "id": "production"
+          }
         },
-        {
-            "id": "2",
-            "model": "role",
-            "object_id": "frontend"
-        },
-        {
-            "id": "3",
-            "model": "role",
-            "object_id": "monitor"
+        "role": {
+          "frontend": {
+            "id": "frontend"
+          },
+          "monitor": {
+            "id": "monitor"
+          }
         }
-    ]
-
-    => curl -XGET http://localhost:4567/host/testing/link/role
+      }
+    }
+    
+Show all links for this entry:
+    
+    % curl -s -XGET http://localhost:4567/host/testing/link
     [
-        {
-            "id": "2",
-            "model": "role",
-            "object_id": "frontend"
-        },
-        {
-            "id": "3",
-            "model": "role",
-            "object_id": "monitor"
-        }
+      {
+        "id": "1",
+        "model": "deployment",
+        "object_id": "production"
+      },
+      {
+        "id": "2",
+        "model": "role",
+        "object_id": "frontend"
+      },
+      {
+        "id": "3",
+        "model": "role",
+        "object_id": "monitor"
+      }
     ]
-
+    
+Show all only role links for this entry:
+    
+    % curl -s -XGET http://localhost:4567/host/testing/link/role
+    [
+      {
+        "id": "2",
+        "model": "role",
+        "object_id": "frontend"
+      },
+      {
+        "id": "3",
+        "model": "role",
+        "object_id": "monitor"
+      }
+    ]
+    
