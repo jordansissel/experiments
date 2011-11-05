@@ -22,17 +22,27 @@ Start things up with 'ruby ohmrest.rb' then run 'test.sh' - output below:
     null
     => curl -XPUT http://localhost:4567/role/frontend
     null
+    => curl -XPUT http://localhost:4567/role/monitor
+    null
     => curl -XPUT http://localhost:4567/host/testing -d { "state": "booting" }
     []
     => curl -XPUT http://localhost:4567/host/testing/link/deployment/production
 
     => curl -XPUT http://localhost:4567/host/testing/link/role/frontend
 
-    => curl -XGET http://localhost:4567/host/testing
-    {"id":"testing","state":"booting","links":["/deployment/production","/role/frontend"]}
+    => curl -XPUT http://localhost:4567/host/testing/link/role/monitor
 
-    # This query is the same as the previous except that 'resolve_all' is requested which
-    # yields a links as a hash of model => object_id => object for all links.
+    => curl -XGET http://localhost:4567/host/testing
+    {
+        "id": "testing",
+        "state": "booting",
+        "links": [
+            "/deployment/production",
+            "/role/frontend",
+            "/role/monitor"
+        ]
+    }
+
     => curl -XGET http://localhost:4567/host/testing?resolve_all
     {
         "id": "testing",
@@ -46,7 +56,44 @@ Start things up with 'ruby ohmrest.rb' then run 'test.sh' - output below:
             "role": {
                 "frontend": {
                     "id": "frontend"
+                },
+                "monitor": {
+                    "id": "monitor"
                 }
             }
         }
     }
+
+    => curl -XGET http://localhost:4567/host/testing/link
+    [
+        {
+            "id": "1",
+            "model": "deployment",
+            "object_id": "production"
+        },
+        {
+            "id": "2",
+            "model": "role",
+            "object_id": "frontend"
+        },
+        {
+            "id": "3",
+            "model": "role",
+            "object_id": "monitor"
+        }
+    ]
+
+    => curl -XGET http://localhost:4567/host/testing/link/role
+    [
+        {
+            "id": "2",
+            "model": "role",
+            "object_id": "frontend"
+        },
+        {
+            "id": "3",
+            "model": "role",
+            "object_id": "monitor"
+        }
+    ]
+

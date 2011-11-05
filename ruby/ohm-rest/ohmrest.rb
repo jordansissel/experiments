@@ -54,7 +54,8 @@ Model.subclasses.each do |model|
     restify(model, result, params.include?("resolve_all"))
 
     # Otherwise, return the json representation of this object.
-    return result.to_json
+    headers "Content-Type" => "text/plain"
+    body JSON.pretty_generate(result)
   end # get /model/:id
 
   p "Setting up PUT /#{model_name}/:id"
@@ -70,10 +71,13 @@ Model.subclasses.each do |model|
     # TODO(sissel): Actually we should create-or-update.
     p model_name => data
     object = model.create(data)
+    headers "Content-Type" => "text/plain"
     if object.valid?
-      return restify(model, object.to_hash).to_json
+      result = object.to_hash
+      restify(model, result, params.include?("resolve_all"))
+      body JSON.pretty_generate(result)
     else
-      return object.errors.to_json
+      body JSON.pretty_generate(object.errors)
     end
   end # put /model/:id
 
@@ -93,6 +97,30 @@ Model.subclasses.each do |model|
       p :link_hash => link.to_hash
       p :link_valid => link.valid?, :errors => link.errors
       obj.links << link
+      result = obj.to_hash
+      restify(model, result, params.include?("resolve_all"))
+      headers "Content-Type" => "text/plain"
+      body JSON.pretty_generate(result)
+    end
+
+    get "/#{model_name}/:id/link/?" do |id|
+      obj = model[id]
+      # Return 404 if this object is not found
+      return 404 if obj.nil?
+      results = obj.links.collect { |l| l.to_hash }
+      headers "Content-Type" => "text/plain"
+      body JSON.pretty_generate(results)
+    end
+
+    get "/#{model_name}/:id/link/:model" do |id, peer_model|
+      obj = model[id]
+      # Return 404 if this object is not found
+      return 404 if obj.nil?
+
+      results = obj.links.select { |l| l.model == peer_model } \
+        .collect { |l| l.to_hash }
+      headers "Content-Type" => "text/plain"
+      body JSON.pretty_generate(results)
     end
   end
 end
