@@ -14,11 +14,27 @@ require "./models/role"
 require "./models/mixins/linkable"
 require "./models/mixins/nameable"
 
-def restify(model, hash)
+def restify(model, hash, resolve_all=false)
   if model.include?(Linkable) and !hash[:links].nil?
-    # Convert all 'links' to paths /model/id
-    hash[:links] = hash[:links].collect do |l| 
-      "/#{l[:model]}/#{l[:object_id]}" 
+    if resolve_all
+      # If resolving all, then make :links a Hash of 
+      #   { model => { object_id => linked_object, ... } }
+      links = {}
+      hash[:links].each do |l|
+        # If resolve_all is set, we want the fully denormalized object returned.
+        linked_model = ::Module.const_get(l[:model].capitalize)
+        link = linked_model[l[:object_id]]
+        #linked_model[l[:object_id]].to_hash
+        links[l[:model]] ||= {}
+        links[l[:model]][l[:object_id]] = link.to_hash
+        #links["/#{l[:model]}/#{l[:object_id]}"] = link.to_hash
+      end
+      hash[:links] = links
+    else
+      # Convert all 'links' to paths "/model/id"
+      hash[:links] = hash[:links].collect do |l| 
+        "/#{l[:model]}/#{l[:object_id]}" 
+      end
     end
   end
 end # def restify
@@ -34,7 +50,8 @@ Model.subclasses.each do |model|
     return 404 if obj.nil?
 
     result = obj.to_hash
-    restify(model, result)
+    p :params => params
+    restify(model, result, params.include?("resolve_all"))
 
     # Otherwise, return the json representation of this object.
     return result.to_json
