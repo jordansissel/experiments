@@ -6,74 +6,24 @@ require "ohm"
 require "sinatra"
 require "json"
 
-# Subclass Ohm::Model so we can hook inheritance to track subclasses
-# to iterate over them later.
-class Model < Ohm::Model
-  class << self
-    def inherited(subclass)
-      @subclasses ||= []
-      @subclasses << subclass
-    end # def inherited
+require "./model"
+require "./models/deployment"
+require "./models/host"
+require "./models/link"
+require "./models/role"
+require "./models/mixins/linkable"
+require "./models/mixins/nameable"
 
-    def subclasses
-      return @subclasses
-    end # def subclass
-  end # class << self
-end # class Model
+def restify(model, hash)
+  if model.include?(Linkable) and !hash[:links].nil?
+    # Convert all 'links' to paths /model/id
+    hash[:links] = hash[:links].collect do |l| 
+      "/#{l[:model]}/#{l[:object_id]}" 
+    end
+  end
+end # def restify
 
-class Link < Model
-  attribute :model
-  attribute :object_id
-
-  def validate
-    assert_present :model
-    assert_present :object_id
-  end # def validate
-
-  def to_hash
-    super.merge(:model => model, :object_id => object_id)
-  end # def to_hash
-end # class Link
-
-module Linkable
-  def self.included(model)
-    model.set :links, Link
-    #model.index :links
-    # TODO(sissel): Make a way to register to_hash
-  end # def self.included
-end # module Linkable
-
-module Nameable
-  def self.included(model)
-    #p self.name => model.name
-    model.attribute :name
-    model.index :name
-    # TODO(sissel): make a way to register a validation
-  end # def self.included
-end # module Nameable
-
-class Deployment < Model
-  include Linkable
-end  # class Deployment
-
-class Role < Model
-end # class Role
-
-class Host < Model
-  include Linkable
-
-  attribute :state
-
-  def validate
-    p "Validate #{self}"
-    assert_present :state
-  end # def validate
-
-  def to_hash
-    super.merge(:state => state, :links => links.collect { |l| l.to_hash } )
-  end # def validate
-end # class Host
-
+# For all Model subclasses, make REST APIs for them.
 Model.subclasses.each do |model|
   model_name = model.name.downcase
 
@@ -83,8 +33,11 @@ Model.subclasses.each do |model|
     # Return 404 if this object is not found
     return 404 if obj.nil?
 
+    result = obj.to_hash
+    restify(model, result)
+
     # Otherwise, return the json representation of this object.
-    return obj.to_json
+    return result.to_json
   end # get /model/:id
 
   p "Setting up PUT /#{model_name}/:id"
@@ -101,7 +54,7 @@ Model.subclasses.each do |model|
     p model_name => data
     object = model.create(data)
     if object.valid?
-      return object.to_json
+      return restify(model, object.to_hash).to_json
     else
       return object.errors.to_json
     end
@@ -109,15 +62,19 @@ Model.subclasses.each do |model|
 
   if model.include?(Linkable)
     p "Setting up PUT /#{model_name}/:id/link/:model/:id"
+    # Putting a link takes no body because all the data we need right now
+    # is the model and the object id you want to link to.
     put "/#{model_name}/:id/link/:model/:id" do |id, peer_model, peer_id|
       obj = model[id]
       # Return 404 if this object is not found
       return 404 if obj.nil?
-      p obj.links
-      link = Link.create(:model => peer_model, :object_id => peer_id)
+
+      # TODO(sissel): Links should take arbitrary data, should they not?
+      link_data = { :model => peer_model, :object_id => peer_id }
+      link = Link.find(link_data).first || Link.create(link_data)
+      p :link => link
       p :link_hash => link.to_hash
       p :link_valid => link.valid?, :errors => link.errors
-
       obj.links << link
     end
   end
