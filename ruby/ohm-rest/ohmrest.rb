@@ -25,20 +25,21 @@ class Link < Model
   attribute :model
   attribute :object_id
 
-  #def id
-    #return "/#{model}/#{object_id}"
-  #end
-
   def validate
     assert_present :model
     assert_present :object_id
   end # def validate
+
+  def to_hash
+    super.merge(:model => model, :object_id => object_id)
+  end # def to_hash
 end # class Link
 
 module Linkable
   def self.included(model)
-    model.collection :links, Link
+    model.set :links, Link
     #model.index :links
+    # TODO(sissel): Make a way to register to_hash
   end # def self.included
 end # module Linkable
 
@@ -69,7 +70,7 @@ class Host < Model
   end # def validate
 
   def to_hash
-    super.merge(:state => state)
+    super.merge(:state => state, :links => links.collect { |l| l.to_hash } )
   end # def validate
 end # class Host
 
@@ -112,7 +113,12 @@ Model.subclasses.each do |model|
       obj = model[id]
       # Return 404 if this object is not found
       return 404 if obj.nil?
-      obj.links << Link.new(:model => peer_model, :object_id => peer_id)
+      p obj.links
+      link = Link.create(:model => peer_model, :object_id => peer_id)
+      p :link_hash => link.to_hash
+      p :link_valid => link.valid?, :errors => link.errors
+
+      obj.links << link
     end
   end
 end
