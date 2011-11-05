@@ -19,6 +19,38 @@ Start things up with 'ruby ohmrest.rb' then run 'test.sh' - output below:
 
     % sh test.sh
 
+But first, what are our models? Three models in this example. Host, Role, and Deployment.
+
+    class Deployment < Model
+      include Linkable
+    end  # class Deployment
+
+    class Host < Model
+      include Linkable
+      attribute :state
+
+      def validate
+        assert_present :state
+      end # def validate
+
+      def to_hash
+        super.merge(:state => state, :links => links.collect { |l| l.to_hash } )
+      end # def validate
+    end # class Host
+
+    class Role < Model
+    end # class Role
+
+All three of these become available as REST APIs under /modelname.
+
+* PUT to /modelname/<id> will create it
+* GET to /modelname/<id> will fetch it
+* PUT to /modelname/<id>/link/<othermodel>/<otherid> will create a link to another object.
+* GET to /modelname/<id>/link will show all links
+* ... you get the idea ...
+
+Here's a simple example. Lines starting with '%' are commands run. Other lines are simply output.
+
 Create a deployment named 'production'
     
     % curl -s -XPUT http://localhost:4567/deployment/production
