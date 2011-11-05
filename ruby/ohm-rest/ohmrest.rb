@@ -14,6 +14,8 @@ require "./models/role"
 require "./models/mixins/linkable"
 require "./models/mixins/nameable"
 
+# Resolve any joins (like Links) if asked or convert Link
+# objects to path format.
 def restify(model, hash, resolve_all=false)
   if model.include?(Linkable) and !hash[:links].nil?
     if resolve_all
