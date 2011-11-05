@@ -43,10 +43,10 @@ But first, what are our models? Three models in this example. Host, Role, and De
 
 All three of these become available as REST APIs under /modelname.
 
-* PUT to /modelname/<id> will create it
-* GET to /modelname/<id> will fetch it
-* PUT to /modelname/<id>/link/<othermodel>/<otherid> will create a link to another object.
-* GET to /modelname/<id>/link will show all links
+* PUT to /modelname/{id} will create it
+* GET to /modelname/{id} will fetch it
+* PUT to /modelname/{id}/link/{othermodel}/{otherid} will create a link to another object.
+* GET to /modelname/{id}/link will show all links
 * ... you get the idea ...
 
 Here's a simple example. Lines starting with '%' are commands run. Other lines are simply output.
