@@ -2,3 +2,4 @@ evented
 threaded
 noop
 connector
+server
