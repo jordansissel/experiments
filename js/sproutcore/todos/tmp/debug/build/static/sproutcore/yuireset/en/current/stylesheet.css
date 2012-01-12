@@ -1,0 +1,351 @@
+           /*
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+/*
+	TODO will need to remove settings on HTML since we can't namespace it.
+	TODO with the prefix, should I group by selector or property for weight savings?
+*/
+/* line 13, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+html {
+  color: #000;
+  background: #FFF;
+}
+
+/* line 43, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+textarea,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+}
+
+/* line 47, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 52, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+fieldset,
+img {
+  border: 0;
+}
+
+/* line 64, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* line 69, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+li {
+  list-style: none;
+}
+
+/* line 74, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+caption,
+th {
+  text-align: left;
+}
+
+/* line 82, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+
+/* line 87, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+q:before,
+q:after {
+  content: '';
+}
+
+/* line 91, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+abbr,
+acronym {
+  border: 0;
+  font-variant: normal;
+}
+
+/* line 96, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+sup {
+  vertical-align: text-top;
+}
+
+/* line 99, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+sub {
+  vertical-align: text-bottom;
+}
+
+/* line 104, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* line 112, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+input,
+textarea,
+select {
+  *font-size: 100%;
+}
+
+/* line 116, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/reset_css.scss */
+legend {
+  color: #000;
+}
+
+/* line 2, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/core_css.scss */
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -ms-text-overflow: ellipsis;
+}
+
+/* line 10, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/core_css.scss */
+body {
+  position: absolute;
+  margin: 0px;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+           /*
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+/**
+ * Nudge down to get to 13px equivalent for these form elements
+ */
+/* line 17, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/fonts_css.scss */
+select,
+input,
+button,
+textarea {
+  font: 99% arial,helvetica,clean,sans-serif;
+}
+
+/* line 22, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/fonts_css.scss */
+table {
+  font-size: inherit;
+  font: 100%;
+}
+
+/* line 32, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/fonts_css.scss */
+pre,
+code,
+kbd,
+samp,
+tt {
+  font-family: monospace;
+  *font-size: 108%;
+  line-height: 100%;
+}
+
+           /*
+  These CSS styles apply to all views.
+*/
+/* default behaviors for all views: 
+ - use "pointer" cursor unless otherwise required 
+ - clip overflow
+*/
+/* line 10, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view {
+  cursor: default;
+  overflow: hidden;
+  position: absolute;
+  /* all views are absolutely positioned. */
+  margin: 0px;
+  user-select: none;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  /* Views do not allow text selection unless you set isTextSelectable to YES.*/
+}
+/* line 21, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view.allow-select {
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+/* line 30, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view.text-align-right {
+  text-align: right;
+}
+/* line 33, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view.textAlignRight {
+  text-align: right;
+}
+/* line 36, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view img {
+  border: none;
+}
+
+/* line 43, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+div.sc-view {
+  border: solid 0 transparent;
+}
+
+/* line 48, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-view:focus {
+  outline: none;
+}
+
+/* line 52, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/view_css.scss */
+.sc-hidden {
+  display: none !important;
+}
+
+           /*
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+/* base.css, part of YUI's CSS Foundation */
+/* line 10, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+h1 {
+  font-size: 138.5%;
+}
+
+/* line 14, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+h2 {
+  font-size: 123.1%;
+}
+
+/* line 18, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+h3 {
+  font-size: 108%;
+}
+
+/* line 22, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+h1, h2, h3 {
+  margin: 1em 0;
+}
+
+/* line 26, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+h1, h2, h3, h4, h5, h6, strong {
+  font-weight: bold;
+}
+
+/* line 30, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+abbr, acronym {
+  border-bottom: 1px dotted #000;
+  cursor: help;
+}
+
+/* line 35, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+em {
+  font-style: italic;
+}
+
+/* line 39, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+blockquote, ul, ol, dl {
+  margin: 1em;
+}
+
+/* line 43, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+ol, ul, dl {
+  margin-left: 2em;
+}
+
+/* line 47, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+ol li {
+  list-style: decimal outside;
+}
+
+/* line 51, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+ul li {
+  list-style: disc outside;
+}
+
+/* line 55, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+dl dd {
+  margin-left: 1em;
+}
+
+/* line 59, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+th, td {
+  border: 1px solid #000;
+  padding: .5em;
+}
+
+/* line 64, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+th {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* line 69, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+caption {
+  margin-bottom: .5em;
+  /*centered so it doesn't blend in to other content*/
+  text-align: center;
+}
+
+/* line 75, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+p, fieldset, table, pre {
+  margin-bottom: 1em;
+}
+
+/* line 80, ./tmp/chance/home/jls/projects/experiments/js/sproutcore/todos/tmp/debug/staging/static/sproutcore/yuireset/en/current/resources/base_css.scss */
+input[type=text], input[type=password], textarea {
+  width: 12.25em;
+  *width: 11.9em;
+}
+

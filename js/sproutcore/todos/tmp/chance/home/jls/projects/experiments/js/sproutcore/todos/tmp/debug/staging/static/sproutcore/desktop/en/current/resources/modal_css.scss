@@ -1,0 +1,9 @@
+
+$theme: '';/** SC.ModalPane Support */
+
+.sc-pane.sc-modal {
+  z-index: 100;
+  .msie &{
+    background-image: url('.');
+  }
+}
