@@ -60,6 +60,10 @@ class Event extends Panel
 
   update: (params) ->
     @name = params.name
+    @event = Model.Event.select (c) -> 
+      console.log(c.name)
+      c.name == @name
+    console.log(event: @event)
     console.log(["update", @name])
     @render()
 
@@ -69,6 +73,8 @@ class Event extends Panel
     # Do any extra magic to generate the event stuff.
     # Update the title
     $("header h2", @el).html(@name)
+    
+    # Go through the event config
 
   back: ->
     @navigate("/events", trans: "left")
