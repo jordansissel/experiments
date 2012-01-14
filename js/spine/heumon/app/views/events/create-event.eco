@@ -1,0 +1,3 @@
+<div class="event-create">
+  Hello <%= @name %>
+</div>

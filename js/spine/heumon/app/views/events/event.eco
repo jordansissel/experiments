@@ -1,0 +1,7 @@
+<div class="event">
+  <div class="event-visual">Graph here.</div>
+  <div class="event-summary">Summary here</div>
+  <div class="event-record">
+    <button>New</button>
+  </div>
+</div>
