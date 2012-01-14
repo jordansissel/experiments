@@ -1,17 +1,33 @@
 Spine = require("spine")
 {Panel} = require("spine.mobile")
 
+Model = {
+  Event: require("models/event")
+}
+
 class EventsList extends Panel
   title: "Heumon"
-  className: "example foo list listview"
+  className: "events-list listview"
   events:
     'tap .event-list-item': 'choose'
     'keyup #event-filter': 'search'
     
   constructor: ->
     super
-    @list = [ "diaper", "ibuprofen" ]
+    console.log(Model.Event)
+
+    # Refresh when any Event data changes
+    Model.Event.bind("refresh", @render)
+
+    console.log(Model.Event.first())
+    console.log(JSON.stringify(Model.Event.first()))
+
     @render()
+
+  sorted_events_list: () ->
+    console.log(Model.Event.all())
+    keys = (e.name for e in Model.Event.all())
+    return keys.sort()
 
   render: ->
     @html require("views/events/index")(@)
@@ -19,6 +35,7 @@ class EventsList extends Panel
   choose: (event) ->
     name = $(event.target).text().trim()
     event.preventDefault()
+
     # go to /events/:name
     @navigate("/events", name, trans: "right")
 
@@ -69,7 +86,8 @@ class EventCreator extends Panel
 
   constructor: ->
     super
-    @addButton("Back", @back);
+    @addButton("Cancel", @cancel)
+    @addButton("Save", @save).addClass("green right")
 
     # Set up a callback when this panel is made active
     @active(@update)
@@ -85,7 +103,13 @@ class EventCreator extends Panel
     # Update the title
     $("header h2", @el).html(@name)
 
-  back: ->
+    # Go through the event config and generate form elements.
+
+  save: ->
+    console.log("Save!")
+
+  cancel: ->
+    # Go back to /events/:name
     @navigate("/events", @name, trans: "left")
 # end class EventCreator
 

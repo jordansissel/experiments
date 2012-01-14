@@ -3,7 +3,7 @@
 
   <div class="event-list">
     <ul>
-      <% for name in @list: %>
+      <% for name in @sorted_events_list(): %>
         <li class="event-list-item">
           <%= name %>
         </li>

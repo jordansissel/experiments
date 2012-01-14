@@ -8,9 +8,12 @@ class App extends Stage.Global
   constructor: ->
     super
     @log("Initialized")
-    @events = new EventsController
-
+    #Spine.Route.setup(history: true)
     Spine.Route.setup(shim: true)
+
+    # Create the events controller
+    @events_controller = new EventsController
+
     @navigate "/events"
 
 module.exports = App
