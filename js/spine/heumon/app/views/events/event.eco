@@ -1,4 +1,11 @@
 <div class="event">
   <div class="event-visual">Graph here.</div>
-  <div class="event-summary">Summary here</div>
+  <div class="event-summary">
+    Data:
+    <ul>
+      <% for instance in @data: %>
+        <li> <%= JSON.stringify(instance) %> </li>
+      <% end %>
+    </ul>
+  </div>
 </div>

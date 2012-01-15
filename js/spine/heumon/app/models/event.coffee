@@ -8,11 +8,11 @@ class Event extends Spine.Model
 if Event.first() == undefined
   # Create some events
   new Event(name: "ibuprofen", config: {
-    radio: [ 1, 2, 3 ]
+    quantity: { radio: [ 1, 2, 3 ] }
   }).save()
 
   new Event(name: "diaper", config: {
-    check: [ "poop", "pee" ]
+    "with": { checkbox: [ "poop", "pee" ] }
   }).save()
 # end data
 

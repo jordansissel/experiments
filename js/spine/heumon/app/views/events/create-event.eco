@@ -1,2 +1,3 @@
 <div class="event-create">
+  <form id="event-data"></form>
 </div>
