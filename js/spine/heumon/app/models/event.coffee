@@ -14,6 +14,8 @@ if Event.first() == undefined
   new Event(name: "diaper", config: {
     "with": { checkbox: [ "poop", "pee" ] }
   }).save()
+
+  new Event(name: "baby food", config: { }).save()
 # end data
 
 Event.fetch()
