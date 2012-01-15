@@ -16,4 +16,6 @@ if Event.first() == undefined
   }).save()
 # end data
 
+Event.fetch()
+
 module.exports = Event

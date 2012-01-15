@@ -61,6 +61,12 @@ class Event extends Panel
     @log("Data", @data)
     @render()
 
+  recent: (n) ->
+    # Sort by timestamp (Date objects)
+    # Sorting by most-recent first.
+    sorted = @data.sort (a, b) -> new Date(b.timestamp) - new Date(a.timestamp)
+    return sorted[0..n]
+
   render: ->
     @html require("views/events/event")(@)
 
@@ -72,6 +78,31 @@ class Event extends Panel
 
   create: ->
     @navigate("/events", @name, "create", trans: "right")
+
+  human_time: (timestamp) ->
+    date = new Date(timestamp)
+    now = new Date
+    interval = Math.floor((now - date) / 1000)
+    # TODO(sissel): Maybe just find a library to do this crap.
+    if interval == 1
+      return "1 second ago"
+    else if interval < 45 # 45 seconds
+      return "a few seconds ago"
+    else if interval < (60 * 10) # 10 minutes
+      return "a few minutes ago"
+    else if interval < (60 * 45) # 90 minutes
+      return Math.floor(interval / 60) + " minutes ago"
+    else if interval < (60 * 75) # 75 minutes
+      return "an hour ago"
+    else if interval < (60 * 60 * 24) # 24 hours
+      return Math.floor(interval / 60 / 60) + " hours ago"
+    else if interval < (60 * 60 * 24 * 7) # 7 days
+      return Math.floor(interval / 60 / 60 / 24) + " days ago"
+    else
+      month = ["January", "February", "March", "April", "May", "June", "July",
+               "August", "September", "October", "November", "December"][date.getMonth()]
+      return month + " " + date.getDay() + ", " + date.getYear()
+
 # end class Event
 
 class EventCreator extends Panel

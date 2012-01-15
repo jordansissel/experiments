@@ -1,10 +1,15 @@
 <div class="event">
   <div class="event-visual">Graph here.</div>
   <div class="event-summary">
-    Data:
+    Recent:
     <ul>
-      <% for instance in @data: %>
-        <li> <%= JSON.stringify(instance) %> </li>
+      <% for instance in @recent(5): %>
+        <li>
+          <%= @human_time(instance.timestamp) %>
+          <% for setting, _ of @event.config: %>
+            <%= setting %>: <%= instance.settings[setting] %>
+          <% end %>
+        </li>
       <% end %>
     </ul>
   </div>

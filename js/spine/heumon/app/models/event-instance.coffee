@@ -6,6 +6,8 @@ class EventInstance extends Spine.Model
 
   constructor: (data) ->
     super(data)
-    @timestamp = new Date()
+    @timestamp ?= (new Date).toISOString()
+
+EventInstance.fetch()
 
 module.exports = EventInstance
