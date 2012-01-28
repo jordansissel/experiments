@@ -25,13 +25,21 @@ JRuby tested was JRuby 1.6.5.
 
 ## Conclusions
 
-* MRI ruby 1.9.2 and 1.9.3 provide both AAAA and A records even though the API
-  clearly claims to return only one address type (noted by the 'family' return
-  value of Socket.gethostbyname).
+Quite a mess here.
+
+* MRI ruby 1.9.2 and 1.9.3 provide both AAAA (IPv6) and A (IPv4) records even
+  though the API clearly claims to return only one address type (noted by the
+  'family' return value of Socket.gethostbyname).
 
 * JRuby in both 1.8 and 1.9 modes only ever seems to yield IPv4 addresses.
+
+* MRI 1.8.7 gets an IPv6 address for 'localhost' while JRuby in gets an IPv4 address
 
 * This API (Socket.gethostbyname) lacks any hints to indicate what address type
   you want. The right API to use is probably the ruby 'resolv' library from
   stdlib - Resolve::DNS, etc.
+
+* I don't think this is a bug, but it is a difference: Note the string encoding
+  differences between 1.8.7 and 1.9 modes (both MRI and JRuby). 1.8 uses octal,
+  1.9 uses hex when displayed.
 
