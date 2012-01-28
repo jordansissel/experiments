@@ -4,6 +4,8 @@
 
 Quite a mess here.
 
+### Socket.gethostbyname
+
 * MRI ruby 1.9.2 and 1.9.3 provide both AAAA (IPv6) and A (IPv4) records even
   though the API clearly claims to return only one address type (noted by the
   'family' return value of Socket.gethostbyname).
@@ -15,13 +17,16 @@ Quite a mess here.
 * I don't think this is a bug, but it is a difference: Note the string encoding
   differences between 1.8.7 and 1.9 modes (both MRI and JRuby). 1.8 uses octal,
   1.9 uses hex when displayed.
+
+### Resolv::DNS is better, right?
+
 * There's wildly inconsistent results in both Socket.gethostbyname and in Resolve::DNS.
 * In MRI and Socket.gethostbyname: 1.8 yields only one address family, 1.9 yields both.
 * In MRI and Resolv::DNS: 1.8 yields both address types, 1.9 yields only one.
 
-WTF. There's so much inconsistency, there's no point in filing patches because
-I still have to provide work arounds for the older versions people still have
-in production (where "older versions" includes ruby 1.9.3, too).
+WTF. There's so much inconsistency, there's no point in filing bugs or patcheS
+because I still have to provide work arounds for the older versions people
+still have in production (where "older versions" includes ruby 1.9.3, too).
 
 ## Data
 
