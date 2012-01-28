@@ -76,8 +76,7 @@ Resolve 'orange.kame.net'
     ["1.9.3[p0]/ruby", ["203.178.141.194"]]
     ["1.9.3[p-1]/ruby", ["203.178.141.194"]]
     ["1.8.7[p330]/jruby", ["203.178.141.194", "2001:200:DFF:FFF1:216:3EFF:FEB1:44D7"]]
-
-* JRuby with --1.9 failed with: NoMethodError: undefined method `ip_address_list' for Socket:Class
+    # JRuby with --1.9 failed with: NoMethodError: undefined method `ip_address_list' for Socket:Class
 
 Resolve 'localhost'
 
@@ -88,7 +87,7 @@ Resolve 'localhost'
     ["1.9.3[p0]/ruby", []]
     ["1.9.3[p-1]/ruby", []]
     ["1.8.7[p330]/jruby", []]
-    ["1.8.7[p330]/jruby", []]
+    # JRuby with --1.9 failed with: NoMethodError: undefined method `ip_address_list' for Socket:Class
 
 Ooookay so localhost doesn't resolve, but "localhost." will ? Blah.
 
@@ -99,4 +98,4 @@ Ooookay so localhost doesn't resolve, but "localhost." will ? Blah.
     ["1.9.3[p0]/ruby", [#<Resolv::IPv4 127.0.0.1>]]
     ["1.9.3[p-1]/ruby", [#<Resolv::IPv4 127.0.0.1>]]
     ["1.8.7[p330]/jruby", [#<Resolv::IPv4 127.0.0.1>, #<Resolv::IPv6 ::1>]]
-    ["1.8.7[p330]/jruby", [#<Resolv::IPv4 127.0.0.1>, #<Resolv::IPv6 ::1>]]
+    # JRuby with --1.9 failed with: NoMethodError: undefined method `ip_address_list' for Socket:Class
