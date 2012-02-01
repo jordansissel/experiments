@@ -1,7 +1,9 @@
 default: foo
 
-foo: foo.6
-	6l -o $@ $^
+httpexample.go: cabin.6
+
+%: %.6
+	6l -o $@ $<
 
 foo.go: cabin.6
 
