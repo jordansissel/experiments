@@ -3,10 +3,14 @@ package cabin
 import (
   "fmt"
   "reflect"
+  "time"
 )
 
-type Cabin struct {
+type Cabin struct {}
 
+type Event struct {
+  timestamp *time.Time
+  object *interface{}
 }
 
 func New() *Cabin {
@@ -16,6 +20,8 @@ func New() *Cabin {
 func (cabin *Cabin) Log(object interface{}) {
   type_ := reflect.TypeOf(object)
   value := reflect.ValueOf(object)
+
+  event := &Event{time.UTC(), &object}
 
   if type_.Kind() == reflect.Ptr {
     type_ = type_.Elem()
@@ -31,24 +37,26 @@ func (cabin *Cabin) Log(object interface{}) {
     return
   }
 
+  fmt.Printf("%s: ", event.timestamp)
   for i := 0; i < type_.NumField(); i++ {
     field := type_.Field(i)
     if field.Anonymous {
       continue;
     }
 
-    fmt.Printf("%s => %s\n", field.Name, field.Type)
+    //fmt.Printf("%s: %s => %s\n", event.timestamp, field.Name, field.Type)
     switch field.Type.Kind() {
       case reflect.Int:
-        fmt.Printf("  => %d\n", value.Field(i).Int())
+        fmt.Printf("%s(%s)=%d, ", field.Name, field.Type, value.Field(i).Int())
       case reflect.Float32, reflect.Float64:
-        fmt.Printf("  => %f\n", value.Field(i).Float())
+        fmt.Printf("%s(%s)=%f, ", field.Name, field.Type, value.Field(i).Float())
       case reflect.String:
-        fmt.Printf("  => %s\n", value.Field(i).String())
+        fmt.Printf("%s(%s)=%s, ", field.Name, field.Type, value.Field(i).String())
       case reflect.Interface:
-        fmt.Printf("  => %s\n", value.Field(i).Interface())
+        fmt.Printf("%s(%s)=%s, ", field.Name, field.Type, value.Field(i).Interface())
       case reflect.Bool:
-        fmt.Printf("  => %s\n", value.Field(i).Bool())
+        fmt.Printf("%s(%s)=%s, ", field.Name, field.Type, value.Field(i).Bool())
     }
   }
+  fmt.Printf("\n")
 }
