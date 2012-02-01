@@ -1,5 +1,6 @@
 default: foo
 
+httpexample: cabin.6
 httpexample.go: cabin.6
 
 %: %.6
