@@ -18,5 +18,6 @@ func main() {
   foo.b = "Hello world"
   foo.c = false
 
+  /* You can log *any* object and cabin will inspect it for structure */
   logger.Log(foo)
 }

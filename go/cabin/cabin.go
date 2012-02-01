@@ -6,27 +6,33 @@ import (
   "time"
 )
 
+/* Make a new struct, but for now it has no members.
+ * Later I will add channels and such for subscription stuff
+ */
 type Cabin struct {}
 
+/* A cabin event. Simply a timestamp + an object */
 type Event struct {
   timestamp *time.Time
   object *interface{}
 }
 
+/* Create a new Cabin instance */
 func New() *Cabin {
   return new(Cabin)
 }
 
+/* Log an object */
 func (cabin *Cabin) Log(object interface{}) {
   type_ := reflect.TypeOf(object)
   value := reflect.ValueOf(object)
 
   event := &Event{time.UTC(), &object}
 
+  /* Dereference reflected pointer values */
   if type_.Kind() == reflect.Ptr {
     type_ = type_.Elem()
   }
-
   if value.Kind() == reflect.Ptr {
     value = value.Elem()
   }
@@ -37,14 +43,16 @@ func (cabin *Cabin) Log(object interface{}) {
     return
   }
 
+  /* Print the timestamp */
   fmt.Printf("%s: ", event.timestamp)
+
+  /* For every field in this object, emit the name, type, and current value */
   for i := 0; i < type_.NumField(); i++ {
     field := type_.Field(i)
     if field.Anonymous {
       continue;
     }
 
-    //fmt.Printf("%s: %s => %s\n", event.timestamp, field.Name, field.Type)
     switch field.Type.Kind() {
       case reflect.Int:
         fmt.Printf("%s(%s)=%d, ", field.Name, field.Type, value.Field(i).Int())
