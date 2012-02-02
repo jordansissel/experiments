@@ -38,7 +38,7 @@ end
 
 puts "try(3) ..."
 $count = 0
-status = try(3, [RuntimeError]) do
+status = try(3) do
   # crappy_api_call throws an exception on upstream errors
   # but we also want to wait until it returns something other than :pending
   # so raise "still pending" if it's still :pending
