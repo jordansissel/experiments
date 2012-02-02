@@ -1,5 +1,5 @@
 # try(5) do ... end
-def try(times=nil, exceptions=[], &block)
+def try(times=nil, exceptions=[Exception], &block)
   sleeptime = 0.1
   max = 5
   tries = 0
@@ -49,7 +49,7 @@ puts "Ready? #{status}"
 
 puts "try(10) ..."
 $count = 0
-status = try(10, [RuntimeError]) do
+status = try(10) do
   result = crappy_api_call
   raise "still pending" if result == :pending
   # return result from this block.
