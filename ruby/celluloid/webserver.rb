@@ -1,3 +1,5 @@
+require "http/parser"
+require "benchmark"
 require "celluloid"
 require "socket"
 
@@ -48,20 +50,43 @@ class ServerConnection
   end
 end
 
-class Echo < ServerConnection
+class HTTPConnection < ServerConnection
   def run
     loop do
-      begin
-        data = read
-        write(data)
-      rescue EOFError, EOF
-        close
-        return
+      parser = HTTP::Parser.new
+      headers_done = false
+      parser.on_headers_complete = proc { headers_done = true; :stop }
+
+      benchmark_header = Benchmark.measure do
+        remainder = ""
+        while !headers_done
+          begin
+            data = read
+            offset = (parser << data)
+            remainder = data[offset..-1]
+            headers_done = (data =~ /\r\n\r\n/)
+          rescue EOFError, EOF
+            close
+            return
+          end
+        end
       end
+      puts benchmark_header
+
+      p parser.headers
+      write([
+        "HTTP/1.1 200 OK",
+        "Content-Length: 4",
+        "",
+        "OK\r\n"
+      ].join("\r\n"))
+      #@socket.flush
     end
+  ensure
+    close
   end
 end
 
-# Run this server. Each connection is handled by the 'Echo' class.
-server = Server.new(Echo)
+# Run this server. Each connection is handled by the 'HTTPConnection' class.
+server = Server.new(HTTPConnection)
 server.run
