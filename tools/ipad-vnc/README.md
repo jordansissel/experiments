@@ -26,6 +26,6 @@ I have found that this configuration is sufficient for running what I need (a
 browser and a terminal). Mocha VNC is quite responsive! I was previously using
 iSSH (which is an awesome SSH app) but it's VNC client is crazy slow to update.
 
-Here's what it looks on the right side of my monitor, with this setup:
+Here's what it looks on the right side of my monitor, mounted in the [ipad mount I built](http://www.flickr.com/photos/jordansissel/5201000502/)
 
 ![iPad is on the right](https://github.com/jordansissel/experiments/raw/master/tools/ipad-vnc/picture.jpg)
