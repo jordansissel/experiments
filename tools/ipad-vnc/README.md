@@ -28,4 +28,4 @@ iSSH (which is an awesome SSH app) but it's VNC client is crazy slow to update.
 
 Here's what it looks on the right side of my monitor, with this setup:
 
-![iPad is on the right](picture.jpg)
+![iPad is on the right](https://github.com/jordansissel/experiments/raw/master/tools/ipad-vnc/picture.jpg)
