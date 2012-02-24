@@ -13,6 +13,8 @@ use:
     % bundle install
     % bundle exec foreman start
 
+The above command will run the X11+VNC server, window manager, and synergy.
+
 Notes:
 
 * I use the 'Mocha VNC' iPad app for this.
@@ -23,3 +25,7 @@ Notes:
 I have found that this configuration is sufficient for running what I need (a
 browser and a terminal). Mocha VNC is quite responsive! I was previously using
 iSSH (which is an awesome SSH app) but it's VNC client is crazy slow to update.
+
+Here's what it looks on the right side of my monitor, with this setup:
+
+![iPad is on the right](picture.jpg)
