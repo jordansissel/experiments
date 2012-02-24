@@ -46,7 +46,7 @@ h2 small { font-weight: normal; font-size: 0.7em; display: block; float: right; 
 .note.returns_void { background: #efefef; }
 .note.deprecated { background: #ffe5e5; border-color: #e9dada; }
 .note.private { background: #ffffc5; border-color: #ececaa; }
-.note.title { text-transform: lowercase; padding: 1px 5px; font-size: 0.9em; font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, sans-serif; display: inline; }
+.note.title { padding: 1px 5px; font-size: 0.9em; font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, sans-serif; display: inline; }
 .summary_signature + .note.title { margin-left: 7px; }
 h1 .note.title { font-size: 0.5em; font-weight: normal; padding: 3px 5px; position: relative; top: -3px; text-transform: capitalize; }
 .note.title.constructor { color: #fff; background: #6a98d6; border-color: #6689d6; } 
@@ -106,10 +106,8 @@ p.inherited {
 #filecontents dl.box .r1, dl.box .r1 { background: #eee; }
 
 ul.toplevel { list-style: none; padding-left: 0; font-size: 1.1em; }
-#files { padding-left: 15px; font-size: 1.1em; }
-
-#files { padding: 0; }
-#files li { list-style: none; display: inline; padding: 7px 12px; line-height: 35px; }
+.index_inline_list { padding-left: 0; font-size: 1.1em; }
+.index_inline_list li { list-style: none; display: inline; padding: 7px 12px; line-height: 35px; }
 
 dl.constants { margin-left: 40px; }
 dl.constants dt { font-weight: bold; font-size: 1.1em; margin-bottom: 5px; }
