@@ -17,18 +17,22 @@ describe HTTP::Parser do
     assert_equal(request.length, offset)
   end
 
+  def buildrequest(array)
+    return array.map { |line| "#{line}#{CRLF}" }.join("")
+  end
+
   it "should report the correct offset after reading headers" do
-    request = [
+    request = buildrequest([
       "GET /foo HTTP/1.1",
       "host: localhost",
       ""
-    ].map { |line| "#{line}#{CRLF}" }.join("")
+    ])
 
     assert_parse(request)
   end
 
   it "should report the correct offset after reading headers, also" do
-    request = [
+    request = buildrequest([
       "GET /websocket HTTP/1.1",
       "host: localhost",
       "connection: Upgrade",
@@ -36,7 +40,7 @@ describe HTTP::Parser do
       "sec-websocket-key: SD6/hpYbKjQ6Sown7pBbWQ==",
       "sec-websocket-version: 13",
       ""
-    ].map { |line| "#{line}#{CRLF}" }.join("")
+    ])
 
     assert_parse(request)
   end

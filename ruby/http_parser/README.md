@@ -18,15 +18,15 @@ Here's what I get:
 
 This request parses properly:
 
-    request = [
+    request = buildrequest([
       "GET /foo HTTP/1.1",
       "host: localhost",
       ""
-    ].map { |line| "#{line}#{CRLF}" }.join("")
+    ])
 
 This request does not:
 
-    request = [
+    request = buildrequest([
       "GET /websocket HTTP/1.1",
       "host: localhost",
       "connection: Upgrade",
@@ -34,7 +34,7 @@ This request does not:
       "sec-websocket-key: SD6/hpYbKjQ6Sown7pBbWQ==",
       "sec-websocket-version: 13",
       ""
-    ].map { |line| "#{line}#{CRLF}" }.join("")
+    ])
 
 The failure is that `parser << data` is returning an offset that is one byte
 short:
