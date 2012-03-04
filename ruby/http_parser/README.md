@@ -1,5 +1,7 @@
 # Bug in http\_parser.rb?
 
+## This bug was fixed in http\_parser.rb 8595cac0e255c6f94b261144e464d1f7c4a2e594 )
+
 Run it:
 
     rvm all do gem install minitest http_parser.rb
