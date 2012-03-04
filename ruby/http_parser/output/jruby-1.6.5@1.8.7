@@ -1,0 +1,28 @@
+1.8.7 @ jruby-1.6.5
+--------------------------------------------------------------------------------
+
+Run options: --seed 45751
+
+# Running tests:
+
+EE
+
+Finished tests in 0.020000s, 100.0000 tests/s, 0.0000 assertions/s.
+
+  1) Error:
+test_0001_should_report_the_correct_offset_after_reading_headers(HTTP::Parser):
+TypeError: wrong argument type unknown (expected Struct)
+    ./test.rb:10:in `assert_parse'
+    ./test.rb:27:in `test_0001_should_report_the_correct_offset_after_reading_headers'
+    org/jruby/RubyProc.java:270:in `call'
+    org/jruby/RubyKernel.java:2093:in `send'
+
+  2) Error:
+test_0002_should_report_the_correct_offset_after_reading_headers_also(HTTP::Parser):
+TypeError: wrong argument type unknown (expected Struct)
+    ./test.rb:10:in `assert_parse'
+    ./test.rb:41:in `test_0002_should_report_the_correct_offset_after_reading_headers_also'
+    org/jruby/RubyProc.java:270:in `call'
+    org/jruby/RubyKernel.java:2093:in `send'
+
+2 tests, 0 assertions, 0 failures, 2 errors, 0 skips

@@ -11,6 +11,9 @@ describe HTTP::Parser do
     parser.on_headers_complete = proc { :stop }
     offset = (parser << request)
     # offset should be at the end of the request headers, now.
+    if request.length != offset
+      puts "OFFSET WRONG? Data remaining: #{request[offset .. -1].inspect}"
+    end
     assert_equal(request.length, offset)
   end
 
