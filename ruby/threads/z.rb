@@ -9,8 +9,9 @@ threads = 10.times.collect do
       cv.wait(mutex)
       require "rubygems"
       require "redis"
-      Redis::Client
     end
+
+    Redis::Client
   end
 end
 
