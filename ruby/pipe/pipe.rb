@@ -1,7 +1,4 @@
 class TTY
-  attr_accessor :keyboard
-  attr_accessor :terminal
-
   class << self
     def singleton
       @tty ||= TTY.new
@@ -14,10 +11,15 @@ class TTY
     def write(*args)
       singleton.write(*args)
     end
-  end
+  end # class methods
+
+  attr_accessor :keyboard
+  attr_accessor :terminal
 
   def initialize
+    # make a pipe for input
     self.keyboard, @keyboard_input = IO.pipe
+    # default output to stdout
     self.terminal = STDOUT
   end
 
@@ -30,7 +32,7 @@ class TTY
   def write(*args)
     @keyboard_input.write(*args)
   end
-end
+end # class TTY
 
 class Pipe
   class NotStartedYet < StandardError; end
@@ -50,8 +52,12 @@ class Pipe
   end # def inspect
 
   def |(receiver)
+    receiver = `#{receiver}` if receiver.is_a?(String)
+
     # pipe our output to the receiver
     start(receiver)
+
+    # Return the receiver so we can chain commands.
     return receiver
   end # def |
 
