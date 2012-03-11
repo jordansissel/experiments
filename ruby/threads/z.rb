@@ -15,9 +15,9 @@ threads = 10.times.collect do
   end
 end
 
-puts "Notifying all"
 mutex.synchronize do
   cv.broadcast
 end
 
 threads.each(&:join)
+puts "OK"
