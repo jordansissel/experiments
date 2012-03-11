@@ -1,34 +1,78 @@
-class Pipe
-  class NotStartedYet < StandardError; end
+class TTY
+  attr_accessor :keyboard
+  attr_accessor :terminal
 
-  class TTYOut
-    def stdin=(io)
-      io.reopen(STDOUT)
+  class << self
+    def singleton
+      @tty ||= TTY.new
+    end
+
+    def read(*args)
+      singleton.read(*args)
+    end
+
+    def write(*args)
+      singleton.write(*args)
     end
   end
 
-  attr_accessor :stdin
-  attr_accessor :stdout
+  def initialize
+    self.keyboard, @keyboard_input = IO.pipe
+    self.terminal = STDOUT
+  end
+
+  # Read from stdout
+  def read(*args)
+    terminal.read(*args)
+  end
+
+  # Write to stdin
+  def write(*args)
+    @keyboard_input.write(*args)
+  end
+end
+
+class Pipe
+  class NotStartedYet < StandardError; end
+  class AlreadyStarted < StandardError; end
+
+  attr_accessor :input
+  attr_accessor :output
 
   def initialize(*args)
     @args = args
-    self.stdin = STDIN
-    self.stdout = STDOUT
+    self.input = TTY.singleton.keyboard
+    self.output = STDOUT
   end # def initialize
 
   def inspect
-    return "<#{self.class.name}##{object_id} stdin=#{stdin} stdout=#{stdout} args=#{@args.inspect}>"
+    return "<#{self.class.name}##{object_id} input=#{input} output=#{output} args=#{@args.inspect}>"
   end # def inspect
 
   def |(receiver)
+    # pipe our output to the receiver
     start(receiver)
     return receiver
   end # def |
 
-  def start(receiver=TTYOut.new)
-    receiver.stdin, self.stdout = IO.pipe
-    p :starting => @args
-    @pid = Process.fork { child }
+  def start(receiver=nil)
+    reader, self.output = IO.pipe
+    if receiver.nil?
+      receiver = TTY.singleton
+      receiver.terminal = reader
+    else
+      receiver.input = reader
+    end
+
+    #p @args => [input, output]
+    @pid = Process.fork do
+      reader.close
+      child
+    end
+
+    # parent doesn't need access to the output.
+    output.close
+
     return receiver
   end # def start
 
@@ -38,10 +82,13 @@ class Pipe
   end # def wait
 
   def child
-    STDOUT.puts "Running: #{@args}"
-    p STDOUT => stdout
-    STDIN.reopen(stdin)
-    STDOUT.reopen(stdout)
+    # redirect stdin/stdout through the pipes
+    STDIN.reopen(input)
+    STDOUT.reopen(output)
+
+    # Close the old FDs now that we have STDIN and STDOUT dup'd
+    input.close
+    output.close
     exec(*@args)
 
     # if exec fails, error appropriately
@@ -50,15 +97,13 @@ class Pipe
   end # def child
 end # class Pipe
 
-def pipe(*args)
-  Pipe.new(*args)
-end # def pipe
-
 def `(string)
   Pipe.new("sh", "-c", string)
 end
 
-#s = (`echo foo` | `grep hello`)
-s = `echo "OK" >&2; seq 50`
-s.start
-s.wait
+require "pry"
+binding.pry
+
+#seq = `seq 15` | `grep 5`
+#puts seq.start.read
+#seq.wait
