@@ -1,4 +1,5 @@
 require "socket"
+require "cabin"
 
 version = RUBY_VERSION
 platform = case RUBY_PLATFORM
@@ -6,31 +7,58 @@ platform = case RUBY_PLATFORM
   else "ruby"
 end
 
-PLATFORM = [version, platform].join(" @ ")
+environment = [version, platform].join(" @ ")
+$logger = Cabin::Channel.get
+$logger.subscribe(STDOUT)
+$logger.level = $DEBUG ? :debug : :info
+$logger[:platform] = environment
 
-def connect(host, port)
+def connect(host, port, options={})
+  timeout = options[:timeout]
   socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
   sockaddr = Socket.sockaddr_in(port, host)
+  tries = 10
+  start = Time.now
   begin
+    $logger.debug("trying to connect")
     socket.connect_nonblock(sockaddr)
   rescue Errno::EINPROGRESS
-    timeout = 0.5 # block until connected-or-error
+    # Block until the socket is ready, then try again
     reader, writer, error = IO.select([socket], [socket], [socket], timeout)
-    p [reader,writer,error]
-    #p :version => PLATFORM, :writer => writer
-    if writer.nil?
-      #$stderr.puts("IO.select returned nil for writer? That's not right")
-      #$stderr.puts([reader,writer,error].inspect)
-      return nil
+    $logger.debug("IO.select", :return => [reader, writer, error])
+
+    # JRuby (at least as of 1.6.7) returns [nil,nil,nil] on IO.select when the
+    # socket is finished connecting *and* on timeout, so let's hack around this
+    # and try to find out if we're really connected or not.
+    if RUBY_PLATFORM == "java"
+      begin
+        socket.connect_nonblock(sockaddr)
+      rescue Errno::EISCONN
+        # Already connected, do nothing
+        $logger.debug("Already connected!")
+      rescue Errno::EINPROGRESS
+        # Connection still in progress, this means we timed out given
+        # our IO.select has returned.
+        $logger.debug("Still in progress after timeout, aborting...")
+        socket.close
+        return nil
+      end
     end
-    begin
-      socket.connect_nonblock(sockaddr) # check connection failure
-    rescue Errno::EISCONN
-    end
+
+    #tries -= 1
+    #retry if tries > 0
   end
 
   return socket
 end
 
-
-p :version => PLATFORM, :socket => connect("google.com", 80)
+if ARGV.size != 3
+  $logger.error("Usage: #{$PROGRAM_NAME} host port timeout")
+  exit 1
+end
+  
+host, port, timeout = ARGV[0..2]
+$logger.time("Connect") do
+  socket = connect(host, port, :timeout => timeout.to_f)
+  $logger.info("Socket?", :socket => socket)
+end
