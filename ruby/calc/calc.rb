@@ -2,35 +2,32 @@ require "./expressor"
 
 class Calc < Expressor
   def initialize
+    @ops ||= []
+    @values ||= []
+    @stack ||= []
     super
-    @stack = []
   end
 
   def emit(type, value)
-    if !@expected.include?(type)
-      raise "Got #{type} but expected one of #{@expected}"
-    end
+    @ops << type
+    @values << value
+    @stack << [type, value]
+  end # def emit
 
-    send(type, value)
+  def parse(string)
+    super(string)
+    compile(@stack)
+    @stack.clear
   end
 
-  def stack
-    @stack
+  def compile(stack)
+    # TODO(sissel): Apply order of operations
+    # "hello.world + 3 + test(abc)"
+    # [[:identifier, "hello"], [:operator, "."], [:identifier, "world"],
+    #  [:operator, "+"], [:integer, "3"], [:operator, "+"],
+    #  [:identifier, "test"], [:operator, "("], [:identifier, "abc"],
+    #  [:operator, ")"]]
+    #
   end
-
-  def expect(things)
-    @expected = things
-  end
-
-  def identifier(value)
-    expect [:operator]
-    stack.push(value)
-  end
-
-  def operator(op)
-    left = stack.pop
-    right = stack.pop
-
-    stack.push(lambda { left + right })
-end
+end # class Calc
 Calc.new.parse(ARGV[0])
