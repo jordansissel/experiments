@@ -1,5 +1,5 @@
 require "socket"
-require "cabin"
+require "cabin" # rubygem 'cabin'
 
 version = RUBY_VERSION
 platform = case RUBY_PLATFORM
@@ -44,9 +44,6 @@ def connect(host, port, options={})
         return nil
       end
     end
-
-    #tries -= 1
-    #retry if tries > 0
   end
 
   return socket

@@ -80,7 +80,7 @@ module X
   end # class Window
 end # module X
 
-display = X::Display.new
+display = X::Display.new(ENV.fetch("DISPLAY", ":0"))
 window = display.window(50, 80, 350, 350)
 xterm = X::Window.new(display.instance_eval { @connection }, :id => 46137378)
 window.map
