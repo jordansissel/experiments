@@ -21,6 +21,13 @@ Here's an example of what happens with stdout closes:
 ```
 % ruby -e 'loop { puts "ok"; $stdout.flush }'  | true
 -e:1:in `flush': Broken pipe (Errno::EPIPE)
+
+# Or more simply, try this with 'seq':
+% seq 10 | true
+% echo $pipestatus
+141 0
+
+# exit code 141 == Signal 13 == SIGPIPE
 ```
 
 Since 'true' exits pretty quickly, ruby has its stdout blown up and the next
