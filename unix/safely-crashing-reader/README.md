@@ -86,4 +86,4 @@ Read: 10
 upstream stdin closed.
 ```
 
-Boom! Victory.
+Boom! Victory. (Tested against Linux 3.3.0-4 and Linux 2.6.32-71.29.1.el6)
