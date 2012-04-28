@@ -13,8 +13,8 @@ custom tool 'slurper':
 ```
 
 If slurper crashes, its stdin is closed and 'someprogram' has its stdout
-brutally destroyed. The process usually dies via SIGPIPE or another read
-failure, like this example:
+brutally destroyed. The process usually dies via SIGPIPE a releated write
+failure the next time it tries to write to stdout. Here's an example:
 
 ```
 % ruby -e 'loop { puts "ok"; $stdout.flush }'  | true
@@ -25,7 +25,7 @@ Since 'true' exits pretty quickly, ruby has its stdout blown up and the next
 write to stdout gets a SIGPIPE. Oops.
 
 Just like the 'true' command above, I worry that my hypothetical 'slurper'
-process could crash.
+process could crash, or generally exit prematurely.
 
 ## fork to the rescue
 
