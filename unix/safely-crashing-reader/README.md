@@ -13,8 +13,10 @@ custom tool 'slurper':
 ```
 
 If slurper crashes, its stdin is closed and 'someprogram' has its stdout
-brutally destroyed. The process usually dies via SIGPIPE a releated write
-failure the next time it tries to write to stdout. Here's an example:
+brutally destroyed. The process usually dies via SIGPIPE or a related write
+failure the next time it tries to write to stdout. 
+
+Here's an example of what happens with stdout closes:
 
 ```
 % ruby -e 'loop { puts "ok"; $stdout.flush }'  | true
