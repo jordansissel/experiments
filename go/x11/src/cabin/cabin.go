@@ -14,7 +14,7 @@ type Cabin struct {
 
 /* A cabin event. Simply a timestamp + an object */
 type Event struct {
-  Timestamp *time.Time
+  Timestamp time.Time
   Message string
   Object interface{}
 }
@@ -32,7 +32,7 @@ func (cabin *Cabin) Subscribe(channel chan *Event) {
 
 /* Log an object */
 func (cabin *Cabin) Log(object interface{}) {
-  event := &Event{Timestamp: time.UTC(), Object: object}
+  event := &Event{Timestamp: time.Now().UTC(), Object: object}
 
   for _, channel := range cabin.channels {
     channel <- event

@@ -1,0 +1,3 @@
+x11: Xvnc :0 -fp /usr/share/fonts/misc -geometry 1024x767 -depth 24
+synergy: sh forever.sh env DISPLAY=:0 synergyc -f sadness
+wm: sh forever.sh env DISPLAY=:0 notion

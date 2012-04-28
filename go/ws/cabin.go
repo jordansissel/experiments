@@ -2,6 +2,7 @@ package cabin
 
 import (
   "time"
+  "fmt"
 )
 
 type Logger struct {
@@ -15,4 +16,8 @@ type Event struct {
 
 func New() *Logger {
   return new(Logger)
+}
+
+func (logger *Logger) Log(message string) {
+  fmt.Println(message)
 }
