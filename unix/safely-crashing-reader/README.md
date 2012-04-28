@@ -39,6 +39,21 @@ loop forever:
   exit if stdin is dead
 ```
 
+## is stdin dead?
+
+I tried many ways to check if 'stdin' was dead.
+
+* read(0, NULL, 0) - always succeeds.
+* lseek(0, 0, SEEK_CUR) - always fails; can't seek in a pipe.
+* write(0, NULL, 0) - always fails; can't write on a read-only fd
+* select(1, [0], NULL, NULL, NULL) - always succeeds claiming stdin is readable
+* poll({ .fd = 0, .events = POLLIN }, 1, -1) - Works! 
+
+poll(2) for POLLIN on fd 0 (stdin) will have the pollfd's `revents` member not
+include POLLIN when stdin is dead. I also found information suggesting that
+poll(2) support on various OSs varies quite a bit
+(<http://www.greenend.org.uk/rjk/tech/poll.html>)
+
 ## Example:
 
 See 'master.c' in this directory for the implementation of the above pseudocode.
