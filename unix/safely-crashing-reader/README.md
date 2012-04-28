@@ -55,10 +55,15 @@ I tried many ways to check if 'stdin' was dead:
   readable, even when it is dead.
 * poll({ .fd = 0, .events = POLLIN }, 1, -1) - Success!
 
-poll(2) for POLLIN on fd 0 (stdin) will have the pollfd's `revents` member not
-include POLLIN when stdin is dead. I also found information suggesting that
-poll(2) support on various OSs varies quite a bit
-(<http://www.greenend.org.uk/rjk/tech/poll.html>)
+poll(2) for POLLIN on fd 0 (stdin) works well and the pollfd's `revents` member
+(based on observations):
+
+* will include POLLHUP if the upstream hungup (died abnormally, like via signal)
+* will not include POLLIN, indicating stdin is not readable and dead (upstream
+  died normally though)
+
+I also found information suggesting that poll(2) support on various OSs varies
+quite a bit (<http://www.greenend.org.uk/rjk/tech/poll.html>)
 
 ## Example:
 
