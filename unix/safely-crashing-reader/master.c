@@ -63,7 +63,12 @@ int main(int argc, char **argv) {
      * when stdin is closed. Yaay! */
     struct pollfd pollfd = { .fd = 0, .events = POLLIN };
     poll(&pollfd, 1, -1); /* Check if stdin is still alive */
-    if ((pollfd.revents & POLLIN) == 0) {
+
+    /* revents will not include 'POLLIN' when the process controlling the input
+     * to stdin dies  normally (ie; exits via normal process exit).
+     * revents will include 'POLLHUP' if the process controlling the input to
+     * stdin dies abnormally (ie; dies via signal, SIGKILL included) */
+    if (((pollfd.revents & POLLIN) == 0) || (pollfd.revents & POLLHUP)) {
       /* fd 0 (stdin) is not ready for reading, it's dead! */
       printf("upstream stdin closed.\n");
       exit(0);
