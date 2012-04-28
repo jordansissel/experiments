@@ -41,7 +41,10 @@ loop forever:
 
 ## is stdin dead?
 
-I tried many ways to check if 'stdin' was dead.
+In the master/babysitter process, we are never reading from stdin, so
+it might be tricky to determine if stdin is dead.
+
+I tried many ways to check if 'stdin' was dead:
 
 * read(0, NULL, 0) - always succeeds, even with stdin is dead.
 * lseek(0, 0, SEEK_CUR) - always fails; can't seek in a pipe.
