@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
       return 1; /* if we get here, run_child went quite strangely */
     } else if (child == -1) {
       fprintf(stderr, "fork() failed: %s\n", strerror(errno));
+      /* this will quit the main program */
       return 1;
     }
 
