@@ -12,8 +12,8 @@ Benchmark.bmbm(20) do |x|
       ITERATIONS.times { q.pop }
     end
 
-    x.report("Channel(#{size})")  do
-      q = Channel.new(size)
+    x.report("BlockingRing(#{size})")  do
+      q = BlockingRing.new(size)
       Thread.new(q) { |q| ITERATIONS.times { |i| q.push i } }
       ITERATIONS.times { q.pop }
     end

@@ -1,6 +1,6 @@
 require "thread"
 
-class Channel
+class BlockingRing
   def initialize(size)
     @buffer = Array.new(size)
     @read = 0
