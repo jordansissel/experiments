@@ -1,10 +1,13 @@
 # Time sucks.
 
-I was profiling Logstash throughput and saw lots of time being spent in time formatting (generating an ISO8601 timestamp for events).
+I was profiling Logstash throughput and saw lots of time being spent in time
+formatting (generating an ISO8601 timestamp for events).
+The specific code is here: [logstash/time.rb](https://github.com/logstash/logstash/blob/ca10d8a6352b9bf7b69a8f0a977df0aa3b01f395/lib/logstash/time.rb#L15-19)
 
-Comment out the time formatting, and it speeds up by 6x. Hmm.. Need a better way to format time, or I need to switch to another time format.
+I commented-out the time formatting, and it speeds up by like 6x. Hmm.. Need a
+better way to format time, or I need to switch to another time format.
 
-Data from time format experiments are below the conclusion
+Experiment time!
 
 ## Conclusions
 
@@ -18,7 +21,12 @@ Like this: "2012-06-14T02:34:00.693000-0700"
 
 ### For just a number
 
-Using unix epoch, `#to_f` might be the most practical in that it is precision-agnostic. It's also 15x faster than sprintf (the fastest iso8601 generator).
+Using unix epoch, `#to_f` might be the most practical in that it is
+precision-agnostic. It's also 15x faster than sprintf (the fastest iso8601
+generator).
+
+This has the unfortunate consequence that it's a schema change in the logstash
+event format.
 
 ## ruby 1.9.3
 

@@ -1,4 +1,5 @@
 
-class Filter
-  # Filter can have a number of threads.
+class Filter < Station
+  def initialize(queue)
+  end
 end
