@@ -67,14 +67,16 @@ when "mine"
   end
 end
 
-start = Time.now
-iterations = 200000
-#iterations = 10000
-1.upto(iterations).each do |i|
-  #DateTime.strptime("May 19 21:56:06", "%b %d %H:%M:%S")
-  Time.strptime("May 19 21:56:06", "%b %d %H:%M:%S")
-end
-duration = Time.now - start
-rate = iterations / duration
+3.times do
+  start = Time.now
+  iterations = 200000
+  #iterations = 10000
+  1.upto(iterations).each do |i|
+    #DateTime.strptime("May 19 21:56:06", "%b %d %H:%M:%S")
+    Time.strptime("May 19 21:56:06", "%b %d %H:%M:%S")
+  end
+  duration = Time.now - start
+  rate = iterations / duration
 
-printf("%15.15s | %5s/%7s | %8.2f | %6d\n", ARGV[0], RUBY_ENGINE, RUBY_VERSION, duration, rate)
+  printf("%15.15s | %5s/%7s | %8.2f | %6d\n", ARGV[0], RUBY_ENGINE, RUBY_VERSION, duration, rate)
+end
