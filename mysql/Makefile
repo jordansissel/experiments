@@ -1,16 +1,22 @@
 default: run
 WORKDIR=mysql
 
+# Give mysqld the --gdb flag so you can ^C it.
 run: | $(WORKDIR)/log/binlog.index
-	/usr/libexec/mysqld --defaults-file=my.cnf --datadir=$$PWD/mysql
+	/usr/libexec/mysqld --defaults-file=my.cnf --datadir=$$PWD/mysql --gdb
 
-$(WORKDIR) $(WORKDIR)/data $(WORKDIR)/log $(WORKDIR)/share:
+shell: 
+	mysql --defaults-file=my.cnf -u root
+
+clean:
+	-[ -d $(WORKDIR) ] && rm -rf $(WORKDIR)
+
+$(WORKDIR):
+	mysql_install_db --defaults-file=my.cnf --datadir=$$PWD/mysql
+
+$(WORKDIR)/data $(WORKDIR)/log: | $(WORKDIR)
 	mkdir $@
 
 # Mysql is retarded.
-$(WORKDIR)/log/binlog.index:
+$(WORKDIR)/log/binlog.index: | $(WORKDIR)/log
 	touch $@
-
-
-$(WORKDIR)/share/mysql: | $(WORKDIR)/share
-	ln -s /usr/share/mysql $@
