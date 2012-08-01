@@ -18,15 +18,20 @@ configure: | $(WORKDIR)/Makefile
 $(WORKDIR)/Makefile: | $(WORKDIR) 
 	cd $(WORKDIR); CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) LDFLAGS=$(LDFLAGS) ./configure --prefix=$(PREFIX)
 
-compile: | $(WORKDIR)/src/.libs/libzmq.so
-$(WORKDIR)/src/.libs/libzmq.so: | configure
+compile: | $(WORKDIR)/src/.libs/libzmq.$(LIBEXT)
+$(WORKDIR)/src/.libs/libzmq.$(LIBEXT): | configure
 	$(MAKE) -C $(WORKDIR) CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) LDFLAGS=$(LDFLAGS)
 
 install: | compile $(PREFIX)/lib $(PREFIX)/include
-	cp $(WORKDIR)/src/.libs/libzmq.so.1 $(PREFIX)/lib
-	ln -sf $(PREFIX)/lib/libzmq.so.1 $(PREFIX)/lib/libzmq.so
+ifeq ($(UNAME),Darwin)
+	cp $(WORKDIR)/src/.libs/libzmq.1.$(LIBEXT) $(PREFIX)/lib
+	ln -sf $(PREFIX)/lib/libzmq.1.$(LIBEXT) $(PREFIX)/lib/libzmq.$(LIBEXT)
+else
+	cp $(WORKDIR)/src/.libs/libzmq.$(LIBEXT).1 $(PREFIX)/lib
+	ln -sf $(PREFIX)/lib/libzmq.$(LIBEXT).1 $(PREFIX)/lib/libzmq.$(LIBEXT)
+endif
 	cp $(WORKDIR)/include/zmq.h $(PREFIX)/include
 	cp $(WORKDIR)/include/zmq_utils.h $(PREFIX)/include
 
-$(PREFIX)/lib/libuuid.so $(PREFIX)/include/uuid/uuid.h:
+$(PREFIX)/lib/libuuid.$(LIBEXT) $(PREFIX)/include/uuid/uuid.h:
 	$(MAKE) -C ../libuuid PREFIX=$(PREFIX) $@

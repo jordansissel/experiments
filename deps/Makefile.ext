@@ -1,5 +1,13 @@
 default: fetch
 
+UNAME?=$(shell uname)
+
+ifeq ($(UNAME),Darwin)
+	LIBEXT=dylib
+else
+	LIBEXT=so
+endif
+
 all:
 	make -C $(WORKDIR) $@
 
