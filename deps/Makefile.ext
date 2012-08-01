@@ -11,7 +11,8 @@ distclean:
 
 fetch: $(TARBALL)
 $(TARBALL):
-	wget -nv -O $@ $(URL)
+	curl -s -o $@ "$(URL)"
+	@#wget -nv -O $@ $(URL)
 
 $(PREFIX)/lib $(PREFIX)/include:
 	mkdir $@
