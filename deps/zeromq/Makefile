@@ -1,4 +1,4 @@
-VERSION=2.1.10
+VERSION=2.2.0
 URL=http://download.zeromq.org/zeromq-$(VERSION).tar.gz
 TARBALL=$(shell basename $(URL))
 WORKDIR=zeromq-$(VERSION)
@@ -10,9 +10,9 @@ CFLAGS=-I$(PREFIX)/include
 LDFLAGS=-L$(PREFIX)/lib 
 CXXFLAGS=-I$(PREFIX)/include
 
-configure: dependencies
-dependencies: $(PREFIX)/lib/libuuid.so
-dependencies: $(PREFIX)/include/uuid/uuid.h
+#configure: dependencies
+#dependencies: $(PREFIX)/lib/libuuid.so
+#dependencies: $(PREFIX)/include/uuid/uuid.h
 
 configure: | $(WORKDIR)/Makefile
 $(WORKDIR)/Makefile: | $(WORKDIR) 
