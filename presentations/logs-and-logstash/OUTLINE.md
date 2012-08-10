@@ -1,31 +1,34 @@
 # About Logstash
+
 ## Goals
+
 ## History
+
 ## Users and Community
 
 # Logging, in General
 
 ## Types of Logs
 
-  * trace and debugging
-  * accounting
-  * transaction
+* trace and debugging
+* accounting
+* transaction
 
 ## Emitting
 
-  * Application
+* Application
 
 ## Transport
 
-  * Network
+* Network
 
 ## Analytics
 
-  * CPU
+* CPU
 
 ## Retention
 
-  * Storage
+* Storage
 
 # Specific Problems
 

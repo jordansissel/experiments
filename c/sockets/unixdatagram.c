@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
    }
    printf("client addr type, len: %d, %d\n", client->sa_family, client_addr_len);
    printf("Got: '%.*s\n", len, buf);
+   perror("recvfrom");
    close(fd);
    unlink(addr.sun_path);
 }
