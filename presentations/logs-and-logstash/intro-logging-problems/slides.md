@@ -17,9 +17,9 @@
 !SLIDE transition=fade incremental
 # Problem: Unstructured Data
 
-* We don't know how to read the logs.
-* All logs have different unstructuredness
-* Machines can't read the logs.
+* Humans can't read logs quickly.
+* Computers can't process unknown formats well.
+* All logs have different and poor unstructuredness.
 
 !SLIDE transition=fade incremental
 # Problem: Unstructured Data
