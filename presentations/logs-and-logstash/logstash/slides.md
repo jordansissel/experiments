@@ -38,7 +38,8 @@ inputs | filters | outputs
 
 * filters let you modify/drop events
 * 18 filter plugins today.
-* date parsing, text parsing, anonymization, etc
+* date parsing, text parsing, anonymization
+* multiline merging, etc
 
 !SLIDE transition=fade incremental
 # logstash agent - outputs
