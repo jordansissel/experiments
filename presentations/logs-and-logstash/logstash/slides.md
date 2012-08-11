@@ -1,48 +1,57 @@
 !SLIDE transition=fade
-# logstash
+
+![logstash](/image/logstash.png)
+
+So how does logstash fit in?
 
 .notes TODO
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
+# Goals
 
-# Technology
-
+* Tooling for managing log lifecycle
 * Take events.
 * Massage them.
 * Put them somewhere else.
 * Don't be annoying.
 
-!SLIDE transition=fade
-# Community
+!SLIDE transition=fade incremental
+# logstash agent
 
-* Everyone can contribute
-* Focus on reducing cost-to-implement
-* Apache 2.0 license
+inputs | filters | outputs
 
-!SLIDE transition=fade
-# Strong History and Future
+!SLIDE transition=fade incremental
+# logstash agent
 
-* project is roughly 3 years old
-* backwards compatibility promise
-* rapidly growing community
+* move logs
+* process logs
 
-!SLIDE transition=fade
-# Community Involvement
+!SLIDE transition=fade incremental
+# logstash agent - inputs
 
-* 80 authors in git
-* 150 folks on IRC
-* 250 users on Jira
-* 430 folks on logstash-users
+* inputs are sources of events.
+* 23 input plugins today.
+* files, syslog, log4j, xmpp, irc, etc
+ 
+!SLIDE transition=fade incremental
+# logstash agent - filters
 
-!SLIDE transition=fade
-# Community
+* filters let you modify/drop events
+* 18 filter plugins today.
+* date parsing, text parsing, anonymization, etc
 
-* kibana (web/analytics ui)
-* logstash-cli
+!SLIDE transition=fade incremental
+# logstash agent - outputs
 
-!SLIDE transition=fade
-# Users
+* outputs let you send events outside the agent
+* 40 output plugins today.
+* storage, graphing systems, monitoring systems, transportation
 
-* 2000 deployments
-* Many with > 10,000 events/sec
-* Many with > 1TB/day
+!SLIDE transition=fade incremental
+# logstash agent - common example
+
+* file input (log files)
+* grok filter (parse structure out of plain text logs)
+* elasticsearch output (for search/analytics)
+* graphite output (for trending/graphing of metrics in logs)
+* nagios output (for alerting on log errors)

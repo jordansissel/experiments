@@ -196,12 +196,59 @@ Hero dependency locks you in :(
 * Collation is difficult
 * Shared tooling is nonexistant
 
-!SLIDE transition=fade
-# Timestamps
+!SLIDE transition=fade bullets incremental
 
-TBD
+. A tangent on time formats.
 
-!SLIDE transition=fade
-# "multiline events"
+* STOP
+* INVENTING
+* TIME
+* FORMATS
 
-TBD
+!SLIDE transition=fade bullets incremental
+# What time is it?
+
+.notes So many bad time formats. What are these, and what is wrong with them?
+
+* 130460505
+* Oct 11 20:21:47
+* [29/Apr/2011:07:05:26 +0000]
+* 020805 13:51:24
+* 110429.071055,118
+
+!SLIDE transition=fade incremental
+# Standards
+
+.notes ISO8601 is a huge specification, luckily RFC3339 and xs:dateTime are more practical subsets.
+
+* ISO8601, RFC3339, xs:dateTime
+* 2012-05-01T10:15:33.144523-0500
+* 2012-06-05T17:06:39.144Z
+* 2012-07-00T16:20:03Z
+
+!SLIDE transition=fade full-screen
+# multiline events
+
+"one line in a file is on event"
+
+except when it's not.
+
+!SLIDE transition=fade full-screen
+# multiline events
+
+<pre style="font-size: 2em">
+org.omg.CORBA.MARSHAL: com.ibm.ws.pmi.server.DataDescriptor; IllegalAccessException  minor code: 4942F23E  completed: No  
+         at com.ibm.rmi.io.ValueHandlerImpl.readValue(ValueHandlerImpl.java:199)  
+         at com.ibm.rmi.iiop.CDRInputStream.read_value(CDRInputStream.java:1429)  
+         at com.ibm.rmi.io.ValueHandlerImpl.read_Array(ValueHandlerImpl.java:625)  
+         at com.ibm.rmi.io.ValueHandlerImpl.readValueInternal(ValueHandlerImpl.java:273)  
+         at com.ibm.rmi.io.ValueHandlerImpl.readValue(ValueHandlerImpl.java:189)  
+         at com.ibm.rmi.iiop.CDRInputStream.read_value(CDRInputStream.java:1429)  
+         at com.ibm.ejs.sm.beans._EJSRemoteStatelessPmiService_Tie._invoke(_EJSRemoteStatelessPmiService_Tie.java:613)  
+         at com.ibm.CORBA.iiop.ExtendedServerDelegate.dispatch(ExtendedServerDelegate.java:515)  
+         at com.ibm.CORBA.iiop.ORB.process(ORB.java:2377)   
+         at com.ibm.CORBA.iiop.OrbWorker.run(OrbWorker.java:186)  
+         at com.ibm.ejs.oa.pool.ThreadPool$PooledWorker.run(ThreadPool.java:104)  
+         at com.ibm.ws.util.CachedThread.run(ThreadPool.java:137)
+</pre>
+

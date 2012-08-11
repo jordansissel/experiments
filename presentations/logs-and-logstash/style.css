@@ -12,3 +12,9 @@
   background-repeat: no-repeat;
   background-position: right bottom;
 }
+
+.mascot {
+  height: 50%;
+  background-image: url("/image/logstash.png");
+  background-repeat: no-repeat;
+}

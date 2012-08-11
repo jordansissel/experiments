@@ -3,9 +3,10 @@
   "sections": [ 
     { "section": "title" },
     { "section": "intro-logging-problems" },
+    { "section": "terminology" },
     { "section": "life-of-a-log" },
     { "section": "logstash" },
-    { "section": "terminology" },
-    { "section": "use-cases" }
+    { "section": "use-cases" },
+    { "section": "logstash-about" }
   ]
 }

@@ -1,23 +1,32 @@
 !SLIDE transition=fade
 # life of a log
 
-!SLIDE transition=fade
-## Emitting
-
-* Application
+Four main phases
 
 !SLIDE transition=fade
-## Transport
+# Emitting
 
-* Network
-
-!SLIDE transition=fade
-## Analytics
-
-* CPU
+* Application records something.
+* `logger.error("mysql is busted, yo!")`
 
 !SLIDE transition=fade
-## Retention
+# Transport
 
-* Storage
+* Ship application logs somewhere
+* Possibly anonymize them in transit.
+* syslog, scribe, flume, etc
+
+!SLIDE transition=fade
+# Analytics
+
+* Search and Analysis
+* Tools: Hadoop, ElasticSearch, Graphite, etc
+
+!SLIDE transition=fade
+# Storage
+
+* HDFS, S3, Sherpa, etc.
+* How much can you store?
+* How much do you need to store?
+
 
