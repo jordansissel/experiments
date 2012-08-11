@@ -1,6 +1,14 @@
 #preso {
 }
+
 .slide, #preso {
   background-color: black;
   color: #F6FFA3;
+}
+
+/* Make first slide have the logstash mascot */
+.slide:nth-child(1) {
+  background-image: url("/image/logstash.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
 }

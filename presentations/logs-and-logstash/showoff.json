@@ -1,5 +1,11 @@
-{ "name": "My Preso", "sections": [ 
-  { "section": "logstash" },
-  { "section": "terminology" }
+{ 
+  "name": "logs and logstash", 
+  "sections": [ 
+    { "section": "title" },
+    { "section": "intro-logging-problems" },
+    { "section": "life-of-a-log" },
+    { "section": "logstash" },
+    { "section": "terminology" },
+    { "section": "use-cases" }
   ]
 }
