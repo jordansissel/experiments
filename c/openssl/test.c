@@ -99,8 +99,13 @@ int main(int argc, char **argv) {
     break;
   }
   char foo[] = "GET / HTTP/1.1\r\nHost: google.com\r\n\r\n";
+  
+  /* Many openssl examples use BIO wrappings of SSL instances, meh, I just go
+   * direct. Using BIO methods instead is useful if you want want to have
+   * configurable code use or not use SSL encryption */
 
   SSL_write(ssl, foo, strlen(foo));
+  BIO_new
   char buf[1024];
   int bytes;
   bytes = SSL_read(ssl, buf, 1024);
