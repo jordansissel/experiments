@@ -1,7 +1,7 @@
 !SLIDE transition=fade
 # life of a log
 
-Four main phases
+emit | transport | analyze | store
 
 !SLIDE transition=fade
 # Emitting

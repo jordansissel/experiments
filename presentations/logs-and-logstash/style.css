@@ -18,3 +18,11 @@
   background-image: url("/image/logstash.png");
   background-repeat: no-repeat;
 }
+
+pre {
+  word-wrap: break-word;
+}
+
+.smallpre pre {
+  font-size: 250%;
+}

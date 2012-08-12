@@ -6,6 +6,7 @@
     { "section": "terminology" },
     { "section": "life-of-a-log" },
     { "section": "logstash" },
+    { "section": "grok" },
     { "section": "use-cases" },
     { "section": "logstash-about" }
   ]

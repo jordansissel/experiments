@@ -1,7 +1,7 @@
 !SLIDE transition=fade
 # about logstash
 
-as a an open source project
+as an open source project
 
 !SLIDE transition=fade
 # Community
@@ -21,12 +21,12 @@ as a an open source project
 # Community Involvement
 
 * 80 authors in git
-* 150 folks on IRC
-* 250 users on Jira
-* 430 folks on logstash-users
+* 150 folks in IRC
+* 250 users in Jira
+* 430 folks in logstash-users
 
 !SLIDE transition=fade
-# Community
+# Community Projects
 
 * kibana (web/analytics ui)
 * logstash-cli
@@ -34,6 +34,6 @@ as a an open source project
 !SLIDE transition=fade
 # Users
 
-* 2000 deployments
+* 2000+ deployments
 * Many with > 10,000 events/sec
 * Many with > 1TB/day

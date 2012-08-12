@@ -31,8 +31,20 @@
 * `logger.info("Error opening %s" % path)`
 * `System.out.println("Something went wrong")`
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
+
+.notes Searching for the string 200 in apache logs will get you many false positives.
+
+    # Search for response code 200
+    % grep 200 access.log
+    184.105.200.34 - - [28/Apr/2012:22:38:38 -0200] "GET /posts/2001/04/3/foo.html HTTP/1.1" 200 276 "-" "Mozilla/5.0 (SuperAdBar 1.420014a)"
+
+!SLIDE transition=fade smallpre
 # Solution: Structured Logs
+
+.notes This is much better. A non-expert could almost read this. It's queryable
+with simple tools, and you don't have to write any hard-to-maintain regular
+expressions.
 
     { 
       "client address": "184.105.173.34",
@@ -45,6 +57,16 @@
       "referrer": null
       "user agent": "LexxeBot/1.0"
     } 
+
+!SLIDE transition=fade incremental
+# Solution: Structured Logs
+
+* JSON
+* Avro
+* Protocol Buffers
+* Thrift
+* msgpack
+* Roll your own
 
 !SLIDE transition=fade 
 # Too Much Data
@@ -183,7 +205,9 @@ Isn't this better than reading raw logs?
 # Accessibility sucks 
 
 * Developer Bob wants access to the logs.
-* "Get off my lawn!" -You
+* "Get off my lawn!" -Ops
+* "Log access" means "Server access" - decouple it!
+* Ship logs away from edge/application servers
 
 !SLIDE transition=fade bullets incremental
 # Expertise Necessary 
@@ -207,6 +231,8 @@ You'll be a hero.
 ![PERL!](xkcd-perlswing-many.png)
 
 Hero culture means you can't go on vacation.
+
+Now you're a human keyboard.
 
 !SLIDE transition=fade incremental
 # Too Many Formats 

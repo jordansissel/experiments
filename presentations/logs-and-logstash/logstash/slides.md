@@ -49,10 +49,17 @@ inputs | filters | outputs
 * storage, graphing systems, monitoring systems, transportation
 
 !SLIDE transition=fade incremental
-# logstash agent - common example
+# common example
 
-* file input (log files)
-* grok filter (parse structure out of plain text logs)
-* elasticsearch output (for search/analytics)
-* graphite output (for trending/graphing of metrics in logs)
-* nagios output (for alerting on log errors)
+* /var/log/*.log (file input)
+* grok filter (parse said logs)
+* elasticsearch output (for storage/search/analytics)
+* graphite output (for metrics/trending)
+
+!SLIDE transition=fade incremental
+# common case
+
+* emit logs to a local file
+* logstash slurps them up
+* ships to elasticsearch
+* search/analytics with elasticsearch
