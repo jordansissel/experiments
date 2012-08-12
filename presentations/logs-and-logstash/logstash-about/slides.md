@@ -3,10 +3,17 @@
 
 as an open source project
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
+# Project Rules
+
+* If a newbie has a bad time, it's a bug. Period.
+* If it seems awkward, it probably is.
+* If it's not possible, we can make it possible.
+* All contributions are good contributions.
+
+!SLIDE transition=fade incremental
 # Community
 
-* Everyone can contribute
 * Focus on reducing cost-to-implement
 * Apache 2.0 license
 
@@ -37,3 +44,12 @@ as an open source project
 * 2000+ deployments
 * Many with > 10,000 events/sec
 * Many with > 1TB/day
+
+!SLIDE transition=fade
+# Community Support
+
+* Site: <http://logstash.net>
+* IRC: #logstash on freenode
+* Email: logstash-users@googlegroups.com
+* Tickets: <http://logstash.jira.com>
+* Code: <https://github.com/logstash/logstash>

@@ -7,13 +7,18 @@ So how does logstash fit in?
 .notes TODO
 
 !SLIDE transition=fade incremental
-# Goals
+# Goals: Log Life Cycle
 
-* Tooling for managing log lifecycle
 * Take events.
 * Massage them.
 * Put them somewhere else.
-* Don't be annoying.
+
+!SLIDE transition=fade incremental
+# Goals: User Experience
+
+* Fit your infrastructure
+* Be extentable
+* Be well documented
 
 !SLIDE transition=fade incremental
 # logstash agent
@@ -53,8 +58,16 @@ inputs | filters | outputs
 
 * /var/log/*.log (file input)
 * grok filter (parse said logs)
+* date filter (normalize the date)
 * elasticsearch output (for storage/search/analytics)
-* graphite output (for metrics/trending)
+
+!SLIDE transition=fade center fullwidth
+![single node example](single-host-example.png)
+## one agent, one server
+
+!SLIDE transition=fade center fullwidth
+![multi node example](multi-host-example.png)
+## many nodes, tiered deployment
 
 !SLIDE transition=fade incremental
 # common case
@@ -63,3 +76,16 @@ inputs | filters | outputs
 * logstash slurps them up
 * ships to elasticsearch
 * search/analytics with elasticsearch
+
+!SLIDE transition=fade incremental
+# logstash agent - transport
+
+* A few plugins are for transporting logs
+* redis, amqp, stomp, tcp, zeromq, jabber, irc, syslog
+* This lets you pipe two remote logstash agents together
+
+!SLIDE transition=fade incremental
+# logstash analytics 
+
+TBD: kibana screenshots
+

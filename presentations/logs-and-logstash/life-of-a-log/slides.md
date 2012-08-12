@@ -14,13 +14,13 @@ emit | transport | analyze | store
 
 * Ship application logs somewhere
 * Possibly anonymize them in transit.
-* syslog, scribe, flume, etc
+* logstash, syslog, scribe, flume, etc
 
 !SLIDE transition=fade
 # Analytics
 
 * Search and Analysis
-* Tools: Hadoop, ElasticSearch, Graphite, etc
+* Tools: logstash, Hadoop, ElasticSearch, Graphite
 
 !SLIDE transition=fade
 # Storage
@@ -28,5 +28,6 @@ emit | transport | analyze | store
 * HDFS, S3, Sherpa, etc.
 * How much can you store?
 * How much do you need to store?
+* What's your retention policy?
 
 

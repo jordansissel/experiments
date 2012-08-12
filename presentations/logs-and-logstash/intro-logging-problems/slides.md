@@ -210,11 +210,11 @@ Isn't this better than reading raw logs?
 * Ship logs away from edge/application servers
 
 !SLIDE transition=fade bullets incremental
-# Expertise Necessary 
+# Knowledge Gap
 
-* Knowing what question to ask
+* What question to ask?
 * vs
-* Knowing how to answer the question
+* How to answer the question?
 
 !SLIDE transition=fade center
 
@@ -223,6 +223,8 @@ Isn't this better than reading raw logs?
 ![PERL!](xkcd.png)
 
 You'll be a hero.
+
+_xkcd #208_
 
 !SLIDE transition=fade center
 
@@ -290,7 +292,7 @@ seriously.
 
 * _except when it's not_
 
-!SLIDE transition=fade full-screen
+!SLIDE transition=fade full-screen nowrap
 # one event
 
 <pre style="font-size: 2em">
@@ -310,3 +312,18 @@ org.omg.CORBA.MARSHAL: com.ibm.ws.pmi.server.DataDescriptor; IllegalAccessExcept
 </pre>
 
 _(logstash solves this one easy)_
+
+!SLIDE transition=fade incremental
+# 'log reference guides'
+
+* NetScreen Log Guide: 170 pages
+* FortiGate Log Guide: 80 pages
+* SonicOS Log Guide: 122 pages
+* ProCurve Log Guide: 56 pages
+
+
+!SLIDE transition=fade incremental
+# 'log reference guides'
+
+* Probability these guides are accurate: 0%
+* Reinforces antipattern of reading each event by a human.

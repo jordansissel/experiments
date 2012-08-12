@@ -23,6 +23,17 @@ pre {
   word-wrap: break-word;
 }
 
+.nowrap pre {
+  word-wrap: normal;
+  white-space: pre;
+}
+
+
 .smallpre pre {
   font-size: 250%;
+}
+
+
+.fullwidth img {
+  width: 100%;
 }

@@ -52,6 +52,30 @@ why do developers keep writing crappy log formats?
 * It's easy to add new ones.
 
 !SLIDE transition=fade incremental
-# grok : apache
+# grok discovery
 
+Logs -> Patterns for those logs
 
+!SLIDE transition=fade incremental
+# grok discovery
+
+* Apr 20 00:53:46 rickastley roll: Never gonna give you up.
+* %{SYSLOGBASE}\Q Never gonna give you up.\E
+
+!SLIDE transition=fade incremental
+
+%{SYSLOGBASE}\Q Never gonna give you up.\E
+
+<pre style="word-wrap: break-word; font-size: 2em">
+\Q\E(?<0000>(?<0001>(?<0002>\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?<0003>(?:3[01]|[1-2]?[0-9]|0?[1-9])) (?<0004>(?!<[0-9])(?<0005>(?:2[0123]|[01][0-9])):(?<0006>(?:[0-5][0-9]))(?::(?<0007>(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?:(?<0008><(?<0009>\b(?:[0-9]+)\b).(?<000a>\b(?:[0-9]+)\b)>) )?(?<000b>(?<000c>(?:(?<000d>\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?<000e>(?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9]))))) (?<000f>(?<0010>(?:[\w._/-]+))(?:\[(?<0011>\b(?:[0-9]+)\b)\])?):)\Q Never gonna give you up.\E
+</pre>
+
+!SLIDE transition=fade incremental
+
+input:
+
+* Aug 23 12:04:33 "hello world" 123.4.3.5 something something woo!
+
+output:
+
+* `%{SYSLOGTIMESTAMP} %{QS} %{IP} something something woo!`
