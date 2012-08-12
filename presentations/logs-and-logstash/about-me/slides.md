@@ -1,8 +1,8 @@
 !SLIDE transition=fade  
 # who am i?
 
-* sysadmin
-* coder
+* sysadmin + coder
+* hate driven development
 * dad
 * beer and rum!
 
@@ -10,6 +10,7 @@
 ![tequila face](tequila-face.jpg)
 
 no tequila plz
+
 
 !SLIDE transition=fade
 # other fun projects
