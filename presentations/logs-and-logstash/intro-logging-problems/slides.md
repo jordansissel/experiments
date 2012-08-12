@@ -4,8 +4,10 @@
 !SLIDE transition=fade incremental
 # Problem: Unknown Value
 
-* We don't know what's in the logs.
-* Should we care what's in the logs?
+* Where are the logs?
+* We don't know what's in them.
+* Should we care what's in them?
+* Does anyone care about them?
 
 !SLIDE transition=fade incremental
 # Symptom: Unknown Value
@@ -20,6 +22,8 @@
 * Humans can't read logs quickly.
 * Computers can't process unknown formats well.
 * All logs have different and poor unstructuredness.
+
+(logstash helps you solve this)
 
 !SLIDE transition=fade incremental
 # Problem: Unstructured Data
@@ -175,26 +179,48 @@
 
 Isn't this better than reading raw logs?
 
-!SLIDE transition=fade
-# Accessibility sucks
+!SLIDE transition=fade incremental
+# Accessibility sucks 
+
+* Developer Bob wants access to the logs.
+* "Get off my lawn!" -You
+
+!SLIDE transition=fade bullets incremental
+# Expertise Necessary 
+
+* Knowing what question to ask
+* vs
+* Knowing how to answer the question
 
 !SLIDE transition=fade center
+
+.notes Two folks know what question they want answered, but they don't know how to answer it. You know how to answer it with some perl! Fixed, right?
 
 ![PERL!](xkcd.png)
 
-You can be a hero!
+You'll be a hero.
 
 !SLIDE transition=fade center
 
+.notes Except now, any time those two folks want questions answered, they'll ask you.
+
 ![PERL!](xkcd-perlswing-many.png)
 
-Hero dependency locks you in :(
+Hero culture means you can't go on vacation.
 
 !SLIDE transition=fade incremental
 # Too Many Formats 
 
 * Collation is difficult
 * Shared tooling is nonexistant
+
+!SLIDE transition=fade incremental
+# Example: LAMP
+
+* Linux system processes writing unstructured logs to syslog.
+* Apache has 2 log files (both different).
+* Mysql has 5 log files (all different). WTF.
+* PHP's logs go where, apache's error log?
 
 !SLIDE transition=fade bullets incremental
 
@@ -204,6 +230,11 @@ Hero dependency locks you in :(
 * INVENTING
 * TIME
 * FORMATS
+
+!SLIDE transition=fade center
+![angry jordan](RageFace.png)
+
+seriously.
 
 !SLIDE transition=fade bullets incremental
 # What time is it?
@@ -226,15 +257,15 @@ Hero dependency locks you in :(
 * 2012-06-05T17:06:39.144Z
 * 2012-07-00T16:20:03Z
 
-!SLIDE transition=fade full-screen
+!SLIDE transition=fade bullets incremental
 # multiline events
 
-"one line in a file is on event"
+* "one line in a file is one event"
 
-except when it's not.
+* _except when it's not_
 
 !SLIDE transition=fade full-screen
-# multiline events
+# one event
 
 <pre style="font-size: 2em">
 org.omg.CORBA.MARSHAL: com.ibm.ws.pmi.server.DataDescriptor; IllegalAccessException  minor code: 4942F23E  completed: No  
@@ -252,3 +283,4 @@ org.omg.CORBA.MARSHAL: com.ibm.ws.pmi.server.DataDescriptor; IllegalAccessExcept
          at com.ibm.ws.util.CachedThread.run(ThreadPool.java:137)
 </pre>
 
+_(logstash solves this one easy)_
