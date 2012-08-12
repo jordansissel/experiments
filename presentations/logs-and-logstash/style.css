@@ -37,3 +37,7 @@ pre {
 .fullwidth img {
   width: 100%;
 }
+
+.slide a {
+  color: inherit;
+}

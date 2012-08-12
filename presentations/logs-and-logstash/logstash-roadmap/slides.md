@@ -6,14 +6,19 @@
 
 !SLIDE transition=fade center
 # improve kibana
+![kibana](kibana.png)
 
 !SLIDE transition=fade center
 # vxin
 ![vxin](elasticsearch-logstash-piesnacking.png)
 
-!SLIDE transition=fade incremental
-# cost of operation
+(general purpose analytics/visualization)
 
 !SLIDE transition=fade incremental
-# release frequency
+# reduce cost of operation
+
+!SLIDE transition=fade incremental
+# increase release frequency
+
+(while keeping quality high)
 
