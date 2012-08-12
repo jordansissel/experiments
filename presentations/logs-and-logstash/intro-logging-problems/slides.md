@@ -210,7 +210,9 @@ Isn't this better than reading raw logs?
 * Ship logs away from edge/application servers
 
 !SLIDE transition=fade bullets incremental
-# Knowledge Gap
+# Impulse Gap
+
+"I know what I want, but I don't know how to get there"
 
 * What question to ask?
 * vs
