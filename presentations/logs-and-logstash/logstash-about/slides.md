@@ -17,12 +17,19 @@ as an open source project
 * Focus on reducing cost-to-implement
 * Apache 2.0 license
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Strong History and Future
 
 * project is roughly 3 years old
-* backwards compatibility promise
 * rapidly growing community
+* backwards compatibility promise
+
+!SLIDE transition=fade incremental
+# Strong History and Future
+
+* has roughly 1 person-year of time invested
+* replaced many silly expensive commercial tools
+* I am working full-time on the project now.
 
 !SLIDE transition=fade
 # Community Involvement

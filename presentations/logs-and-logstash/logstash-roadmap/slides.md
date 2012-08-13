@@ -17,6 +17,9 @@
 !SLIDE transition=fade incremental
 # reduce cost of operation
 
+* lumberjack (light log agent)
+* improve storage in elasticsearch
+
 !SLIDE transition=fade incremental
 # increase release frequency
 
