@@ -5,13 +5,13 @@ what is a log?
 
 .notes TODO
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Event == Log
 
 * Timestamp
 * Data
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Types of Logs
 
 * Trace, debug
@@ -20,7 +20,7 @@ what is a log?
 
 Differences are usually in target audience.
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Trace Logs
 
 * `printf("Opening file: %s\n", file)`
@@ -28,14 +28,14 @@ Differences are usually in target audience.
 * Stack traces
 * Core dumps
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Trace Logs
 
 * Audience: The author talking to herself.
 * Structured: Unlikely.
 * Often for used debugging a system
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Transaction Logs
 
 * mysql binlog
@@ -43,13 +43,13 @@ Differences are usually in target audience.
 * hadoop editlog
 * tcpdump pcap files
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Transaction Logs
 
 * Audience: The software talking to itself.
 * Structured: Yes.
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Accounting Logs
 
 * ad server click logs
@@ -57,14 +57,14 @@ Differences are usually in target audience.
 * customer logins
 * unix utmp
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Accounting Logs
 
 * Audience: Computers and Humans
 * Structured: Usually
 * Often for business/monitoring purposes.
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Types of Logs
 
 .notes So with logs, there's usually someone writing the event and someone
@@ -78,7 +78,7 @@ to describe logs by purpose.
 
 Where is operations?
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Structured vs Unstructured
 
 * Structured: Designed for machine consumption 

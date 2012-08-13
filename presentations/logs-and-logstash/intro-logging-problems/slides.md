@@ -1,7 +1,7 @@
 !SLIDE transition=fade
 # logging problems
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Problem: Unknown Value
 
 * Where are the logs?
@@ -9,14 +9,14 @@
 * Should we care what's in them?
 * Does anyone care about them?
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Symptom: Unknown Value
 
 * Keep logs, they might be useful, right?
 * 3AM on a Saturday, logs fill up your disks.
 * Add logrotate, right?
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Problem: Unstructured Data
 
 * Humans can't read logs quickly.
@@ -25,13 +25,13 @@
 
 (logstash helps you solve this)
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Problem: Unstructured Data
 
 * `logger.info("Error opening %s" % path)`
 * `System.out.println("Something went wrong")`
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 
 .notes Searching for the string 200 in apache logs will get you many false positives.
 
@@ -59,7 +59,7 @@ expressions.
       "user agent": "LexxeBot/1.0"
     } 
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Solution: Structured Logs
 
 * JSON
@@ -202,7 +202,7 @@ expressions.
 
 Isn't this better than reading raw logs?
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Accessibility sucks 
 
 * Developer Bob wants access to the logs.
@@ -210,7 +210,7 @@ Isn't this better than reading raw logs?
 * "Log access" means "Server access" - decouple it!
 * Ship logs away from edge/application servers
 
-!SLIDE transition=fade bullets incremental
+!SLIDE transition=fade bullets 
 # Impulse Gap
 
 "I know what I want, but I don't know how to get there"
@@ -239,13 +239,13 @@ Hero culture means you can't go on vacation.
 
 Now you're a human keyboard.
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Too Many Formats 
 
 * Collation is difficult
 * Shared tooling is nonexistant
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Example: LAMP
 
 * Linux system processes writing unstructured logs to syslog.
@@ -253,7 +253,7 @@ Now you're a human keyboard.
 * Mysql has 5 log files (all different). WTF.
 * PHP's logs go where, apache's error log?
 
-!SLIDE transition=fade bullets incremental
+!SLIDE transition=fade bullets 
 
 . A tangent on time formats.
 
@@ -267,7 +267,7 @@ Now you're a human keyboard.
 
 seriously.
 
-!SLIDE transition=fade bullets incremental
+!SLIDE transition=fade bullets 
 # What time is it?
 
 .notes So many bad time formats. What are these, and what is wrong with them?
@@ -278,7 +278,7 @@ seriously.
 * 020805 13:51:24
 * 110429.071055,118
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Standards
 
 .notes ISO8601 is a huge specification, luckily RFC3339 and xs:dateTime are more practical subsets.
@@ -288,7 +288,7 @@ seriously.
 * 2012-06-05T17:06:39.144Z
 * 2012-07-00T16:20:03Z
 
-!SLIDE transition=fade bullets incremental
+!SLIDE transition=fade bullets 
 # multiline events
 
 * "one line in a file is one event"
@@ -316,7 +316,7 @@ org.omg.CORBA.MARSHAL: com.ibm.ws.pmi.server.DataDescriptor; IllegalAccessExcept
 
 _(logstash solves this one easy)_
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # 'log reference guides'
 
 * NetScreen Log Guide: 170 pages
@@ -325,7 +325,7 @@ _(logstash solves this one easy)_
 * ProCurve Log Guide: 56 pages
 
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # 'log reference guides'
 
 * Probability these guides are accurate: 0%

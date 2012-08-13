@@ -3,7 +3,7 @@
 
 as an open source project
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Project Rules
 
 * If a newbie has a bad time, it's a bug. Period.
@@ -11,20 +11,20 @@ as an open source project
 * If it's not possible, we can make it possible.
 * All contributions are good contributions.
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Community
 
 * Focus on reducing cost-to-implement
 * Apache 2.0 license
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Strong History and Future
 
 * project is roughly 3 years old
 * rapidly growing community
 * backwards compatibility promise
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # Strong History and Future
 
 * has roughly 1 person-year of time invested

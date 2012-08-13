@@ -1,7 +1,7 @@
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # logstash roadmap
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # search and analytics
 
 !SLIDE transition=fade center
@@ -14,13 +14,13 @@
 
 (general purpose analytics/visualization)
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # reduce cost of operation
 
 * lumberjack (light log agent)
 * improve storage in elasticsearch
 
-!SLIDE transition=fade incremental
+!SLIDE transition=fade 
 # increase release frequency
 
 (while keeping quality high)
