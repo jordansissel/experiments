@@ -5,15 +5,13 @@ what is a log?
 
 .notes TODO
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Event == Log
 
 * Timestamp
 * Data
 
-That's it.
-
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Types of Logs
 
 * Trace, debug
@@ -22,7 +20,7 @@ That's it.
 
 Differences are usually in target audience.
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Trace Logs
 
 * `printf("Opening file: %s\n", file)`
@@ -30,14 +28,14 @@ Differences are usually in target audience.
 * Stack traces
 * Core dumps
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Trace Logs
 
 * Audience: The author talking to herself.
 * Structured: Unlikely.
 * Often for used debugging a system
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Transaction Logs
 
 * mysql binlog
@@ -45,13 +43,13 @@ Differences are usually in target audience.
 * hadoop editlog
 * tcpdump pcap files
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Transaction Logs
 
 * Audience: The software talking to itself.
 * Structured: Yes.
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Accounting Logs
 
 * ad server click logs
@@ -59,7 +57,7 @@ Differences are usually in target audience.
 * customer logins
 * unix utmp
 
-!SLIDE transition=fade
+!SLIDE transition=fade incremental
 # Accounting Logs
 
 * Audience: Computers and Humans

@@ -29,7 +29,7 @@ as an open source project
 
 * has roughly 1 person-year of time invested
 * replaced many silly expensive commercial tools
-* I am working full-time on the project now.
+* I am working full-time on it at DreamHost
 
 !SLIDE transition=fade
 # Community Involvement

@@ -37,6 +37,7 @@
 
     # Search for response code 200
     % grep 200 access.log
+
     184.105.200.34 - - [28/Apr/2012:22:38:38 -0200] "GET /posts/2001/04/3/foo.html HTTP/1.1" 200 276 "-" "Mozilla/5.0 (SuperAdBar 1.420014a)"
 
 !SLIDE transition=fade smallpre
