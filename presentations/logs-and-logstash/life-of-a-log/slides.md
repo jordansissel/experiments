@@ -20,7 +20,7 @@ emit | transport | analyze | store
 # Analytics
 
 * Search and Analysis
-* Tools: logstash, Hadoop, ElasticSearch, Graphite
+* Tools: logstash, graylog2, Hadoop, ELSA, ElasticSearch, Graphite
 
 !SLIDE transition=fade
 # Storage
