@@ -11,9 +11,9 @@ Constraints: Data loss is not acceptable (can't just stop storing the logs)
 Options:
 
 * Compression ([LZF](http://www.elasticsearch.org/blog/2012/06/25/0.19.5-released.html) and
-  [Snappy](http://www.elasticsearch.org/blog/2012/08/23/0.19.9-released.html)
+  [Snappy](http://www.elasticsearch.org/blog/2012/08/23/0.19.9-released.html))
 * Disable the ['_all' field](http://www.elasticsearch.org/guide/reference/mapping/all-field.html)
-* For well-parsed logs, remove the '@message' field.
+* For parsed logs, there are lots of duplicate and superluous fields we can remove.
 
 ## Discussion
 
@@ -109,6 +109,12 @@ run-time of these tests is of interest to you.
     <td> 1.58x </td>
     <td> 6m35.877s </td>
   </tr>
+  <tr>
+    <td> 6 </td>
+    <td> 344M     /data/jls/millionlogstest/6.yml </td>
+    <td> 1.57x </td>
+    <td> 6m27.440s </td>
+  </tr>
 </table>
 
 ## Conclusion
@@ -120,3 +126,24 @@ filter uses, for example grok.
 * Enabling store compression uses 55% less storage
 * Removing the @message and @source fields save you 26% of storage.
 * Disabling the '_all' field saves you 13% in storage.
+* Using grok with 'singles => true' had no meaningful impact.
+
+## Recommendations
+
+* Always enable compression in elasticsearch.
+* If you don't need the '_all' field, disable it.
+* The 'remove fields' steps performed here will be unnecessary if you log
+  directly in a structured format. For example, if you follow the ['apache log in
+  json'](http://cookbook.logstash.net/recipes/apache-json-logs/) logstash
+  cookbook recipe, grok, date, and mutate filters here will not be necessary, meaning
+  the only tuning you'll have to do is in disabling '_all' and enabling
+  compression in elasticsearch.
+
+
+## Future Work
+
+It's likely we can take this example of "ship apache 'combined format' access
+logs into logstash" a bit further and with some tuning improve storage a bit
+more.
+
+For now, I am happy to have reduced the inflation from 6.2x to 1.58x :)
