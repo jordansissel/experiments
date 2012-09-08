@@ -1,4 +1,4 @@
-path.data: data/3.yml
+path.data: /data/jls/millionlogstest/3.yml
 compress.default.type: snappy
 index.store.compress.stored: true
 index.store.compress.tv: true

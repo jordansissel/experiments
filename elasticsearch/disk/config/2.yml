@@ -1,3 +1,3 @@
-path.data: data/2.yml
+path.data: /data/jls/millionlogstest/2.yml
 index.store.compress.stored: true
 index.store.compress.tv: true
