@@ -82,7 +82,7 @@ run-time of these tests is of interest to you.
   <tr>
     <td> 1 </td>
     <td> 1183M    /data/jls/millionlogstest/1.yml </td>
-    <td> 5.47x </5d>
+    <td> 5.47x </td>
     <td> 6m13.339s </td>
   </tr>
   <tr>
