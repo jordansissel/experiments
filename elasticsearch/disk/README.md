@@ -65,7 +65,7 @@ run-time of these tests is of interest to you.
   </tr>
   <tr>
     <td> 4 </td>
-    <td> 395M    /data/jls/millionlogstest/3.yml </td>
+    <td> 395M    /data/jls/millionlogstest/4.yml </td>
     <td> 1.81x </td>
     <td> 6m39.278s </td>
   </tr>
