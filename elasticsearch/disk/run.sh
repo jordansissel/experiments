@@ -37,4 +37,6 @@ esac
 logstash="ruby --1.9 $HOME/projects/logstash/bin/logstash"
 time $logstash agent -f apache.logstash.conf
 
+curl -s http://localhost:9200/_flush
+curl -s http://localhost:9200/_optimize
 

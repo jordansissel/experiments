@@ -25,13 +25,18 @@ One million apache logs from semicomplete.com:
   </tr>
   <tr>
     <td> 0 </td>
-    <td> 878M    /data/jls/millionlogstest/0.yml </td>
-    <td> 6m19.436s </td>
+    <td> 1358M    /data/jls/millionlogstest/0.yml </td>
+    <td> 6m47.343s </td>
   </tr>
   <tr>
     <td> 1 </td>
-    <td> 867M    /data/jls/millionlogstest/1.yml </td>
-    <td> 6m19.375s </td>
+    <td> 1183M    /data/jls/millionlogstest/1.yml </td>
+    <td> 6m13.339s </td>
+  </tr>
+  <tr>
+    <td> 2 </td>
+    <td> 539M    /data/jls/millionlogstest/1.yml </td>
+    <td> 6m17.103s </td>
   </tr>
 </table>
 
