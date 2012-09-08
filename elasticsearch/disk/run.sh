@@ -5,7 +5,8 @@ if [ -z "$config" ] ; then
   echo "1: disable _all"
   echo "2: 1 + store compression = LZW "
   echo "3: 1 + store compression = Snappy"
-  echo "4: 3 + remove @message and @source (simulate 'apache logs in json')"
+  echo "4: 3 + remove @message and @source"
+  echo "5: 3 + remove all superfluous fields (simulate 'apache logs in json')"
 fi
 
 template() {
@@ -34,10 +35,11 @@ case $config in
     ;;
 esac
 
-logstashconf=apache.logstash.conf
-if [ $config -eq 4 ] ; then
-  logstashconf=apache-stripmsg.logstash.conf
-fi
+case $config in
+  4) logstashconf=apache-stripmsg.logstash.conf ;;
+  5) logstashconf=apache-strippointless.logstash.conf ;;
+  *) logstashconf=apache.logstash.conf ;;
+esac
 
 logstash="ruby --1.9 $HOME/projects/logstash/bin/logstash"
 time $logstash agent -f $logstashconf
