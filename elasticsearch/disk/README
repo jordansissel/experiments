@@ -1,0 +1,7 @@
+Test scenarios
+
+* 0.yml: test defaults
+* 1.yml: disable _all
+* 2.yml: store compress + disable _all
+* 3.yml: store compress w/ snappy + disable _all
+* 4.yml: remove @message (simulate 'apache logs in json')
