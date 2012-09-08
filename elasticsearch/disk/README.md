@@ -36,7 +36,9 @@ this saves us much duplicate data in the event itself.
 * 1: disable _all
 * 2: store compress + disable _all
 * 3: store compress w/ snappy + disable _all
-* 4: remove superfluous things (@message and @source) (simulate 'apache logs in json')
+* 4: compress + remove duplicate things (@message and @source) 
+* 5: compress + remove all superfluous things (simulate 'apache logs in json')
+* 6: compress + remove all superfluous things + use 'grok singles'
 
 ## Test data
 
@@ -100,6 +102,12 @@ run-time of these tests is of interest to you.
     <td> 395M    /data/jls/millionlogstest/4.yml </td>
     <td> 1.81x </td>
     <td> 6m39.278s </td>
+  </tr>
+  <tr>
+    <td> 5 </td>
+    <td> 346M    /data/jls/millionlogstest/5.yml </td>
+    <td> 1.58x </td>
+    <td> 6m35.877s </td>
   </tr>
 </table>
 

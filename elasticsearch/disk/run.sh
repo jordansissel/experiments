@@ -7,6 +7,7 @@ if [ -z "$config" ] ; then
   echo "3: 1 + store compression = Snappy"
   echo "4: 3 + remove @message and @source"
   echo "5: 3 + remove all superfluous fields (simulate 'apache logs in json')"
+  echo "6: 5 + grok { singles => true }"
 fi
 
 template() {
