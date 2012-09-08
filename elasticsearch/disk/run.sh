@@ -3,9 +3,9 @@ if [ -z "$config" ] ; then
   echo "Usage: $0 NUMBER"
   echo "0: test defaults"
   echo "1: disable _all"
-  echo "2: store compress + disable _all"
-  echo "3: store compress w/ snappy + disable _all"
-  echo "4: remove @message (simulate 'apache logs in json')"
+  echo "2: 1 + store compression = LZW "
+  echo "3: 1 + store compression = Snappy"
+  echo "4: 3 + remove @message and @source (simulate 'apache logs in json')"
 fi
 
 template() {
