@@ -9,26 +9,30 @@ if [ -z "$config" ] ; then
 fi
 
 template() {
-  curl -XPUT http://localhost:9200/_template/logtemplate -d "$1"
+  while ! curl -XPUT http://localhost:9200/_template/logtemplate -d "$1" ; do
+    echo "Waiting for ES to come up"
+    sleep 1
+  done
 }
+
+rm -rf /data/jls/millionlogstest/$config.yml/
+sh es.sh $config.yml&
+es_pid=$!
+trap "kill -TERM $es_pid" EXIT
 
 case $config in
   1|2|3|4) 
-    template ' {
-      "template": "logstash-*"
+    template '{
+      "template": "logstash-*",
       "settings": {
-        "number_of_shards": 5 ,
+        "number_of_shards": 5,
         "index.compress.stored": true,
-        "index.query.default_field": "@message",
+        "index.query.default_field": "@message"
       },
       "mappings": { "_default_": { "_all": { "enabled": false } } }
     }'
     ;;
 esac
-
-sh es.sh $config.yml&
-es_pid=$!
-trap "kill -TERM $es_pid" EXIT
 
 logstash="ruby --1.9 $HOME/projects/logstash/bin/logstash"
 time $logstash agent -f apache.logstash.conf
