@@ -36,8 +36,8 @@ run-time of these tests is of interest to you.
   <tr> 
     <td> ORIGIN </td>
     <td> 218M    /data/jls/million.apache.logs </td>
-    <td> </td>
-    <td> </td>
+    <td> N/A </td>
+    <td> N/A </td>
   </tr>
   <tr>
     <td> 0 </td>
