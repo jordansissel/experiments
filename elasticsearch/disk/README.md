@@ -28,6 +28,11 @@ One million apache logs from semicomplete.com:
     <td> 878M    /data/jls/millionlogstest/0.yml </td>
     <td> 6m19.436s </td>
   </tr>
+  <tr>
+    <td> 1 </td>
+    <td> 867M    /data/jls/millionlogstest/1.yml </td>
+    <td> 6m19.375s </td>
+  </tr>
 </table>
 
 # Environment
