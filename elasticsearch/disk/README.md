@@ -123,10 +123,15 @@ This test confirms what many logstash users have already reported: it is easy
 to achieve a 5-6x increase in storage from raw logs caused by common logstash
 filter uses, for example grok.
 
+Summary of test results:
+
 * Enabling store compression uses 55% less storage
 * Removing the @message and @source fields save you 26% of storage.
 * Disabling the '_all' field saves you 13% in storage.
 * Using grok with 'singles => true' had no meaningful impact.
+* Compression ratios in LZF were the same as Snappy.
+
+Final storage size was 25% the size of the common case (1358mb vs 344mb!)
 
 ## Recommendations
 
