@@ -22,7 +22,8 @@ es_pid=$!
 trap "kill -TERM $es_pid" EXIT
 
 case $config in
-  1|2|3|4) 
+  0) ;; # do nothing
+  *) 
     template '{
       "template": "logstash-*",
       "settings": {
@@ -38,6 +39,7 @@ esac
 case $config in
   4) logstashconf=apache-stripmsg.logstash.conf ;;
   5) logstashconf=apache-strippointless.logstash.conf ;;
+  6) logstashconf=apache-singles.logstash.conf ;;
   *) logstashconf=apache.logstash.conf ;;
 esac
 
