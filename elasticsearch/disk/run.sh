@@ -34,8 +34,13 @@ case $config in
     ;;
 esac
 
+logstashconf=apache.logstash.conf
+if [ $config -eq 4 ] ; then
+  logstashconf=apache-stripmsg.logstash.conf
+fi
+
 logstash="ruby --1.9 $HOME/projects/logstash/bin/logstash"
-time $logstash agent -f apache.logstash.conf
+time $logstash agent -f $logstashconf
 
 curl -s http://localhost:9200/_flush
 curl -s http://localhost:9200/_optimize

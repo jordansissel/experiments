@@ -4,7 +4,7 @@
 * 1: disable _all
 * 2: store compress + disable _all
 * 3: store compress w/ snappy + disable _all
-* 4: remove @message (simulate 'apache logs in json')
+* 4: remove superfluous things (@message and @source) (simulate 'apache logs in json')
 
 # Test data
 
