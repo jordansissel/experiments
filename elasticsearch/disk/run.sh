@@ -24,7 +24,7 @@ trap "kill -TERM $es_pid" EXIT
 
 case $config in
   0) ;; # do nothing
-  *) 
+  1|2|3|4|5|6) 
     template '{
       "template": "logstash-*",
       "settings": {
@@ -35,12 +35,36 @@ case $config in
       "mappings": { "_default_": { "_all": { "enabled": false } } }
     }'
     ;;
+  7)
+    template '{
+      "template": "logstash-*",
+      "settings": {
+        "number_of_shards": 5,
+        "number_of_replicas": 0,
+        "index.compress.stored": true,
+        "index.query.default_field": "@message"
+      },
+      "mappings": { 
+        "_default_": { 
+          "_all": { "enabled": false },
+          "@fields": { "type": "object", "dynamic": true, "path": "full" },
+          "@message" : { "type" : "string", "index" : "analyzed" },
+          "@source" : { "type" : "string", "index" : "not_analyzed" },
+          "@source_host" : { "type" : "string", "index" : "not_analyzed" },
+          "@source_path" : { "type" : "string", "index" : "not_analyzed" },
+          "@tags": { "type": "string", "index" : "not_analyzed" },
+          "@timestamp" : { "type" : "date", "index" : "not_analyzed" },
+          "@type" : { "type" : "string", "index" : "not_analyzed" }
+        } 
+      }
+    }'
 esac
 
 case $config in
   4) logstashconf=apache-stripmsg.logstash.conf ;;
   5) logstashconf=apache-strippointless.logstash.conf ;;
   6) logstashconf=apache-singles.logstash.conf ;;
+  7) logstashconf=apache-strippointless.logstash.conf ;;
   *) logstashconf=apache.logstash.conf ;;
 esac
 
