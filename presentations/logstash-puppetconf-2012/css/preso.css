@@ -1,0 +1,15 @@
+
+.reveal section img.plain {
+  background: none;
+  border: none;
+  
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.unreadable {
+  font-size: 0.3em !important;
+  overflow: hidden;
+}
+
