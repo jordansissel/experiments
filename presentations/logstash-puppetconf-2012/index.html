@@ -33,7 +33,7 @@
           </script>
 
           <!--<marquee behavior="alternate">-->
-            <img src="http://cookbook.logstash.net/img/logstash.png" class="plain">
+            <img src="images/logstash.png" class="plain">
             <!--</marquee>-->
         </section>
         
@@ -144,6 +144,8 @@
 
         <section>
           <h1> terminology </h1>
+          
+          (for the purpose of this discussion)
         </section>
 
         <section>
@@ -153,11 +155,149 @@
           <small> <a href="http://www.flickr.com/photos/susieblackmon/3389702050/">(photo by Susie Blackmon)</a> </small>
         </section>
 
-  <!-- Perhaps fill in things about logs? -->
+        <section>
+          <h2> what is a log? </h2>
+
+          A timestamp and some data.
+
+          <pre><code>
+Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
+( a timestamp ) ( some data that for that point in time )
+          </code></pre>
+        </section>
 
         <section>
           <h2> life of a log </h2>
+          <p> <img src="images/lifecycle.png" class="plain" width="700"> </p>
+          (as a real-time stream)
         </section>
+
+        <section>
+          <h2> tools </h2>
+          tbd.
+  <!-- FILL THIS IN -->
+  <!-- FILL THIS IN -->
+  <!-- FILL THIS IN -->
+  <!-- FILL THIS IN -->
+        </section>
+
+        <section>
+          <img src="images/logstash.png" class="plain">
+          <h3> how can logstash help? </h3>
+        </section>
+
+        <section>
+          <h2> demo: apache logs </h2>
+
+          <pre><code>217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:31 -0400] "GET /images/web/2009/banner.png HTTP/1.1" 200 52315 "http://www.semicomplete.com/style2.css" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/ HTTP/1.1" 200 4483 "http://news.ycombinator.com/item?id=4417660" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/bootstrap/css/bootstrap-responsive.min.css HTTP/1.1" 200 7680 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/style.css HTTP/1.1" 200 2715 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/jquery.ui.datepicker.css HTTP/1.1" 200 33035 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</code></pre>
+        </section>
+
+        <section>
+          <pre><code><focus>input {
+  file {
+    type => "web"
+    path => "/var/log/httpd/access.log"
+  }
+}</focus>
+
+filter {
+  grok {
+    type => "web"
+    pattern => "%{COMBINEDAPACHELOG}"
+  }
+  date {
+    type => "web"
+    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+  }
+}
+
+output {
+  elasticsearch { }
+}</code></pre>
+        </section>
+
+        <section>
+          <pre><code>input {
+  file {
+    type => "web"
+    path => "/var/log/httpd/access.log"
+  }
+}
+
+<focus>filter {
+  grok {
+    type => "web"
+    pattern => "%{COMBINEDAPACHELOG}"
+  }
+  date {
+    type => "web"
+    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+  }
+}</focus>
+
+output {
+  elasticsearch { }
+}</code></pre>
+        </section>
+
+        <section>
+          <pre><code>input {
+  file {
+    type => "web"
+    path => "/var/log/httpd/access.log"
+  }
+}
+
+filter {
+  grok {
+    type => "web"
+    pattern => "%{COMBINEDAPACHELOG}"
+  }
+  date {
+    type => "web"
+    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+  }
+}
+
+<focus>output {
+  elasticsearch { }
+}</focus></code></pre>
+        </section>
+
+        <section>
+          <h1> demo </h1>
+        </section>
+
+        <section>
+          <h2> demo recap </h2>
+
+          <ul>
+            <li> read events from a log file
+            <li> parse apache's bullshit default log format
+            <li> parse apache's bullshit time format
+            <li> push the event into elasticsearch
+            <li> search/analyze with kibana
+          </ul>
+        </section>
+
+        <section>
+          <h2> 23 inputs | 18 filters | 40 outputs </h2>
+          (easy to write your own, too)
+        </section>
+
+        <section>
+          <h2> what can logstash do? </h2>
+        </section>
+
+        <!-- 'what does this pattern match' / grok -->
+        <!-- time parsing -->
+        <!-- multiline merge -->
+        <!-- apache graph example -->
       </div>
 
       <!-- The navigational controls UI -->
@@ -202,22 +342,24 @@
           progress: true,
           history: true,
           
-          theme: query.theme || 'default', // default/neon/beige
-          transition: query.transition || 'default' // default/cube/page/concave/linear(2d)
+          theme: "default", // default/neon/beige
+          transition: "linear" 
         });
 
       } );
       
       // Load highlight.js for syntax highlighting of code samples
-      head.js( 'lib/js/highlight.js', function() { 
-        hljs.initHighlightingOnLoad(); 
-      } );
+      //head.js( 'lib/js/highlight.js', function() { 
+        //hljs.initHighlightingOnLoad(); 
+      //} );
 
       // If we're runnning the notes server we need to include some additional JS
       // TODO Is there a better way to determine if we're running the notes server?
       if( window.location.host === 'localhost:1947' ) {
         head.js( 'socket.io/socket.io.js', 'plugin/speakernotes/client.js' );
       }
+
+
     </script>
     
   </body>

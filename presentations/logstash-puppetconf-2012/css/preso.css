@@ -13,3 +13,13 @@
   overflow: hidden;
 }
 
+focus {
+  display: block;
+  margin: 0;
+  padding: 3px;
+  font-size: 1.3em;
+  background-color: #072;
+  font-weight: bold;
+  border: 3px solid green;
+  width: 100%;
+}
