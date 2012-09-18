@@ -23,3 +23,8 @@ focus {
   border: 3px solid green;
   width: 100%;
 }
+
+pre, code {
+  white-space: pre-wrap;
+  overflow: hidden;
+}
