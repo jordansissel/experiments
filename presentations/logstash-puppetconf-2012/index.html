@@ -26,15 +26,18 @@
     <div class="reveal">
       <div class="slides">
         <section>
+            <hr>
           <h1>a log of hope</h1>
           <script>
             // Delicously hacky. Look away.
             if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) ) document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
           </script>
 
-          <!--<marquee behavior="alternate">-->
-            <img src="images/logstash.png" class="plain">
-            <!--</marquee>-->
+          <img src="images/logstash.png" class="plain">
+
+          <hr>
+          <p style="width: 100%; text-align: right;">@jordansissel</span>
+          <p style="width: 100%; text-align: right;">DreamHost</span>
         </section>
         
         <section>
@@ -189,6 +192,10 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
         </section>
 
         <section>
+          logstash is open source, free, and awesome.
+        </section>
+
+        <section>
           <h2> demo: apache logs </h2>
 
           <pre><code>217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
@@ -202,19 +209,19 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
         <section>
           <pre><code><focus>input {
   file {
-    type => "web"
-    path => "/var/log/httpd/access.log"
+    type =&gt; "web"
+    path =&gt; "/var/log/httpd/access.log"
   }
 }</focus>
 
 filter {
   grok {
-    type => "web"
-    pattern => "%{COMBINEDAPACHELOG}"
+    type =&gt; "web"
+    pattern =&gt; "%{COMBINEDAPACHELOG}"
   }
   date {
-    type => "web"
-    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+    type =&gt; "web"
+    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
   }
 }
 
@@ -226,19 +233,19 @@ output {
         <section>
           <pre><code>input {
   file {
-    type => "web"
-    path => "/var/log/httpd/access.log"
+    type =&gt; "web"
+    path =&gt; "/var/log/httpd/access.log"
   }
 }
 
 <focus>filter {
   grok {
-    type => "web"
-    pattern => "%{COMBINEDAPACHELOG}"
+    type =&gt; "web"
+    pattern =&gt; "%{COMBINEDAPACHELOG}"
   }
   date {
-    type => "web"
-    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+    type =&gt; "web"
+    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
   }
 }</focus>
 
@@ -250,19 +257,19 @@ output {
         <section>
           <pre><code>input {
   file {
-    type => "web"
-    path => "/var/log/httpd/access.log"
+    type =&gt; "web"
+    path =&gt; "/var/log/httpd/access.log"
   }
 }
 
 filter {
   grok {
-    type => "web"
-    pattern => "%{COMBINEDAPACHELOG}"
+    type =&gt; "web"
+    pattern =&gt; "%{COMBINEDAPACHELOG}"
   }
   date {
-    type => "web"
-    timestamp => "dd/MMM/yyyy:HH:mm:ss Z"
+    type =&gt; "web"
+    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
   }
 }
 
@@ -288,19 +295,195 @@ filter {
         </section>
 
         <section>
+          <h2> what problems can we solve? </h2>
+        </section>
+
+        <section>
+          <h2> save you from regexp hell </h2>
+        </section>
+
+        <section>
+          <pre><code>(?&lt;a0&gt;(?&lt;a1&gt;(?&lt;a2&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?&lt;a3&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) (?&lt;a4&gt;(?!&lt;[0-9])(?&lt;a5&gt;(?:2[0123]|[01][0-9])):(?&lt;a6&gt;(?:[0-5][0-9]))(?::(?&lt;a7&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?&lt;a8&gt;(?:(?&lt;a9&gt;\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?&lt;a10&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (?&lt;a11&gt;(?&lt;a12&gt;(?:[\w._/%-]+))(?:\[(?&lt;a13&gt;\b(?:[1-9][0-9]*)\b)\])?): (?&lt;a14&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])):(?&lt;a15&gt;(?:[+-]?(?:[0-9]+))) \[(?&lt;a16&gt;(?&lt;a17&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))/(?&lt;a18&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b)/(?&lt;a19&gt;[0-9]+):(?&lt;a20&gt;(?!&lt;[0-9])(?&lt;a21&gt;(?:2[0123]|[01][0-9])):(?&lt;a22&gt;(?:[0-5][0-9]))(?::(?&lt;a23&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9])).(?&lt;a24&gt;(?:[+-]?(?:[0-9]+))))\] (?&lt;a25&gt;\S+) (?&lt;a26&gt;\S+)/(?&lt;a27&gt;\S+) (?&lt;a28&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a29&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a30&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a31&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a32&gt;\S+) (?&lt;a33&gt;(?:[+-]?(?:[0-9]+))) (?&lt;a34&gt;\S+) (?&lt;a35&gt;.*?) (?&lt;a36&gt;.*?) (?&lt;a37&gt;\S+) (?&lt;a38&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a39&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a40&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a41&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a42&gt;\S+) (?&lt;a43&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a44&gt;(?:[+-]?(?:[0-9]+))) \{(?&lt;a45&gt;(?&lt;a46&gt;.*?))\} \{(?&lt;a47&gt;(?&lt;a48&gt;.*?))\} "(?&lt;a49&gt;\b\w+\b) (?&lt;a50&gt;(?&lt;a51&gt;(?:/[A-Za-z0-9$.+!*'(){},~:;=#%_-]*)+)(?:(?&lt;a52&gt;\?[A-Za-z0-9$.+!*'(){},~#%&/=:;_-]*))?) HTTP/(?&lt;a53&gt;(?:(?&lt;a54&gt;(?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))))))")</code></pre>
+        </section>
+
+        <section>
+          <div>
+            <pre style="opacity: 0.3;"><code>(?&lt;a0&gt;(?&lt;a1&gt;(?&lt;a2&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?&lt;a3&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) (?&lt;a4&gt;(?!&lt;[0-9])(?&lt;a5&gt;(?:2[0123]|[01][0-9])):(?&lt;a6&gt;(?:[0-5][0-9]))(?::(?&lt;a7&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?&lt;a8&gt;(?:(?&lt;a9&gt;\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?&lt;a10&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (?&lt;a11&gt;(?&lt;a12&gt;(?:[\w._/%-]+))(?:\[(?&lt;a13&gt;\b(?:[1-9][0-9]*)\b)\])?): (?&lt;a14&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])):(?&lt;a15&gt;(?:[+-]?(?:[0-9]+))) \[(?&lt;a16&gt;(?&lt;a17&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))/(?&lt;a18&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b)/(?&lt;a19&gt;[0-9]+):(?&lt;a20&gt;(?!&lt;[0-9])(?&lt;a21&gt;(?:2[0123]|[01][0-9])):(?&lt;a22&gt;(?:[0-5][0-9]))(?::(?&lt;a23&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9])).(?&lt;a24&gt;(?:[+-]?(?:[0-9]+))))\] (?&lt;a25&gt;\S+) (?&lt;a26&gt;\S+)/(?&lt;a27&gt;\S+) (?&lt;a28&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a29&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a30&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a31&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a32&gt;\S+) (?&lt;a33&gt;(?:[+-]?(?:[0-9]+))) (?&lt;a34&gt;\S+) (?&lt;a35&gt;.*?) (?&lt;a36&gt;.*?) (?&lt;a37&gt;\S+) (?&lt;a38&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a39&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a40&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a41&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a42&gt;\S+) (?&lt;a43&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a44&gt;(?:[+-]?(?:[0-9]+))) \{(?&lt;a45&gt;(?&lt;a46&gt;.*?))\} \{(?&lt;a47&gt;(?&lt;a48&gt;.*?))\} "(?&lt;a49&gt;\b\w+\b) (?&lt;a50&gt;(?&lt;a51&gt;(?:/[A-Za-z0-9$.+!*'(){},~:;=#%_-]*)+)(?:(?&lt;a52&gt;\?[A-Za-z0-9$.+!*'(){},~#%&/=:;_-]*))?) HTTP/(?&lt;a53&gt;(?:(?&lt;a54&gt;(?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))))))")</code></pre>
+            <span style="position: absolute; top: 5em; left: 5em;">
+              <h3> this is a regexp for </h3>
+              <h2> haproxy http logs </h2>
+              <div class="fragment"> 
+                <img src="images/trollface.png" class="plain" width="200">
+                <h3>(or is it?)</h3>
+              </div>
+            </span>
+          </div>
+        </section>
+
+        <section>
+          <h2> grok saves you </h2>
+
+          <ul>
+            <li> over 100 pre-defined regexp patterns
+            <li> numbers, network addresses, urls, quoted strings, etc
+            <li> removes 'regexp wizard' requirement from log analysis
+          <ul>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <ul>
+            <li> %{NUMBER:bytes}
+            <li> %{QUOTEDSTRING:referrer}
+            <li> %{URLPATHPARAM:request}
+          </li>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <pre>
+Log:  Sep 17 02:40:14 carrera auditd: Audit daemon rotating logs
+
+Grok: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{SYSLOGPROG:program}: %{DATA:message}
+</pre>
+
+          <ul style="width: 100%">
+            <li class="fragment"><pre>SYSLOGTIMESTAMP: %{MONTH} +%{MONTHDAY} %{TIME}</pre>
+            <li class="fragment"><pre>HOSTNAME: \b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b)</pre>
+            <li class="fragment"><pre>SYSLOGPROG %{PROG:program}(?:\[%{POSINT:pid}\])?</pre>
+          </ul>
+        </section>
+
+        <section>
+          <h2> patterns with unit tests </h2>
+
+          <pre><code>Loaded suite test/alltests
+Started
+...................................
+Finished in 4.39923 seconds.
+
+35 tests, 72461 assertions, 0 failures, 0 errors
+           ↖↖↖↖
+            pattern correctness tests</code></pre>
+        </section>
+
+        <!-- time parsing -->
+        <section>
+          <h2> what time is it? </h2>
+
+          <hr>
+
+          <table>
+            <tr>
+              <td class="fragment">1304060505
+              <td class="fragment" nowrap>29/Apr/2011:07:05:26 +0000
+            <tr>
+              <td class="fragment" nowrap>Fri, 21 Nov 1997 09:55:06 -0600
+              <td class="fragment">Oct 11 20:21:47
+            <tr>
+              <td class="fragment">020805 13:51:24
+              <td class="fragment">110429.071055,118
+            <tr>
+              <td class="fragment">@4000000037c219bf2ef02e94
+            </tr>
+          </table>
+
+          <h3 class="fragment">
+            <hr>
+            logstash date filter fixes this bullshit
+          </h3>
+        </section>
+
+        <section>
+          <h2> date fixing </h2>
+
+          <ul>
+            <li> ISO8601: 2012-09-19T22:14:30.425T
+            <li> unified timestamp format for searching/sorting.
+          </ul>
+
+          <pre><code>filter {
+  date {
+    # Turn 020805 13:51:24
+    # Into 2002-08-05T13:51:24.000Z
+    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"
+  }
+}</code></pre>
+        </section>
+
+        <!-- multiline merge -->
+        <section>
+          <h3> this is one event </h3>
+          <pre><code>Exception in thread "main" Fooz$FancyPantsException
+        at Fooz.bar(Fooz.java:14)
+        at Fooz.foo(Fooz.java:10)
+        at Fooz.main(Fooz.java:6)</code></pre>
+
+          <div class="fragment">
+            <p>Solution:</p>
+            <pre><code>filter {
+  multiline {
+    # If the message starts with whitespace,
+    pattern =&gt; "^\s"
+    # it belongs to the previous line.
+    what =&gt; previous
+  }
+}</code></pre></div>
+        </section>
+
+        <!-- apache graph example -->
+        <section>
+          <h2> apache metrics </h2>
+          <pre><code>filter {
+  grok { 
+    type =&gt; "apache-access"
+    pattern =&gt; "%{COMBINEDAPACHELOG}" 
+  }
+}
+
+output {
+  statsd { 
+    # Count one hit every event by response
+    #   Tracks 'apache.HOSTNAME.response.200' as a metric!
+    increment =&gt; "apache.%{@source_host}.response.%{response}" 
+  }
+}</code></pre>
+          <p class="fragment">related outputs: graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png">
+          <h2> file → grok → statsd → graphite </h2>
+        </section>
+
+        <section>
+          <blockquote> logstash is a unix pipe on steroids </blockquote>
+          <small>- John Vincent (@lusis)</small>
+        </section>
+
+        <section>
           <h2> 23 inputs | 18 filters | 40 outputs </h2>
           (easy to write your own, too)
         </section>
 
         <section>
-          <h2> what can logstash do? </h2>
+          <h3> project focuses </h3>
+          transport and process logs to and from anywhere.
         </section>
 
-        <!-- 'what does this pattern match' / grok -->
-        <!-- time parsing -->
-        <!-- multiline merge -->
-        <!-- apache graph example -->
-      </div>
+        <section>
+          <h3> project focuses </h3>
+          if a newbie has a bad time, <br>it's a bug in logstash or the docs.
+        </section>
+
+        <section>
+          <h3> project focuses </h3>
+          all contributions are awesome: code, docs, bugs, feature requests, irc/mail support
+        </section>
+
+      </div> <!-- end of slide area -->
 
       <!-- The navigational controls UI -->
       <aside class="controls">
