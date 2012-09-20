@@ -178,12 +178,15 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
         </section>
 
         <section>
-          <h2> tools </h2>
-          tbd.
-  <!-- FILL THIS IN -->
-  <!-- FILL THIS IN -->
-  <!-- FILL THIS IN -->
-  <!-- FILL THIS IN -->
+          <h2> related tools </h2>
+
+          <ul>
+            <li> transport: flume, fluentd, scribe, rsyslog, syslog-ng
+            <li> anlytics/search: hadoop, graylog2
+            <li> storage: hdfs, cassandra, elasticsearch
+          </ul>
+
+          <p class="fragment">note: only open source tools listed</p>
         </section>
 
         <section>
@@ -324,9 +327,9 @@ filter {
           <h2> grok saves you </h2>
 
           <ul>
-            <li> over 100 pre-defined regexp patterns
+            <li> over 100 patterns
             <li> numbers, network addresses, urls, quoted strings, etc
-            <li> removes 'regexp wizard' requirement from log analysis
+            <li> no 'regexp wizard' requirement in log analysis
           <ul>
         </section>
 
@@ -390,8 +393,9 @@ Finished in 4.39923 seconds.
             </tr>
           </table>
 
+          <hr>
+
           <h3 class="fragment">
-            <hr>
             logstash date filter fixes this bullshit
           </h3>
         </section>
@@ -411,6 +415,14 @@ Finished in 4.39923 seconds.
     mysqltimestamp =&gt; "YYMMdd HH:mm:ss"
   }
 }</code></pre>
+        </section>
+
+        <section>
+          <div class="fragment">
+            <h1> seriously </h1>
+            <img src="images/psychoaxe.jpg">
+          </div>
+          <h2> stop inventing shitty time formats </h2>
         </section>
 
         <!-- multiline merge -->
@@ -480,7 +492,7 @@ output {
 
         <section>
           <h3> project focuses </h3>
-          all contributions are awesome: code, docs, bugs, feature requests, irc/mail support
+          contributions include more than just code.
         </section>
 
       </div> <!-- end of slide area -->
