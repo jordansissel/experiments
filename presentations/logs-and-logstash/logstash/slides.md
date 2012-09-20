@@ -1,6 +1,6 @@
-!SLIDE transition=fade
+!SLIDE transition=fade center
 
-![logstash](/image/logstash.png)
+![logstash](logstash.png)
 
 So how does logstash fit in?
 
