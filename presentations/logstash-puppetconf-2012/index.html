@@ -418,6 +418,21 @@ output {
         </section>
 
         <section>
+          <img src="images/apache-negative-duration.png" style="width: 120%; margin-left: -100px; margin-top: -70px;">
+          <h2> request duration &lt; 0 !?! </h2>
+        </section>
+
+        <section>
+          <h2> request duration &lt; 0 !?! </h2>
+
+          <ul>
+            <li class="fragment"> apache uses gettimeofday()
+            <li class="fragment"> ntp skew affects gettimeofday()
+            <li class="fragment"> time skew backwards == negative request time
+          </ul>
+        </section>
+
+        <section>
           <blockquote> logstash is a unix pipe on steroids </blockquote>
           <small>- John Vincent (@lusis)</small>
         </section>
@@ -428,18 +443,38 @@ output {
         </section>
 
         <section>
-          <h3> project focuses </h3>
-          transport and process logs to and from anywhere.
+          <h1> project focuses </h1>
+          <h2> features, design, community </h2>
         </section>
 
         <section>
-          <h3> project focuses </h3>
-          if a newbie has a bad time, <br>it's a bug in logstash or the docs.
+          <h3 class="lead-in"> feature: </h3>
+          <h2> transport and process logs <br> to and from anywhere. </h2>
         </section>
 
         <section>
-          <h3> project focuses </h3>
-          contributions include more than just code.
+          <h3 class="lead-in"> feature: </h3>
+          <h2> provide search and analytics </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash should fit your infrastructure </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash is extendable </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> if a newbie has a bad time, it's a bug </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> contributions: more than code </h2>
         </section>
 
       </div> <!-- end of slide area -->
