@@ -409,12 +409,12 @@ output {
     increment =&gt; "apache.%{@source_host}.response.%{response}" 
   }
 }</code></pre>
-          <p class="fragment">related outputs: graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
+          <p class="fragment">graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
         </section>
 
         <section>
           <img src="images/frontend-response-codes.png" class="full">
-          <h2> file → grok → statsd → graphite </h2>
+          <h2> apache→grok→statsd→graphite </h2>
         </section>
 
         <section>
