@@ -26,15 +26,9 @@
     <div class="reveal">
       <div class="slides">
         <section>
-            <hr>
+          <hr>
           <h1>a log of hope</h1>
-          <script>
-            // Delicously hacky. Look away.
-            if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) ) document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
-          </script>
-
           <img src="images/logstash.png" class="plain">
-
           <hr>
           <p style="width: 100%; text-align: right;">@jordansissel</span>
           <p style="width: 100%; text-align: right;">DreamHost</span>
@@ -210,14 +204,14 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
         </section>
 
         <section>
-          <pre><code><focus>input {
+          <pre><code class="fragment-highlight"><span class="fragment">input {
   file {
     type =&gt; "web"
     path =&gt; "/var/log/httpd/access.log"
   }
-}</focus>
+}</span>
 
-filter {
+<span class="fragment">filter {
   grok {
     type =&gt; "web"
     pattern =&gt; "%{COMBINEDAPACHELOG}"
@@ -226,59 +220,11 @@ filter {
     type =&gt; "web"
     timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
   }
-}
+}</span>
 
-output {
+<span class="fragment">output {
   elasticsearch { }
-}</code></pre>
-        </section>
-
-        <section>
-          <pre><code>input {
-  file {
-    type =&gt; "web"
-    path =&gt; "/var/log/httpd/access.log"
-  }
-}
-
-<focus>filter {
-  grok {
-    type =&gt; "web"
-    pattern =&gt; "%{COMBINEDAPACHELOG}"
-  }
-  date {
-    type =&gt; "web"
-    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
-  }
-}</focus>
-
-output {
-  elasticsearch { }
-}</code></pre>
-        </section>
-
-        <section>
-          <pre><code>input {
-  file {
-    type =&gt; "web"
-    path =&gt; "/var/log/httpd/access.log"
-  }
-}
-
-filter {
-  grok {
-    type =&gt; "web"
-    pattern =&gt; "%{COMBINEDAPACHELOG}"
-  }
-  date {
-    type =&gt; "web"
-    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
-  }
-}
-
-<focus>output {
-  elasticsearch { }
-}</focus></code></pre>
+}</span></code></pre>
         </section>
 
         <section>
@@ -404,7 +350,8 @@ Finished in 4.39923 seconds.
           <h2> date fixing </h2>
 
           <ul>
-            <li> ISO8601: 2012-09-19T22:14:30.425T
+            <li> standards: ISO8601 / RFC3339 / xs:dateTime 
+            <li> Example: 2012-09-19T22:14:30.425-0800
             <li> unified timestamp format for searching/sorting.
           </ul>
 
