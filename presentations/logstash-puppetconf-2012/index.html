@@ -185,16 +185,11 @@
         </section>
 
         <section>
-          <h2> what is a log? </h2>
-
           <pre><code style="font-size: 120%">
 Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
 <span class="fragment">(  timestamp  )</span> <span class="fragment">(      some data for this event         )</span>
           </code></pre>
-
-          <p class="fragment">log = timestamp + data</p>
-          <p class="fragment">(also, event = log)</p>
-
+          <h2 class="fragment">timestamp + data = log</h2>
         </section>
 
         <section>
@@ -208,7 +203,7 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
 
           <ul>
             <li> transport: flume, fluentd, scribe, rsyslog, syslog-ng
-            <li> anlytics/search: hadoop, graylog2
+            <li> search+analytics: hadoop, graylog2
             <li> storage: hdfs, cassandra, elasticsearch
           </ul>
 
@@ -318,6 +313,16 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
             <li> %{NUMBER:bytes}
             <li> %{QUOTEDSTRING:referrer}
             <li> %{URLPATHPARAM:request}
+          </li>
+        </section>
+
+        <section>
+          <h2> Not everything is a string </h2>
+
+          <ul>
+            <li> %{PATTERN:NAME:TYPE}
+            <li> %{NUMBER:bytes:int}
+            <li> %{NUMBER:duration:float}
           </li>
         </section>
 
