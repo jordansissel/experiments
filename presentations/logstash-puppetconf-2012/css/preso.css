@@ -16,11 +16,9 @@
 focus {
   display: block;
   margin: 0;
-  padding: 3px;
-  font-size: 1.3em;
+  padding: 0;
   background-color: #072;
   font-weight: bold;
-  border: 3px solid green;
   width: 100%;
 }
 
@@ -42,7 +40,7 @@ code {
 .full {
   width: 110%;
   margin-left: -50px !important;
-  margin-top: -70px !important;
+  /*margin-top: -70px !important;*/
 }
 
 pre.full {

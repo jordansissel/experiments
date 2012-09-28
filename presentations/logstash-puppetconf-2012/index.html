@@ -26,12 +26,16 @@
     <div class="reveal">
       <div class="slides">
         <section>
-          <hr>
           <h1>a log of hope</h1>
-          <img src="images/logstash.png" class="plain">
-          <hr>
-          <p style="width: 100%; text-align: right;">@jordansissel</span>
-          <p style="width: 100%; text-align: right;">DreamHost</span>
+          <div>
+            <img src="images/logstash.png" class="plain" style="float: left; margin-left: 8em">
+          </div>
+          <div style="float: right">
+            <!-- alignment is hard, let's go shopping! -->
+            <br> <br> <br> <br> <br> <br> <br>
+            <p style="width: 100%; text-align: right">@jordansissel</span>
+            <p style="width: 100%; text-align: right">DreamHost</span>
+          </div>
         </section>
         
         <section>
@@ -174,7 +178,7 @@
         </section>
 
         <section>
-          <img src="images/office-space-printer-beat-down-gif.gif" class="full">
+          <img src="images/office-space-printer-beat-down-gif.gif" style="width: 100%">
         </section>
 
         <section>
@@ -267,24 +271,21 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
           <pre><code class="fragment-highlight"><span class="fragment">input {
   file {
     type =&gt; "web"
-    path =&gt; "/var/log/httpd/access.log"
-  }
+<focus>    path =&gt; "/var/log/httpd/access.log"</focus> }
 }</span>
 
 <span class="fragment">filter {
   grok {
     type =&gt; "web"
-    pattern =&gt; "%{COMBINEDAPACHELOG}"
-  }
+<focus>    pattern =&gt; "%{COMBINEDAPACHELOG}"</focus>  }</span>
+<span class="fragment">
   date {
     type =&gt; "web"
-    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"
-  }
+<focus>    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"</focus>  }
 }</span>
 
 <span class="fragment">output {
-  elasticsearch { }
-}</span></code></pre>
+<focus>  elasticsearch { }</focus>}</span></code></pre>
         </section>
 
         <section>
@@ -431,8 +432,7 @@ Finished in 4.39923 seconds.
   date {
     # Turn 020805 13:51:24
     # Into 2002-08-05T13:51:24.000Z
-    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"
-  }
+<focus>    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"</focus>  }
 }</code></pre>
         </section>
 
@@ -475,11 +475,10 @@ Finished in 4.39923 seconds.
 }
 
 output {
-  statsd { 
+<focus>  statsd {</focus>
     # Count one hit every event by response
     #   Tracks 'apache.HOSTNAME.response.200' as a metric!
-    increment =&gt; "apache.%{@source_host}.response.%{response}" 
-  }
+<focus>    increment =&gt; "apache.%{@source_host}.response.%{response}"</focus>  }
 }</code></pre>
           <p class="fragment">graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
         </section>
