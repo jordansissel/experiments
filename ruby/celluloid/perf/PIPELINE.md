@@ -1,5 +1,11 @@
 # Pipeline using 'future'
 
+Experimenting with different processing pipeline implementations.
+
+Logstash can do roughly 50000 events/sec under MRI with the generator input and stdout output. The current logstash model uses threads for each worker (plugin, usually) and SizedQueue for message passing.
+
+How does a similar workflow perform in Celluloid? Quite poorly, at least with the way I've implemented it.
+
 ## JRuby 1.7.0
 
     % ruby pipeline.rb
