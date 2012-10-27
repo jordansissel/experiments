@@ -6,10 +6,12 @@ Command:
 
 Output: <output.txt>
 
-Notes:
+Tests:
 
-* Time to first byte (first require() call): 2.72 seconds
-* Time to first logstash event: 10.43 seconds
+* JRuby 1.6.8 / logstash jar: First byte: 2.72 seconds, first event: 10.43 seconds
+* MRI 1.9.3: First by 0.203 seconds, first event: 0.204 seconds
+* JRuby 1.6.8: 
+* JRuby 1.7.0.RC2: First byte: 2.49 seconds, first event: 10.19 seconds
 
 ## Longest require() trace
 
