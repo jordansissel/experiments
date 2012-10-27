@@ -1,0 +1,43 @@
+#preso {
+}
+
+.slide, #preso {
+  background-color: black;
+  color: #F6FFA3;
+}
+
+/* Make first slide have the logstash mascot */
+.slide:nth-child(1) {
+  background-image: url("/image/logstash.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
+
+.mascot {
+  height: 50%;
+  background-image: url("/image/logstash.png");
+  background-repeat: no-repeat;
+}
+
+pre {
+  word-wrap: break-word;
+}
+
+.nowrap pre {
+  word-wrap: normal;
+  white-space: pre;
+}
+
+
+.smallpre pre {
+  font-size: 250%;
+}
+
+
+.fullwidth img {
+  width: 100%;
+}
+
+.slide a {
+  color: inherit;
+}

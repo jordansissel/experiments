@@ -1,0 +1,15 @@
+{ 
+  "name": "logs and logstash", 
+  "sections": [ 
+    { "section": "title" },
+    { "section": "about-me" },
+    { "section": "intro-logging-problems" },
+    { "section": "terminology" },
+    { "section": "life-of-a-log" },
+    { "section": "logstash" },
+    { "section": "grok" },
+    { "section": "use-cases" },
+    { "section": "logstash-roadmap" },
+    { "section": "logstash-about" }
+  ]
+}
