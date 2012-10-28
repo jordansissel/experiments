@@ -279,7 +279,61 @@ output {
           </ul>
         </section> <!-- }}} -->
 
+        <section> <!-- querying from graphite {{{ -->
+          <h1> logstash </h1>
+          <h2> solving serious problems </h2>
+        </section>
+
         <section>
+          <img src="images/vs.jpg" class="plain">
+          <h2> bieber vs gangnam </h2>
+        </section>
+
+        <section>
+          <pre><code style="font-size: 28pt !important; line-height: 1em;">input {
+  twitter { # live twitter stream
+    type =&gt; "twitter"
+    user =&gt; "secret"
+    password =&gt; "secret"
+    keywords =&gt; [ "bieber", "gangnam" ]
+  }
+}
+output {
+  elasticsearch { }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> query  elasticsearch </h2>
+          <h2> render in graphite </h2>
+
+          <h2 style="text-transform: inherit !important;"> logstashHits("some query") </h2>
+        </section>
+
+        <section>
+          <img src="images/graphite-bieber-gangnam.png" class="plain full">
+        </section>
+
+        <section>
+          <img src="images/graphite-bieber-gangnam-moving-average.png" class="plain full">
+          <h2 style="text-transform: inherit !important">movingAverage()</h2>
+        </section>
+
+        <section>
+          <img src="images/graphite-bieber-gangnam-ratio.png" class="plain full">
+          <h2 style="text-transform: inherit !important">divideSeries()</h2>
+        </section>
+
+        <section>
+          <img src="images/logstash-apache-kibana.png" class="full plain">
+          <img src="images/logstash-in-graphite.png" class="full plain">
+        </section> <!-- }}} -->
+
+        <section>
+          <h2> live demo? </h2>
+        </section>
+
+        <section> <!-- project focus, etc {{{ -->
           <h1> project focuses </h1>
           <h2> function, design, community </h2>
         </section>
@@ -324,12 +378,9 @@ output {
             <li> #logstash on freenode irc (I am 'whack')
             <li> <a href="http://logstash.jira.com">logstash.jira.com</a>
           </ul>
-
           <hr>
-
           Questions? Now or later (twitter: @jordansissel)
-
-        </section>
+        </section> <!-- }}} -->
 
       </div> <!-- end of slide area -->
 
@@ -345,6 +396,7 @@ output {
       <div class="progress"><span></span></div>
     </div>
 
+    <!-- javascript loading {{{ -->
     <script src="lib/js/head.min.js"></script>
 
     <script>
@@ -434,5 +486,6 @@ output {
     </script>
     <script src="js/jquery.min.js"></script>
     
+    <!-- }}} -->
   </body>
 </html>
