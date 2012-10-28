@@ -46,3 +46,26 @@ code {
 pre.full {
   margin-top: -110px;
 }
+
+.thin {
+  opacity: 1.0;
+  width: auto;
+}
+
+.fade-out {
+  transition: opacity 2s, font-size 3s;
+
+  /* CSS doesn't let you set width on inline elements, so shrink the font size
+   * instead. Sigh. */
+  font-size: 0px;
+  opacity: 0.0;
+}
+
+.rotate90 {
+  transition: transform 2s;
+  transform: rotate(-90deg);
+}
+
+code.apache {
+  transition: transform 2s;
+}
