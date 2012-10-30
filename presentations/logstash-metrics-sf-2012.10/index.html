@@ -63,7 +63,13 @@
         </section>
 
         <section>
-          <h2> metric == log </h2>
+          <h2> what is a metric? </h2>
+          <h2> what is a log? </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> proposal: </h3>
+          <h2> metrics are logs </h2>
         </section>
 
         <section> <!-- pulling metrics from logs {{{ -->
@@ -330,6 +336,23 @@ output {
         </section> <!-- }}} -->
 
         <section>
+          <h2> scaling logstash (transport) </h2>
+
+          <ul>
+            <li> inputs with matching outputs </li>
+            <li> redis, zeromq, stomp, amqp, irc, xmpp </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2> scaling logstash (storage) </h2>
+
+          <ul>
+            <li> elasticsearch scales horizontally </li>
+          </ul>
+        </section>
+
+        <section>
           <h2> live demo? </h2>
         </section>
 
@@ -443,7 +466,7 @@ output {
             apachelogs.html(newtext);
             setTimeout(function() {
               apachelogs.find(".thin").addClass("fade-out")
-            }, 500);
+            }, 1000);
           } else if (fragment.hasClass("rotate")) {
             apachelogs.addClass("rotate90");
           } else if (fragment.hasClass("plot-it")) {
