@@ -23,6 +23,12 @@ results = {}
       end
     end
   end
+
+  results["select { even? }"] = Stud::Benchmark.run(1) do
+    count.times.select { |value| even?(value) }.each do |value|
+      a = value + 1
+    end
+  end
 end
 
 results.each do |name, result|
