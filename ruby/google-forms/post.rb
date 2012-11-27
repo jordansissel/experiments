@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
+# usage:
+#   post.rb <formkey> arg1 arg2 arg3 ...
+#
+# The formkey is the 'formkey=dHJJSEpLUkhaRzBOdEFPT3RQ....' junk in the form url.
+# To view this, from your spreadsheet go to "Form -> Go to live form"
+# The arguments are, in order, the columns you are filling in.
 
 require "ftw"
 require "cgi"
