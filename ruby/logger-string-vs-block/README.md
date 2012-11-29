@@ -18,8 +18,9 @@ The problem space here was that I have some pretty complex 'logger.debug(...)'
 calls that build up large hashes to log. That action of 'build a hash' is just
 wasted cycles if the log level is below debug.
 
-Hypothesis: logger.debug(...) is slow because the '...' in my case creates
-objects that are immediately thrown away when the log level is not debug.
+Hypothesis: logger.debug(...) is slow because the '...' is executed code and, in
+my case, creates objects that are immediately thrown away when the log level is
+not debug. There must be a faster way.
 
 Test cases:
 
