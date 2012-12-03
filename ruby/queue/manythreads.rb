@@ -1,34 +1,41 @@
 require "thread"
 require "java"
 
+class JSizedQueue < java.util.concurrent.ArrayBlockingQueue
+  alias_method :<<, :put
+  alias_method :push, :put
+  alias_method :pop, :take
+end
+
 #queue = SizedQueue.new(20)
-queue = java.util.concurrent.ArrayBlockingQueue.new(20)
+queue = JSizedQueue.new(20)
 
 writers = 500.times.collect do |i|
   Thread.new do 
-    if queue.is_a?(SizedQueue)
-      queue << [i, Time.now] while true
-    else
-      # ArrayBlockingQueue
-      queue.put([i, Time.now]) while true
-    end
+    queue << [i, Time.now] while true
   end
 end
 
+puts "Queue implementation: #{queue.class} / #{queue.class.ancestors}"
+
 max_age = 10
-start = Time.now
+lifestart = start = Time.now
+count = 0
 reader = Thread.new do
+  ages = {}
   while true
+    id, time = queue.pop
     now = Time.now
-    if queue.is_a?(SizedQueue)
-      id, time = queue.pop
-    else
-      # ArrayBlockingQueue
-      id, time = queue.take
-    end
-    age = now - time
-    if age > max_age
-      puts "#{now - start}: Thread #{id} is behind by #{age} seconds"
+    ages[id] = time
+    count += 1
+    # Report every 5 seconds
+    if now - start > 5
+      behind = ages.select { |id, time| now - time > 5 }
+      puts "#{now - lifestart} (count: #{count}): behind > 5 seconds = #{behind.count}"
+      if ages.count < 500
+        puts "Missing: #{500 - ages.cout}"
+      end
+      start = now
     end
   end
 end
