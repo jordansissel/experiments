@@ -1,0 +1,10 @@
+# A sample Guardfile
+# More info at https://github.com/guard/guard#readme
+
+# Add files and commands to this file, like the example:
+#   watch(%r{file/path}) { `command(s)` }
+#
+guard 'shell' do
+  watch(/(^.*\.jade$)/) {|m| `node node_modules/jade/bin/jade #{m[1]}`  }
+  watch(/(^.*\.coffee$)/) {|m| `node node_modules/coffee-script/bin/coffee -c #{m[1]}`  }
+end
