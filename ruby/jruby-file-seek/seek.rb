@@ -34,7 +34,7 @@ describe "File#seek(0, IO::SEEK_CUR)" do
         insist { subject.seek(0, IO::SEEK_CUR) } == 0
         first = subject.read(16)
         insist { subject.seek(0, IO::SEEK_CUR) } == 16
-        subject.seek(0)
+        subject.seek(0, IO::SEEK_SET)
         insist { subject.seek(0, IO::SEEK_CUR) } == 0
         second = subject.read(16)
         insist { subject.seek(0, IO::SEEK_CUR) } == 16
