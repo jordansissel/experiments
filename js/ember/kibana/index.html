@@ -11,14 +11,23 @@
       Search: {{view Ember.TextField valueBinding="query" placeholder="Search..."}}
       (wee)
     </script>
-    <script type="text/x-handlebars" data-template-name="search-results">
-      Hello
+    <script type="text/x-handlebars" data-template-name="results-table">
+      <table>
+        <!-- headers -->
+        <tr>
+        {{#each field in columns}}
+          <td>{{ field }}</td>
+        {{/each}}
+        </tr>
+        {{#each result in results}}
+        <tr>
+          {{#each field in columns}}
+          <td>{{ result.[field] }}</td>
+          {{/each}}
+        </tr>
+        {{/each}}
+      </table>
     </script>
-
-    <script type="text/x-handlebars">
-      Search: {{view Kibana.SearchInputView}}
-    </script>
-
 
   </body>
 </html>
