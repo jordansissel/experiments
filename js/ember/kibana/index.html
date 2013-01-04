@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="js/ember-1.0.0-pre.2.js"></script>
-    <script src="js/kibana.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   </head>
   <body>
+    <script src="js/handlebars-1.0.rc.1.js"></script>
+    <script src="js/ember-1.0.0-pre.2.js"></script>
+    <script src="js/kibana.js"></script>
     <script type="text/x-handlebars" data-template-name="search-input">
-      {{#view Kibana.SearchInputView}}
-        {{view Ember.TextField valueBinding="query" placeholder="Search..."}}
-      {{/view}}
+      Search: {{view Ember.TextField valueBinding="query" placeholder="Search..."}}
+      (wee)
     </script>
     <script type="text/x-handlebars" data-template-name="search-results">
       Hello
-  </script>
+    </script>
+
+    <script type="text/x-handlebars">
+      Search: {{view Kibana.SearchInputView}}
+    </script>
+
+
   </body>
 </html>

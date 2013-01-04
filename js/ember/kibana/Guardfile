@@ -2,6 +2,8 @@ require "fileutils"
 
 def build(m)
   source = m[0]
+  return if source =~ /^build\//
+
   case File.extname(source)
     when ".coffee"
       destination = File.join("build", File.dirname(source)).gsub("/coffee", "/js")
@@ -27,5 +29,5 @@ guard 'shell' do
   watch(/^(coffee\/.*\.coffee)$/) { |m| build(m) }
   watch(/^(css\/.*\.css)$/) { |m| build(m) }
   watch(/^(jade\/.*\.jade)$/) { |m| build(m) }
-  watch(/^(html\/.*\.html)$/) { |m| build(m) }
+  watch(/^(.*\.html)$/) { |m| build(m) }
 end
