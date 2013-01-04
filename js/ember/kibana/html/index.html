@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="js/ember-1.0.0-pre.2.min.js"></script>
+    <script src="js/kibana.js"></script>
+  </head>
+  <body>
+    <script type="text/x-handlebars" data-template-name="search-form">
+      {{#view Kibana.SearchInputView}}
+        {{view Ember.TextField valueBinding="query" placeholder="Search..."}}
+      {{/view}}
+    </script>
+    <script type="text/x-handlebars" data-template-name="search-results">
+      Hello
+  </script>
+  </body>
+</html>
