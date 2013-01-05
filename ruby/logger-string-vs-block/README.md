@@ -4,15 +4,21 @@ Run each test through rbx, jruby (1.8 and 1.9), mri 1.8.7 and 1.9.2.
      ---------------+---------------+------------
          control_if | jruby/  1.9.3 |     0.23
           string_if | jruby/  1.9.3 |     0.23
+        control_and | jruby/  1.9.3 |     0.25
+         string_and | jruby/  1.9.3 |     0.25
               block | jruby/  1.9.3 |     0.44
-        doubleblock | jruby/  1.9.3 |     0.44
-             string | jruby/  1.9.3 |     0.81
+        doubleblock | jruby/  1.9.3 |     0.45
+             string | jruby/  1.9.3 |     0.84
      ---------------+---------------+------------
+         control_if |  ruby/  1.9.3 |     0.56
           string_if |  ruby/  1.9.3 |     0.57
-         control_if |  ruby/  1.9.3 |     0.59
-              block |  ruby/  1.9.3 |     2.03
-        doubleblock |  ruby/  1.9.3 |     2.05
-             string |  ruby/  1.9.3 |     3.37
+        control_and |  ruby/  1.9.3 |     0.59
+         string_and |  ruby/  1.9.3 |     0.59
+              block |  ruby/  1.9.3 |     2.06
+        doubleblock |  ruby/  1.9.3 |     2.17
+             string |  ruby/  1.9.3 |     3.39
+
+
 
 The problem space here was that I have some pretty complex 'logger.debug(...)'
 calls that build up large hashes to log. That action of 'build a hash' is just

@@ -24,8 +24,16 @@ logger.level = Logger::WARN
     logger.info([ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }]) if logger.info?
   end
 
+  time_stringand = time(iterations) do
+    logger.info? && logger.info([ "Hello #{data}", { "foo" => "bar", "baz" => "fizz" }])
+  end
+
   time_controlif = time(iterations) do
     nil if logger.info?
+  end
+
+  time_controland = time(iterations) do
+    logger.info? && nil
   end
 
   time_block = time(iterations) do
@@ -42,7 +50,9 @@ logger.level = Logger::WARN
   ruby = RUBY_ENGINE rescue "ruby"
   printf("%15.15s | %5s/%7s | %8.2f\n", "string", ruby, RUBY_VERSION, time_string)
   printf("%15.15s | %5s/%7s | %8.2f\n", "string_if", ruby, RUBY_VERSION, time_stringif)
+  printf("%15.15s | %5s/%7s | %8.2f\n", "string_and", ruby, RUBY_VERSION, time_stringand)
   printf("%15.15s | %5s/%7s | %8.2f\n", "control_if", ruby, RUBY_VERSION, time_controlif)
+  printf("%15.15s | %5s/%7s | %8.2f\n", "control_and", ruby, RUBY_VERSION, time_controland)
   printf("%15.15s | %5s/%7s | %8.2f\n", "block", ruby, RUBY_VERSION, time_block)
   printf("%15.15s | %5s/%7s | %8.2f\n", "doubleblock", ruby, RUBY_VERSION, time_doubleblock)
 end
