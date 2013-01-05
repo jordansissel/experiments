@@ -1,0 +1,33 @@
+require "fileutils"
+
+def build(m)
+  source = m[0]
+  return if source =~ /^build\//
+
+  case File.extname(source)
+    when ".coffee"
+      destination = File.join("build", File.dirname(source)).gsub("/coffee", "/js")
+      FileUtils.mkdir_p(File.dirname(destination))
+      puts "coffee #{source} -> #{destination}"
+      `coffee -o #{destination} -c #{source}`
+    when ".jade"
+      destination = File.join("build", File.dirname(source)).gsub("/jade", "/")
+      FileUtils.mkdir_p(File.dirname(destination))
+      puts "jade #{source} -> #{destination}"
+      `jade -O #{destination} #{source}`
+    else
+      destination = File.join("build", source)
+      FileUtils.mkdir_p(File.dirname(destination))
+      puts "copy #{source} -> #{destination}"
+      FileUtils.copy(source, destination)
+  end
+end
+
+Dir.mkdir("build") rescue nil
+guard 'shell' do
+  watch(/^(js\/.*\.js)$/) { |m| build(m) }
+  watch(/^(coffee\/.*\.coffee)$/) { |m| build(m) }
+  watch(/^(css\/.*\.css)$/) { |m| build(m) }
+  watch(/^(jade\/.*\.jade)$/) { |m| build(m) }
+  watch(/^(.*\.html)$/) { |m| build(m) }
+end
