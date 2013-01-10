@@ -2,8 +2,8 @@
 
 ## Configuration
 
-* [logstash.conf](#file-logstash-conf)
-* [elasticsearch template](#file-template-sh) (6 shards, 0 replicas)
+* [logstash.conf](https://github.com/jordansissel/experiments/tree/master/elasticsearch/perf/logstash.conf)
+* [elasticsearch template](https://github.com/jordansissel/experiments/tree/master/elasticsearch/perf/template.sh) (6 shards, 0 replicas)
 * logstash run: `timeout 300 java -XX:+UseParNewGC -XX:+UseConcMkSweepGC -Xss256k -jar logstash-1.1.7-monolithic.jar agent -f logstash.conf`
 * elasticsearch run: `bin/elasticsearch -f`
 * logstash run on same host as elasticsearch
