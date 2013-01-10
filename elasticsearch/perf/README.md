@@ -24,7 +24,8 @@
 
 ## Conclusions
 
-* null output is 'best possible performance' right now
+* null output is 'best possible performance' right now. I believe 25000
+  events/sec to be quite poor performance.
 * tcp and file outputs perform the same; drop against 'null' is likely JSON
   serialization.
 * Big loss in performance with elasticsearch logstash output (vs tcp/file).
@@ -37,6 +38,7 @@
 * Try to improve 'null' output performance:
   * event creation
   * message passing from input -> filter -> output
+  * profile with yjp and visualvm
 * Try to get tcp and file outputs closer to null output performance
   * json serialization
 * Find out why 1-to-2 ES nodes had no performance improvement.
