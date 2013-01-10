@@ -34,8 +34,13 @@
 
 ## Next steps:
 
+* Try to improve 'null' output performance:
+  * event creation
+  * message passing from input -> filter -> output
 * Try to get tcp and file outputs closer to null output performance
+  * json serialization
 * Find out why 1-to-2 ES nodes had no performance improvement.
+  * ask the elasticsearch folks for advice here
 * Improve performance of elasticsearch\_http relative to elasticsearch..
-* Improve performance elasticsearch and elasticsearch\_http relative to null,
-  tcp, and file outputs.
+  * experiment with different flush sizes
+  * performance test ftw lib
