@@ -1,0 +1,449 @@
+        <section>
+          <h2> related tools </h2>
+
+          <ul>
+            <li> transport: flume, fluentd, scribe, rsyslog, syslog-ng
+            <li> search+analytics: hadoop, graylog2, elsa
+            <li> storage: hdfs, cassandra, elasticsearch
+          </ul>
+
+          <p class="fragment">note: only open source tools listed</p>
+        </section>
+
+        <section>
+          <img src="images/logstash.png" class="plain">
+          <h3> how can logstash help? </h3>
+        </section>
+
+        <section>
+          logstash is open source, free, and awesome.
+        </section>
+
+        <section>
+          <h2> example: apache logs </h2>
+
+          <pre><code>217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:31 -0400] "GET /images/web/2009/banner.png HTTP/1.1" 200 52315 "http://www.semicomplete.com/style2.css" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/ HTTP/1.1" 200 4483 "http://news.ycombinator.com/item?id=4417660" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/bootstrap/css/bootstrap-responsive.min.css HTTP/1.1" 200 7680 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/style.css HTTP/1.1" 200 2715 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/jquery.ui.datepicker.css HTTP/1.1" 200 33035 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"</code></pre>
+        </section>
+
+        <section>
+          <pre><code class="fragment-highlight"><span class="fragment">input {
+  file {
+    type =&gt; "web"
+<focus>    path =&gt; "/var/log/httpd/access.log"</focus> }
+}</span>
+
+<span class="fragment">filter {
+  grok {
+    type =&gt; "web"
+<focus>    pattern =&gt; "%{COMBINEDAPACHELOG}"</focus>  }</span>
+<span class="fragment">
+  date {
+    type =&gt; "web"
+<focus>    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"</focus>  }
+}</span>
+
+<span class="fragment">output {
+<focus>  elasticsearch { }</focus>}</span></code></pre>
+        </section>
+
+        <section>
+          <img src="images/kibana-logstash-downloads.png" class="full">
+          <br><br>
+          <h2> top downloads for logstash </h2>
+        </section>
+
+        <section>
+          <img src="images/kibana-chef-agent.png" class="full">
+          <br><br>
+          <h2> folks install logstash with chef </h2>
+        </section>
+
+        <section>
+          <img src="images/kibana-chef-hits-6min-each.png" class="full">
+          <br><br>
+          <h2> go deeper, zoom in </h2>
+        </section>
+
+        <section>
+          <h2> what else can we solve? </h2>
+        </section>
+
+        <section>
+          <h2> /regex/ </h2> 
+        </section>
+
+        <section>
+          <pre class="full"><code>(?&lt;a0&gt;(?&lt;a1&gt;(?&lt;a2&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?&lt;a3&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) (?&lt;a4&gt;(?!&lt;[0-9])(?&lt;a5&gt;(?:2[0123]|[01][0-9])):(?&lt;a6&gt;(?:[0-5][0-9]))(?::(?&lt;a7&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?&lt;a8&gt;(?:(?&lt;a9&gt;\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?&lt;a10&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (?&lt;a11&gt;(?&lt;a12&gt;(?:[\w._/%-]+))(?:\[(?&lt;a13&gt;\b(?:[1-9][0-9]*)\b)\])?): (?&lt;a14&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])):(?&lt;a15&gt;(?:[+-]?(?:[0-9]+))) \[(?&lt;a16&gt;(?&lt;a17&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))/(?&lt;a18&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b)/(?&lt;a19&gt;[0-9]+):(?&lt;a20&gt;(?!&lt;[0-9])(?&lt;a21&gt;(?:2[0123]|[01][0-9])):(?&lt;a22&gt;(?:[0-5][0-9]))(?::(?&lt;a23&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9])).(?&lt;a24&gt;(?:[+-]?(?:[0-9]+))))\] (?&lt;a25&gt;\S+) (?&lt;a26&gt;\S+)/(?&lt;a27&gt;\S+) (?&lt;a28&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a29&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a30&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a31&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a32&gt;\S+) (?&lt;a33&gt;(?:[+-]?(?:[0-9]+))) (?&lt;a34&gt;\S+) (?&lt;a35&gt;.*?) (?&lt;a36&gt;.*?) (?&lt;a37&gt;\S+) (?&lt;a38&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a39&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a40&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a41&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a42&gt;\S+) (?&lt;a43&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a44&gt;(?:[+-]?(?:[0-9]+))) \{(?&lt;a45&gt;(?&lt;a46&gt;.*?))\} \{(?&lt;a47&gt;(?&lt;a48&gt;.*?))\} "(?&lt;a49&gt;\b\w+\b) (?&lt;a50&gt;(?&lt;a51&gt;(?:/[A-Za-z0-9$.+!*'(){},~:;=#%_-]*)+)(?:(?&lt;a52&gt;\?[A-Za-z0-9$.+!*'(){},~#%&/=:;_-]*))?) HTTP/(?&lt;a53&gt;(?:(?&lt;a54&gt;(?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))))))")</code></pre>
+        </section>
+
+        <section>
+          <div>
+            <pre class="full" style="opacity: 0.3;"><code>(?&lt;a0&gt;(?&lt;a1&gt;(?&lt;a2&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?&lt;a3&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) (?&lt;a4&gt;(?!&lt;[0-9])(?&lt;a5&gt;(?:2[0123]|[01][0-9])):(?&lt;a6&gt;(?:[0-5][0-9]))(?::(?&lt;a7&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?&lt;a8&gt;(?:(?&lt;a9&gt;\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?&lt;a10&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (?&lt;a11&gt;(?&lt;a12&gt;(?:[\w._/%-]+))(?:\[(?&lt;a13&gt;\b(?:[1-9][0-9]*)\b)\])?): (?&lt;a14&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])):(?&lt;a15&gt;(?:[+-]?(?:[0-9]+))) \[(?&lt;a16&gt;(?&lt;a17&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))/(?&lt;a18&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b)/(?&lt;a19&gt;[0-9]+):(?&lt;a20&gt;(?!&lt;[0-9])(?&lt;a21&gt;(?:2[0123]|[01][0-9])):(?&lt;a22&gt;(?:[0-5][0-9]))(?::(?&lt;a23&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9])).(?&lt;a24&gt;(?:[+-]?(?:[0-9]+))))\] (?&lt;a25&gt;\S+) (?&lt;a26&gt;\S+)/(?&lt;a27&gt;\S+) (?&lt;a28&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a29&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a30&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a31&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a32&gt;\S+) (?&lt;a33&gt;(?:[+-]?(?:[0-9]+))) (?&lt;a34&gt;\S+) (?&lt;a35&gt;.*?) (?&lt;a36&gt;.*?) (?&lt;a37&gt;\S+) (?&lt;a38&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a39&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a40&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a41&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a42&gt;\S+) (?&lt;a43&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a44&gt;(?:[+-]?(?:[0-9]+))) \{(?&lt;a45&gt;(?&lt;a46&gt;.*?))\} \{(?&lt;a47&gt;(?&lt;a48&gt;.*?))\} "(?&lt;a49&gt;\b\w+\b) (?&lt;a50&gt;(?&lt;a51&gt;(?:/[A-Za-z0-9$.+!*'(){},~:;=#%_-]*)+)(?:(?&lt;a52&gt;\?[A-Za-z0-9$.+!*'(){},~#%&/=:;_-]*))?) HTTP/(?&lt;a53&gt;(?:(?&lt;a54&gt;(?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))))))")</code></pre>
+            <span style="position: absolute; top: 5em; left: 5em;">
+              <h3> this is a regexp for </h3>
+              <h2> haproxy http logs </h2>
+              <div class="fragment"> 
+                <img src="images/trollface.png" class="plain" width="200">
+                <h3>(or is it?)</h3>
+              </div>
+            </span>
+          </div>
+        </section>
+
+        <section>
+          <h2> grok saves you </h2>
+
+          <ul>
+            <li> over 100 patterns
+            <li> numbers, network addresses, urls, quoted strings, etc
+            <li> no 'regexp wizard' requirement in log analysis
+          <ul>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <ul>
+            <li> %{NUMBER:bytes}
+            <li> %{QUOTEDSTRING:referrer}
+            <li> %{URLPATHPARAM:request}
+          </li>
+        </section>
+
+        <section>
+          <h2> Not everything is a string </h2>
+
+          <ul>
+            <li> %{PATTERN:NAME:TYPE}
+            <li> %{NUMBER:bytes:int}
+            <li> %{NUMBER:duration:float}
+          </li>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <pre>
+Log:  Sep 17 02:40:14 carrera auditd: Audit daemon rotating logs
+
+Grok: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{SYSLOGPROG:program}: %{DATA:message}
+</pre>
+
+          <ul style="width: 100%">
+            <li class="fragment"><pre>SYSLOGTIMESTAMP: %{MONTH} +%{MONTHDAY} %{TIME}</pre>
+            <li class="fragment"><pre>HOSTNAME: \b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b)</pre>
+            <li class="fragment"><pre>SYSLOGPROG %{PROG:program}(?:\[%{POSINT:pid}\])?</pre>
+          </ul>
+        </section>
+
+        <section>
+          <h2> patterns with unit tests </h2>
+
+          <pre><code>Loaded suite test/alltests
+Started
+...................................
+Finished in 4.39923 seconds.
+
+35 tests, 72461 assertions, 0 failures, 0 errors
+           ↖↖↖↖
+            pattern correctness tests</code></pre>
+        </section>
+
+        <!-- time parsing -->
+        <section>
+          <h2> what time is it? </h2>
+
+          <hr>
+
+          <table>
+            <tr>
+              <td class="fragment">1304060505
+              <td class="fragment" nowrap>29/Apr/2011:07:05:26 +0000
+            <tr>
+              <td class="fragment" nowrap>Fri, 21 Nov 1997 09:55:06 -0600
+              <td class="fragment">Oct 11 20:21:47
+            <tr>
+              <td class="fragment">020805 13:51:24
+              <td class="fragment">110429.071055,118
+            <tr>
+              <td class="fragment">@4000000037c219bf2ef02e94
+            </tr>
+          </table>
+
+          <hr>
+
+          <h3 class="fragment">
+            logstash date filter fixes this bullshit
+          </h3>
+        </section>
+
+        <section>
+          <h2> date fixing </h2>
+
+          <ul>
+            <li> standards: ISO8601 / RFC3339 / xs:dateTime 
+            <li> Example: 2012-09-19T22:14:30.425-0800
+            <li> unified timestamp format for searching/sorting.
+          </ul>
+
+          <pre><code>filter {
+  date {
+    # Turn 020805 13:51:24
+    # Into 2002-08-05T13:51:24.000Z
+<focus>    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"</focus>  }
+}</code></pre>
+        </section>
+
+        <section>
+          <div class="fragment">
+            <h1> seriously </h1>
+            <img src="images/psychoaxe.jpg">
+          </div>
+          <h2> stop inventing shitty time formats </h2>
+        </section>
+
+        <!-- multiline merge -->
+        <section>
+          <h3> this is one event </h3>
+          <pre><code>Exception in thread "main" Fooz$FancyPantsException
+        at Fooz.bar(Fooz.java:14)
+        at Fooz.foo(Fooz.java:10)
+        at Fooz.main(Fooz.java:6)</code></pre>
+
+          <div class="fragment">
+            <p>Solution:</p>
+            <pre><code>filter {
+  multiline {
+    # If the message starts with whitespace,
+    pattern =&gt; "^\s"
+    # it belongs to the previous line.
+    what =&gt; previous
+  }
+}</code></pre></div>
+        </section>
+
+        <!-- apache graph example -->
+        <section>
+          <h2> apache metrics </h2>
+          <pre><code>filter {
+  grok { 
+    type =&gt; "apache-access"
+    pattern =&gt; "%{COMBINEDAPACHELOG}" 
+  }
+}
+
+output {
+<focus>  statsd {</focus>
+    # Count one hit every event by response
+    #   Tracks 'apache.HOSTNAME.response.200' as a metric!
+<focus>    increment =&gt; "apache.%{@source_host}.response.%{response}"</focus>  }
+}</code></pre>
+          <p class="fragment">graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png" class="full">
+          <h2> apache→grok→statsd→graphite </h2>
+        </section>
+
+        <section>
+          <img src="images/stats-negative-min.png" class="full">
+          <h2> awesome analysis </h2>
+        </section>
+
+        <section>
+          <img src="images/apache-negative-duration.png" class="full">
+          <h2> less than zero seconds?! </h2>
+        </section>
+
+        <section>
+          <h2> request duration &lt; 0 !?! </h2>
+
+          <ul>
+            <li class="fragment"> apache uses gettimeofday()
+            <li class="fragment"> ntp skew affects gettimeofday()
+            <li class="fragment"> time skew backwards == negative request time
+          </ul>
+        </section>
+
+        <section>
+          <h2> logstash power </h2>
+        </section>
+
+        <section>
+          <blockquote> logstash is a unix pipe on steroids </blockquote>
+          <small>- John Vincent (@lusis)</small>
+        </section>
+
+        <section>
+          <h2> 23 inputs | 18 filters | 40 outputs </h2>
+        </section>
+
+        <section>
+          <h1> project focuses </h1>
+          <h2> function, design, community </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> feature: </h3>
+          <h2> transport and process logs <br> to and from anywhere. </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> feature: </h3>
+          <h2> provide search and analytics </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash should fit your infrastructure </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash is extendable </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> if a newbie has a bad time, it's a bug </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> contributions: more than code </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community tools: </h3>
+          <ul>
+            <li> <a href="http://kibana.org/">kibana</a> (Rashid Khan)
+            <li> <a href="http://forge.puppetlabs.com/simonmcc/logstash">puppet module</a> (Simon McCartney, Kris Buytaert)
+            <li> <a href="https://github.com/jedi4ever/logstash-cli">logstash-cli</a> (Patrick Debois)
+          </ul>
+        </section>
+
+        <section>
+          <h2> logstash @ DreamHost </h2>
+
+          <ul>
+            <li class="fragment"> 20k apache events/sec peak
+            <li class="fragment"> 250 million events/day
+            <li class="fragment"> 75gb data/day
+            <li class="fragment"> 160 web servers 
+            <li class="fragment"> 7 logstash/elasticsearch servers
+          </ul>
+
+          <br><br><br>
+          <h3 class="fragment">this is a small deployment</h3>
+        </section>
+
+        <section>
+          <h2> logstash @ DreamHost (plan) </h2>
+
+          <ul>
+            <li class="fragment"> Trace problems through infrastructure events
+            <li class="fragment"> Reduce Ops team 'human keyboard'
+            <li class="fragment"> Gives log access to other teams.
+            <li class="fragment"> Provide real-time visibility to customers.
+            <li class="fragment"> Thousands of servers.
+            <li class="fragment"> Billions of events per day.
+          </ul>
+        </section>
+
+        <section>
+          <h2> get your 'stash on </h2>
+
+          <ul>
+            <li> <a href="http://logstash.net/">logstash.net</a>
+            <li> logstash-users@googlegroups.com
+            <li> #logstash on freenode irc (I am 'whack')
+            <li> <a href="http://logstash.jira.com">logstash.jira.com</a>
+          </ul>
+
+          <hr>
+
+          Questions? Now or later (twitter: @jordansissel)
+
+        </section>
+
+        <section>
+          <h2> references </h2>
+
+          <ul>
+            <li> xkcd perl comic: https://xkcd.com/208/
+            <li> outdoor printer smash gif clip from the Office Space movie
+          </ul>
+
+          (omitted references are unintentional)
+      </div> <!-- end of slide area -->
+
+      <!-- The navigational controls UI -->
+      <aside class="controls">
+        <a class="left" href="#">&#x25C4;</a>
+        <a class="right" href="#">&#x25BA;</a>
+        <a class="up" href="#">&#x25B2;</a>
+        <a class="down" href="#">&#x25BC;</a>
+      </aside>
+
+      <!-- Presentation progress bar -->
+      <div class="progress"><span></span></div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+
+    <script>
+      // Load reveal.js as well as a classList polyfill if needed
+      head.js( !document.body.classList ? 'lib/js/classList.js' : null )
+        .js( 'js/reveal.js', function() {
+
+        // Parse the query string into a key/value object
+        var query = {};
+        location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+          query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+        } );
+
+        // Fires when a slide with data-state=customevent is activated
+        Reveal.addEventListener( 'customevent', function() {
+          console.log( '"customevent" has fired' );
+        } );
+
+        // Fires each time a new slide is activated
+        Reveal.addEventListener( 'slidechanged', function( event ) {
+          // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+        } );
+
+        // Full list of configuration options available here:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+          controls: true,
+          progress: true,
+          history: true,
+          
+          theme: "default", // default/neon/beige
+          transition: "linear" 
+        });
+
+      } );
+      
+      // Load highlight.js for syntax highlighting of code samples
+      //head.js( 'lib/js/highlight.js', function() { 
+        //hljs.initHighlightingOnLoad(); 
+      //} );
+
+      // If we're runnning the notes server we need to include some additional JS
+      // TODO Is there a better way to determine if we're running the notes server?
+      if( window.location.host === 'localhost:1947' ) {
+        head.js( 'socket.io/socket.io.js', 'plugin/speakernotes/client.js' );
+      }
+
+
+    </script>
+    
+  </body>
+</html>

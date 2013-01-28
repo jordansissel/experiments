@@ -4,9 +4,9 @@
   <head>
     <meta charset="utf-8">
     
-    <title>logstash and metrics</title>
+    <title>logs and logstash @ puppetconf 2012</title>
 
-    <meta name="description" content="logstash and metrics">
+    <meta name="description" content="logs/logstash presentation for puppetconf 2012">
     <meta name="author" content="Jordan Sissel">
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -26,6 +26,7 @@
     <div class="reveal">
       <div class="slides">
         <section>
+          <h1>a log of hope</h1>
           <div>
             <img src="images/logstash.png" class="plain" style="float: left; margin-left: 8em">
           </div>
@@ -36,7 +37,7 @@
             <p style="width: 100%; text-align: right">DreamHost</span>
           </div>
         </section>
-
+        
         <section> <!-- who am I? {{{ -->
           <h2> who am I? </h2>
 
@@ -83,17 +84,11 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
 <span class="fragment">(  timestamp  )</span> <span class="fragment">(      something that happened          )</span>
           </code></pre>
           <h2 class="fragment">timestamp + data = log</h2>
-        </section> 
-
-        <section>
-          <h2> what is a metric? </h2>
-          <h2> what is a log? </h2>
-        </section>
-
-        <section>
-          <h3 class="lead-in"> proposal: </h3>
-          <h2> metrics are logs </h2>
         </section> <!-- }}} -->
+
+        <section>
+          <h2> what about metrics? </h2>
+        </section>
 
         <section> <!-- pulling metrics from logs {{{ -->
           <pre><code class="apache">108.166.15.188 - - [13/Sep/2012:02:34:22 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.8 (ruby-1.9.3-p0; ohai-0.6.10; x86_64-linux; +http://opscode.com)"
@@ -113,110 +108,39 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
 24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.history.js HTTP/1.1" 200 6466 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
 24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/feed.png HTTP/1.1" 200 689 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
 </code></pre>
-        </section>
-
-        <section>
-          <pre><code class="apache" style="color: grey">108.166.15.188 - - [13/Sep/2012:02:34:22 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.8 (ruby-1.9.3-p0; ohai-0.6.10; x86_64-linux; +http://opscode.com)"
-50.56.197.244 - - [13/Sep/2012:02:34:37 -0400] "GET / HTTP/1.1" 200 41687 "-" "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt; DTS Agent"
-89.96.171.210 - - [13/Sep/2012:02:32:49 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.10 (ruby-1.9.3-p194; ohai-0.6.4; amd64-freebsd8; +http://opscode.com)"
-37.57.128.238 - - <span style="line-spacing: 1em;font-size: 2em; color: white;">[13/Sep/2012:02:37:24 -0400]</span> "GET / HTTP/1.1" <span style="font-size: 2em; color: white;">200</span> 41687 "-" "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt; DTS Agent"
-199.21.99.109 - - [13/Sep/2012:02:38:12 -0400] "GET /blog/tags/packaging HTTP/1.1" 200 15152 "-" "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)"
-180.76.6.232 - - [13/Sep/2012:02:38:23 -0400] "GET /blog/tags/wrt54gl HTTP/1.1" 200 8867 "-" "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"
-217.227.233.68 - - [13/Sep/2012:02:38:25 -0400] "GET /articles/ssh-security/ HTTP/1.1" 200 16543 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
-217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /reset.css HTTP/1.1" 200 1015 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
-217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /style2.css HTTP/1.1" 200 4877 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
-217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
-217.227.233.68 - - [13/Sep/2012:02:38:31 -0400] "GET /images/web/2009/banner.png HTTP/1.1" 200 52315 "http://www.semicomplete.com/style2.css" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
-184.73.137.50 - - [13/Sep/2012:02:38:28 -0400] "GET /files/logstash/logstash-1.1.1-monolithic.jar HTTP/1.1" 200 53813805 "-" "Chef Client/0.10.8 (ruby-1.8.7-p334; ohai-0.6.10; i686-linux; +http://opscode.com)"
-24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/excanvas.min.js HTTP/1.1" 200 19415 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
-24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 71463 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
-24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.history.js HTTP/1.1" 200 6466 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
-24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/feed.png HTTP/1.1" 200 689 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
-</code></pre>
-        </section>
-
-        <section>
-          <pre><code class="apache">
-  timestamp                 |response code
-----------------------------+-------------
-[13/Sep/2012:02:34:22 -0400] 200
-[13/Sep/2012:02:34:37 -0400] 200
-[13/Sep/2012:02:32:49 -0400] 404 
-[13/Sep/2012:02:37:24 -0400] 200 
-[13/Sep/2012:02:38:12 -0400] 302 
-[13/Sep/2012:02:38:23 -0400] 200
-[13/Sep/2012:02:38:25 -0400] 200 
-[13/Sep/2012:02:38:26 -0400] 200 
-[13/Sep/2012:02:38:26 -0400] 200 
-[13/Sep/2012:02:38:26 -0400] 200 
-[13/Sep/2012:02:38:31 -0400] 200 
-[13/Sep/2012:02:38:28 -0400] 200 
-[13/Sep/2012:02:38:46 -0400] 200
-[13/Sep/2012:02:38:46 -0400] 200
-[13/Sep/2012:02:38:46 -0400] 200
-[13/Sep/2012:02:38:47 -0400] 200
-</code></pre>
-        </section>
-
-        <section>
-          <pre><code class="apache">
-  timestamp                 |errors
-----------------------------+-------------
-[13/Sep/2012:02:34:22 -0400] ██████
-[13/Sep/2012:02:34:37 -0400] █████
-[13/Sep/2012:02:32:49 -0400] ███████
-[13/Sep/2012:02:37:24 -0400] ████████
-[13/Sep/2012:02:38:12 -0400] ███████████
-[13/Sep/2012:02:38:23 -0400] ████████
-[13/Sep/2012:02:38:25 -0400] ███████
-[13/Sep/2012:02:38:26 -0400] ███████
-[13/Sep/2012:02:38:26 -0400] ███████████
-[13/Sep/2012:02:38:26 -0400] ████████
-[13/Sep/2012:02:38:31 -0400] ██████████
-[13/Sep/2012:02:38:28 -0400] █████████
-[13/Sep/2012:02:38:46 -0400] ███████
-[13/Sep/2012:02:38:46 -0400] ████████
-[13/Sep/2012:02:38:46 -0400] ████████
-[13/Sep/2012:02:38:47 -0400] ██████
-</code></pre>
-        </section>
-
-        <section>
-          <img src="images/frontend-response-codes.png">
+          <span class="fragment thin-it-out"></span>
+          <span class="fragment rotate"></span>
+          <span class="fragment plot-it"></span>
+          <span class="fragment graph"></span>
         </section> <!-- }}} -->
 
         <section>
-          <h2> how do we do it? </h2>
+          <h2> life of a log </h2>
+          <p> <img src="images/lifecycle.png" class="plain" width="700"> </p>
+          (as a real-time stream)
         </section>
 
         <section>
-          <img src="images/xkcd-perl.png" class="full">
-          <h2> wrong way </h2>
-        </section>
-
-        <section>
-          <h2> make it easy. </h2>
           <img src="images/logstash.png" class="plain">
-        </section>
-
-        <!-- shipping to metric outputs {{{ -->
-        <section>
-          <pre><code>179.44.34.142 - - [13/Sep/2012:02:32:49 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.10"</pre></code>
-          <h2 class="fragment" style="font-size: 2em;">response code: 200</h2>
-          <h2 class="fragment" style="font-size: 2em;">bytes sent: 40923996</h2>
+          <h3> how can logstash help? </h3>
         </section>
 
         <section>
-          <h2> input: file </h2>
-          <h2> filter: grok </h2>
-          <h2> output: statsd </h2>
+          logstash is open source, free, and awesome.
+        </section>
+
+        <section>
+          <h2> example: apache logs </h2>
+
+          <pre><code>217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+          </code></pre>
         </section>
 
         <section>
           <pre><code class="fragment-highlight"><span class="fragment">input {
   file {
     type =&gt; "web"
-<focus>    path =&gt; "/var/log/httpd/access.log"</focus>
+<focus>    path =&gt; "/var/log/httpd/access.log"</focus> 
   }
 }</span>
 
@@ -224,75 +148,134 @@ Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
   grok {
     type =&gt; "web"
 <focus>    pattern =&gt; "%{COMBINEDAPACHELOG}"</focus>  
+  }</span>
+<span class="fragment">
+  date {
+    type =&gt; "web"
+<focus>    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"</focus>  
   }
 }</span>
 
-<span class="fragment">output { 
-<focus> statsd { 
-    type =&gt; "web"
-    increment =&gt; "apache.response.%{response}"
-    count =&gt; [ "apache.bytes", "%{bytes}" ]
-  }
-</focus>}</span></code></pre>
+<span class="fragment">output {
+<focus>  elasticsearch { }</focus>
+}</span></code></pre>
         </section>
 
         <section>
-          <pre><code style="font-size: 34pt !important; line-height: 1em; ">output {
-  <img src="images/ganglia.png" class="plain"> {
-    metric =&gt; "apache.bytes"
-    value =&gt; "%{bytes}"
-  }
-}</code></pre>
+          <img src="images/kibana-logstash-downloads.png" class="full">
+          <br><br>
+          <h2> top downloads for logstash </h2>
         </section>
 
         <section>
-          <pre><code style="font-size: 34pt !important; line-height: 1em; ">output {
-  <img src="images/graphite.png" class="plain"> {
-    metrics =&gt; [ 
-      "apache.bytes", "%{bytes}" 
-    ]
-  }
-}</code></pre>
+          <img src="images/kibana-chef-agent.png" class="full">
+          <br><br>
+          <h2> folks install logstash with chef </h2>
         </section>
 
         <section>
-          <pre><code style="font-size: 34pt !important; line-height: 1em; ">output {
-  <img src="images/librato.png" class="plain"> {
-    counter =&gt; [ 
-      "apache.bytes", "%{bytes}" 
-    ]
-  }
-}</code></pre>
+          <img src="images/kibana-chef-hits-6min-each.png" class="full">
+          <br><br>
+          <h2> go deeper, zoom in </h2>
         </section>
 
         <section>
-          <pre><code style="font-size: 34pt !important; line-height: 1em; ">output {
-  opentsdb {
-    metrics =&gt; [
-      "apache.bytes", "%{bytes}"
-    ]
-  }
-}</code></pre>
-        </section> <!-- }}} -->
+          <h2> what else can we solve? </h2>
+        </section>
 
-        <section> <!-- input/output/filter plugin counts {{{ -->
-          <pre><code style="font-size: 28pt !important; line-height: 1em;">input {
-  # 27 input plugins
-  # events from any source
-}
+        <section>
+          <h2> /regex/ </h2> 
+        </section>
 
-filter {
-  # 24 filter plugins
-  # parse, modify, annotate events
-}
+        <section>
+          <h2> /what does this match/ </h2> 
+          <pre><code>(((\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) ((?!<[0-9])((?:2[0123]|[01][0-9])):((?:[0-5][0-9]))(?::((?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)))(?![0-9]))) (?:(<(\b(?:[0-9]+)\b).(\b(?:[0-9]+)\b)>) )?(((?:(\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|((((?:[\w._/%-]+))(?:\[(\b(?:[1-9][0-9]*)\b)\])?):)
+          </code></pre>
+        </section>
+        <section>
+          <h2> &nbsp; </h2>
+          <div>
+            <pre style="opacity: 0.3"><code>(((\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) ((?!<[0-9])((?:2[0123]|[01][0-9])):((?:[0-5][0-9]))(?::((?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)))(?![0-9]))) (?:(<(\b(?:[0-9]+)\b).(\b(?:[0-9]+)\b)>) )?(((?:(\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|((((?:[\w._/%-]+))(?:\[(\b(?:[1-9][0-9]*)\b)\])?):)</code></pre>
+            <span style="position: absolute; top: 4em; left: 2em;">
+              <h3> this regexp matches </h3>
+              <h2> common syslog logs on linux </h2>
+              <div class="fragment" style="position: absolute; top: 2em; left: 4em; border: 1px solid black; background-color: #374; padding: .5em; box-shadow: 0 0px 15px 15px rgba(0,0,0,0.2); border-radius: 15px;; width: 10em;">
+                <img src="images/trollface.png" class="plain" width="230">
+                <h3>(or does it?)</h3>
+              </div>
+            </span>
+          </div>
+        </section>
 
-output {
-  # 45 output plugins
-  # ship to any destination
-}</code></pre>
-        </section> <!-- }}} -->
+        <section>
+          <h2> how do you read this?</h2>
 
-        <!-- time rant + date filter  {{{ -->
+          <pre><code>Jan 28 07:01:03 frontend44 sshd[3897]: Accepted publickey ...
+
+<span class="fragment">  [timestamp]   [hostname] [program]: [ some kind of message ] </span>
+</code></pre>
+        </section>
+
+        <section>
+          <h2> grok saves you </h2>
+
+          <ul>
+            <li> over 100 patterns
+            <li> numbers, network addresses, urls, quoted strings, etc
+            <li> no 'regexp' knowledge necessary
+          <ul>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <ul>
+            <li> %{NUMBER:bytes}
+            <li> %{QUOTEDSTRING:referrer}
+            <li> %{URLPATHPARAM:request}
+          </li>
+        </section>
+
+        <section>
+          <h2> Not everything is a string </h2>
+
+          <ul>
+            <li> %{PATTERN:NAME:TYPE}
+            <li> %{NUMBER:bytes:int}
+            <li> %{NUMBER:duration:float}
+          </li>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <pre>
+Log:  Sep 17 02:40:14 carrera auditd: Audit daemon rotating logs
+
+Grok: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{SYSLOGPROG:program}: %{DATA:message}
+</pre>
+
+          <ul style="width: 100%">
+            <li class="fragment"><pre>SYSLOGTIMESTAMP: %{MONTH} +%{MONTHDAY} %{TIME}</pre>
+            <li class="fragment"><pre>HOSTNAME: \b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b)</pre>
+            <li class="fragment"><pre>SYSLOGPROG %{PROG:program}(?:\[%{POSINT:pid}\])?</pre>
+          </ul>
+        </section>
+
+        <section>
+          <h2> patterns with unit tests </h2>
+
+          <pre><code>Loaded suite test/alltests
+Started
+...................................
+Finished in 4.39923 seconds.
+
+35 tests, 72461 assertions, 0 failures, 0 errors
+           ↖↖↖↖
+            pattern correctness tests</code></pre>
+        </section>
+
+        <!-- time parsing -->
         <section>
           <h2> what time is it? </h2>
 
@@ -335,9 +318,18 @@ output {
     # Into 2002-08-05T13:51:24.000Z
 <focus>    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"</focus>  }
 }</code></pre>
-        </section> <!-- }}} -->
+        </section>
 
-        <section> <!-- multiline {{{ -->
+        <section>
+          <h2> no new time formats! </h2>
+          <div class="fragment">
+            <img src="images/psychoaxe.jpg">
+            <h2> seriously </h1>
+          </div>
+        </section>
+
+        <!-- multiline merge -->
+        <section>
           <h3> this is one event </h3>
           <pre><code>Exception in thread "main" Fooz$FancyPantsException
         at Fooz.bar(Fooz.java:14)
@@ -354,16 +346,40 @@ output {
     what =&gt; previous
   }
 }</code></pre></div>
-        </section> <!-- }}} -->
+        </section>
 
-        <section> <!-- negative apache time example {{{ -->
+        <!-- apache graph example -->
+        <section>
+          <h2> apache metrics </h2>
+          <pre><code>filter {
+  grok { 
+    type =&gt; "apache-access"
+    pattern =&gt; "%{COMBINEDAPACHELOG}" 
+  }
+}
+
+output {
+<focus>  statsd {</focus>
+    # Count one hit every event by response
+    #   Tracks 'apache.HOSTNAME.response.200' as a metric!
+<focus>    increment =&gt; "apache.%{@source_host}.response.%{response}"</focus>  }
+}</code></pre>
+          <p class="fragment">graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png" class="full">
+          <h2> apache→grok→statsd→graphite </h2>
+        </section>
+
+        <section>
           <img src="images/stats-negative-min.png" class="full">
-          <h2> negative request duration? </h2>
+          <h2> 'duration' less than zero?! </h2>
         </section>
 
         <section>
           <img src="images/apache-negative-duration.png" class="full">
-          <h2> less than zero seconds?! </h2>
+          <h2> whaaat. </h2>
         </section>
 
         <section>
@@ -371,62 +387,16 @@ output {
 
           <ul>
             <li class="fragment"> apache uses gettimeofday()
-            <li class="fragment"> ntp behaves badly with bad hardware clocks
-            <li class="fragment"> time jumps backwards == negative request time
+            <li class="fragment"> ntp skew affects gettimeofday()
+            <li class="fragment"> time skew backwards == negative request time
           </ul>
-        </section> <!-- }}} -->
-
-        <section> <!-- querying from graphite {{{ -->
-          <h1> logstash </h1>
-          <h2> solving serious problems </h2>
         </section>
 
         <section>
-          <img src="images/vs.jpg" class="plain">
-          <h2> bieber vs gangnam </h2>
+          <h2> logstash power </h2>
         </section>
 
         <section>
-          <pre><code style="font-size: 28pt !important; line-height: 1em;">input {
-  twitter { # live twitter stream
-    type =&gt; "twitter"
-    user =&gt; "secret"
-    password =&gt; "secret"
-    keywords =&gt; [ "bieber", "gangnam" ]
-  }
-}
-output {
-  elasticsearch { }
-}</code></pre>
-        </section>
-
-        <section>
-          <h2> query  elasticsearch </h2>
-          <h2> render in graphite </h2>
-
-          <h2 style="text-transform: inherit !important;"> logstashHits("some query") </h2>
-        </section>
-
-        <section>
-          <img src="images/graphite-bieber-gangnam.png" class="plain full">
-        </section>
-
-        <section>
-          <img src="images/graphite-bieber-gangnam-moving-average.png" class="plain full">
-          <h2 style="text-transform: inherit !important">movingAverage()</h2>
-        </section>
-
-        <section>
-          <img src="images/graphite-bieber-gangnam-ratio.png" class="plain full">
-          <h2 style="text-transform: inherit !important">divideSeries()</h2>
-        </section>
-
-        <section>
-          <img src="images/logstash-apache-kibana.png" class="full plain">
-          <img src="images/logstash-in-graphite.png" class="full plain">
-        </section> <!-- }}} -->
-
-        <section> <!-- agent pipe model {{{ -->
           <blockquote> logstash is a unix pipe on steroids </blockquote>
           <small>- John Vincent (@lusis)</small>
         </section>
@@ -448,48 +418,17 @@ output {
         <section>
           <h2> outputs </h2>
           send events somewhere else
-        </section> <!-- }}} -->
+        </section>
 
-        <section> <!-- scaling {{{ -->
+        <section>
           <h2> scaling out </h2>
           <img src="images/distributed.png" style="width: 100%;">
         </section>
 
+  <!-- Project Focus -->
         <section>
-          <h2> scaling logstash (transport) </h2>
-
-          <ul>
-            <li> inputs with matching outputs </li>
-            <li> redis, zeromq, stomp, amqp, irc, xmpp </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2> scaling logstash (storage) </h2>
-
-          <ul>
-            <li> elasticsearch scales horizontally </li>
-          </ul>
-          </section> <!-- }}} -->
-
-        <section>
-          <h2> live demo? </h2>
-        </section>
-
-        <section> <!-- project focus, etc {{{ -->
           <h1> project focuses </h1>
           <h2> function, design, community </h2>
-        </section>
-
-        <section>
-          <h3 class="lead-in"> feature: </h3>
-          <h2> transport and process events <br> to and from anywhere. </h2>
-          <h3> (in any format) </h3>
-        </section>
-
-        <section>
-          <h3 class="lead-in"> feature: </h3>
-          <h2> provide search and analytics </h2>
         </section>
 
         <section>
@@ -513,6 +452,41 @@ output {
         </section>
 
         <section>
+          <h3 class="lead-in"> community tools: </h3>
+          <ul>
+            <li> <a href="http://kibana.org/">kibana</a> (Rashid Khan)
+            <li> <a href="http://forge.puppetlabs.com/simonmcc/logstash">puppet module</a> (Simon McCartney, Kris Buytaert)
+            <li> <a href="https://github.com/jedi4ever/logstash-cli">logstash-cli</a> (Patrick Debois)
+          </ul>
+        </section>
+
+  <!-- dreamhost stuff -->
+        <section>
+          <h2> logstash @ DreamHost </h2>
+
+          <ul>
+            <li class="fragment"> 40k events/sec peak
+            <li class="fragment"> 450 million events/day
+            <li class="fragment"> 300gb data/day
+            <li class="fragment"> 600 servers 
+            <li class="fragment"> 7 logstash/elasticsearch servers
+          </ul>
+        </section>
+
+        <section>
+          <h2> logstash @ DreamHost (plan) </h2>
+
+          <ul>
+            <li class="fragment"> Trace problems through infrastructure events
+            <li class="fragment"> Reduce Ops team 'human keyboard'
+            <li class="fragment"> Gives log access to other teams.
+            <li class="fragment"> Provide real-time visibility to customers.
+            <li class="fragment"> Thousands of servers.
+            <li class="fragment"> Billions of events per day.
+          </ul>
+        </section>
+
+        <section>
           <h2> get your 'stash on </h2>
 
           <ul>
@@ -521,10 +495,22 @@ output {
             <li> #logstash on freenode irc (I am 'whack')
             <li> <a href="http://logstash.jira.com">logstash.jira.com</a>
           </ul>
-          <hr>
-          Questions? Now or later (twitter: @jordansissel)
-        </section> <!-- }}} -->
 
+          <hr>
+
+          Questions? Now or later (twitter: @jordansissel)
+
+        </section>
+
+        <section>
+          <h2> references </h2>
+
+          <ul>
+            <li> xkcd perl comic: https://xkcd.com/208/
+            <li> outdoor printer smash gif clip from the Office Space movie
+          </ul>
+
+          (omitted references are unintentional)
       </div> <!-- end of slide area -->
 
       <!-- The navigational controls UI -->
@@ -539,8 +525,8 @@ output {
       <div class="progress"><span></span></div>
     </div>
 
-    <!-- javascript loading {{{ -->
     <script src="lib/js/head.min.js"></script>
+    <script src="js/jquery.min.js"></script>
 
     <script>
       // Load reveal.js as well as a classList polyfill if needed
@@ -573,17 +559,17 @@ output {
             var newtext = "";
             apachelogs.text().split("\n").forEach(function(line) {
               var result = re.exec(line)
-              console.log(result)
               if (!result) { return; }
               //console.log(line);
               newtext += "<span class='thin'><span>" + result[1] + "</span></span>";
-              newtext += "<span class='timestamp'>" + result[2].replace(/.....$/g, "") + "</span>";
+              newtext += "<span class='timestamp'>" + result[2] + "</span>"; //;.replace(/.....$/g, "") + "</span>";
               newtext += "<span class='thin'>" + result[3] + "</span>";
               newtext += " <span class='response'>" + result[4] + "</span>";
               newtext += "<span class='thin'>" + result[5] + "</span>";
               newtext += "\n";
             });
 
+            console.log(newtext)
             apachelogs.html(newtext);
             setTimeout(function() {
               apachelogs.find(".thin").addClass("fade-out")
@@ -603,7 +589,6 @@ output {
           }
 
         });
-
         // Full list of configuration options available here:
         // https://github.com/hakimel/reveal.js#configuration
         Reveal.initialize({
@@ -627,9 +612,9 @@ output {
       if( window.location.host === 'localhost:1947' ) {
         head.js( 'socket.io/socket.io.js', 'plugin/speakernotes/client.js' );
       }
+
+
     </script>
-    <script src="js/jquery.min.js"></script>
     
-    <!-- }}} -->
   </body>
 </html>
