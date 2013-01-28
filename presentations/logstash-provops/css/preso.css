@@ -1,0 +1,48 @@
+
+.reveal section img.plain {
+  background: none;
+  border: none;
+  
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.unreadable {
+  font-size: 0.3em !important;
+  overflow: hidden;
+}
+
+focus {
+  display: inherit;
+  margin: 0;
+  padding: 0;
+  background-color: #072;
+  font-weight: bold;
+  width: 100%;
+}
+
+pre, code {
+  width: 100% !important;
+  white-space: pre-wrap;
+}
+
+code {
+  white-space: pre-wrap;
+  font-size: 120% !important;
+}
+
+.lead-in {
+  text-align: left;
+  padding-bottom: 1em;
+}
+
+.full {
+  width: 110%;
+  margin-left: -50px !important;
+  /*margin-top: -70px !important;*/
+}
+
+pre.full {
+  margin-top: -110px;
+}

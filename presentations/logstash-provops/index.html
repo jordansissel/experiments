@@ -1,0 +1,666 @@
+<!doctype html>  
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    
+    <title>logs and logstash @ puppetconf 2012</title>
+
+    <meta name="description" content="logs/logstash presentation for puppetconf 2012">
+    <meta name="author" content="Jordan Sissel">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+    <link rel="stylesheet" href="css/preso.css">
+
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+  </head>
+  
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>a log of hope</h1>
+          <div>
+            <img src="images/logstash.png" class="plain" style="float: left; margin-left: 8em">
+          </div>
+          <div style="float: right">
+            <!-- alignment is hard, let's go shopping! -->
+            <br> <br> <br> <br> <br> <br> <br>
+            <p style="width: 100%; text-align: right">@jordansissel</span>
+            <p style="width: 100%; text-align: right">DreamHost</span>
+          </div>
+        </section>
+        
+        <section>
+          <h2> who am I? </h2>
+
+          <ul>
+            <li> Czar of Logging @ DreamHost
+            <li> full-time work on logstash 
+            <li> sysadmin for 8 years
+          </ul>
+        </section>
+
+        <section>
+          <h2> things I like </h2>
+
+          <div>
+            <span style="position: absolute; left:2em; background-color: #232628" class="fragment"> 
+              <img src="images/nethack.png" style="width: 100%">
+              <h2> nethack </h2>
+            </span>
+            <span style="position: absolute; left:2em; background-color: #232628" class="fragment">
+              <img src="images/hannah.jpg" style="width: 100%">
+              <h2> babies </h2>
+            </span>
+            <span style="position: absolute; left:2em; background-color: #232628" class="fragment">
+            </span>
+          </span>
+        </section>
+
+  <!-- intro -->
+        <section>
+          <h2> first: a story </h2>
+
+          and how everything went wrong.
+        </section>
+
+        <section>
+          <pre class="unreadable"><code>108.166.15.188 - - [13/Sep/2012:02:34:22 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.8 (ruby-1.9.3-p0; ohai-0.6.10; x86_64-linux; +http://opscode.com)"
+50.56.197.244 - - [13/Sep/2012:02:34:37 -0400] "GET / HTTP/1.1" 200 41687 "-" "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt; DTS Agent"
+89.96.171.210 - - [13/Sep/2012:02:32:49 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.10 (ruby-1.9.3-p194; ohai-0.6.4; amd64-freebsd8; +http://opscode.com)"
+37.57.128.238 - - [13/Sep/2012:02:37:24 -0400] "GET / HTTP/1.1" 200 41687 "-" "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt; DTS Agent"
+199.21.99.109 - - [13/Sep/2012:02:38:12 -0400] "GET /blog/tags/packaging HTTP/1.1" 200 15152 "-" "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)"
+180.76.6.232 - - [13/Sep/2012:02:38:23 -0400] "GET /blog/tags/wrt54gl HTTP/1.1" 200 8867 "-" "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"
+217.227.233.68 - - [13/Sep/2012:02:38:25 -0400] "GET /articles/ssh-security/ HTTP/1.1" 200 16543 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /reset.css HTTP/1.1" 200 1015 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /style2.css HTTP/1.1" 200 4877 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+217.227.233.68 - - [13/Sep/2012:02:38:31 -0400] "GET /images/web/2009/banner.png HTTP/1.1" 200 52315 "http://www.semicomplete.com/style2.css" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+184.73.137.50 - - [13/Sep/2012:02:38:28 -0400] "GET /files/logstash/logstash-1.1.1-monolithic.jar HTTP/1.1" 200 53813805 "-" "Chef Client/0.10.8 (ruby-1.8.7-p334; ohai-0.6.10; i686-linux; +http://opscode.com)"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/ HTTP/1.1" 200 4483 "http://news.ycombinator.com/item?id=4417660" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/bootstrap/css/bootstrap-responsive.min.css HTTP/1.1" 200 7680 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/style.css HTTP/1.1" 200 2715 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/jquery.ui.datepicker.css HTTP/1.1" 200 33035 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/excanvas.min.js HTTP/1.1" 200 19415 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 71463 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.history.js HTTP/1.1" 200 6466 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/css/jquery-ui-1.8.16.custom.css HTTP/1.1" 200 50829 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.flot.min.js HTTP/1.1" 200 37554 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.flot.selection.min.js HTTP/1.1" 200 3532 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.smartresize.js HTTP/1.1" 200 1123 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/iso8601.min.js HTTP/1.1" 200 486 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/safebase64.js HTTP/1.1" 200 3264 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.min.js HTTP/1.1" 200 93868 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/js/lib/json2.js HTTP/1.1" 200 17541 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/js/ajax.js HTTP/1.1" 200 37584 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery-ui-timepicker-addon.js HTTP/1.1" 200 50902 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery.ui.datepicker.js HTTP/1.1" 200 76332 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/bootstrap/js/bootstrap-dropdown.js HTTP/1.1" 200 2558 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/bootstrap/js/bootstrap.js HTTP/1.1" 200 47395 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/js/lib/jquery.ui.accordion.js HTTP/1.1" 200 16265 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:46 -0400] "GET /kibana/js/lib/jquery-ui-1.8.16.custom.min.js HTTP/1.1" 200 196695 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/loader2.php?page=eyJzZWFyY2giOiIiLCJmaWVsZHMiOlsiIl0sIm9mZnNldCI6MCwidGltZWZyYW1lIjoiNDggaG91cnMiLCJncmFwaG1vZGUiOiJjb3VudCIsInN0YW1wIjoxMzQ1NjQ3NjQ3ODU5fQ==&_=1347518472674 HTTP/1.1" 200 576 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/logo.png HTTP/1.1" 200 1051 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/css/images/ui-icons_222222_256x240.png HTTP/1.1" 200 4369 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/kibana_banner.png HTTP/1.1" 200 16930 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/feed.png HTTP/1.1" 200 689 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/csv.gif HTTP/1.1" 200 154 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/stream.png HTTP/1.1" 200 569 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/images/ajax-loader.gif HTTP/1.1" 200 723 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:47 -0400] "GET /kibana/favicon.ico HTTP/1.1" 200 4286 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:55 -0400] "GET /kibana/loader2.php?page=eyJzZWFyY2giOiIiLCJmaWVsZHMiOlsiIl0sIm9mZnNldCI6MCwidGltZWZyYW1lIjoiYWxsIiwiZ3JhcGhtb2RlIjoiY291bnQiLCJzdGFtcCI6MTM0NzUxODQ4MDExOX0=&_=1347518480123 HTTP/1.1" 200 580 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+24.24.235.59 - - [13/Sep/2012:02:38:56 -0400] "GET /kibana/loader2.php?page=eyJzZWFyY2giOiIiLCJmaWVsZHMiOlsiIl0sIm9mZnNldCI6MCwidGltZWZyYW1lIjoiNDggaG91cnMiLCJncmFwaG1vZGUiOiJjb3VudCIsInN0YW1wIjoxMzQ1NjQ3NjQ3ODU5fQ==&_=1347518481745 HTTP/1.1" 200 576 "http://semicomplete.com/kibana/" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+50.19.56.78 - - [13/Sep/2012:02:38:54 -0400] "GET /files/logstash/logstash-1.1.1-monolithic.jar HTTP/1.1" 200 53813805 "-" "Chef Client/0.10.8 (ruby-1.8.7-p334; ohai-0.6.12; i686-linux; +http://opscode.com)"
+178.1.226.1 - - [13/Sep/2012:02:39:23 -0400] "GET /favicon.ico HTTP/1.1" 200 3638 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1"
+108.166.15.188 - - [13/Sep/2012:02:40:07 -0400] "GET /files/logstash/logstash-1.1.0-monolithic.jar HTTP/1.1" 200 40923996 "-" "Chef Client/0.10.8 (ruby-1.9.3-p0; ohai-0.6.10; x86_64-linux; +http://opscode.com)"
+74.125.183.29 - - [13/Sep/2012:02:40:15 -0400] "GET /?flav=rss20 HTTP/1.1" 200 32996 "-" "FeedBurner/1.0 (http://www.FeedBurner.com)"
+178.77.103.6 - - [13/Sep/2012:02:40:16 -0400] "GET /blog HTTP/1.1" 200 41691 "-" "Tiny Tiny RSS/1.5.5 (http://tt-rss.org/)"
+174.37.213.34 - - [13/Sep/2012:02:40:48 -0400] "GET /blog HTTP/1.1" 200 41691 "-" "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.19; aggregator:Spinn3r (Spinn3r 3.1); http://spinn3r.com/robot) Gecko/2010040121 Firefox/3.0.19"
+50.16.86.251 - - [13/Sep/2012:02:40:51 -0400] "GET /files/logstash/logstash-1.1.1-monolithic.jar HTTP/1.1" 200 53813805 "-" "Chef Client/0.10.8 (ruby-1.8.7-p334; ohai-6.14.0; i686-linux; +http://opscode.com)"
+          </code></pre>
+        </section>
+
+        <section>
+          <img src="images/nagios-sms1.png" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <img src="images/nagios-sms2.png" class="fragment" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <img src="images/nagios-sms3.png" class="fragment" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <img src="images/nagios-sms4.png" class="fragment" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <img src="images/nagios-sms5.png" class="fragment" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <img src="images/nagios-sms6.png" class="fragment" style="margin-top: -100px; width:600px; position: absolute; left: 3em;">
+          <h1 class="fragment" style="position: absolute; top:2em; left:0em; background-color: black; border: 1px solid white; width: 100%;">
+            rm -rf all the logs
+          </h1>
+        </section>
+
+        <section>
+          <h2> what else sucks? </h2>
+        </section>
+
+        <section>
+          <img src="images/pc-load-letter.jpg">
+          <h2> shitty error messages </h2>
+        </section>
+
+        <section>
+          <img src="images/office-space-printer-beat-down-gif.gif" style="width: 100%">
+        </section>
+
+        <section>
+          <h3 class="lead-in"> the next day: </h3>
+
+          <blockquote>We got an angry customer! HELP!</blockquote>
+        </section>
+
+        <section>
+          <img src="images/xkcd-perl.png" class="full">
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png" class="full">
+        </section> 
+        <section>
+          <img src="images/xkcd-perlswing-many.png">
+          <p>do this every day?</p>
+        </section>
+
+        <section>
+          <img src="images/computer-keyboard-jacket.jpg" style="border: 0px;">
+        </section>
+
+        <section>
+          <h1>&#x2639;</h1>
+          don't be a human keyboard.
+        </section>
+
+        <section>
+          <h1> terminology </h1>
+          
+          (for the purpose of this discussion)
+        </section>
+
+        <section>
+          <img src="images/logs.jpg" width="700">
+          <h2> what is a log? </h2>
+
+          <small> <a href="http://www.flickr.com/photos/susieblackmon/3389702050/">(photo by Susie Blackmon)</a> </small>
+        </section>
+
+        <section>
+          <pre><code style="font-size: 120%">
+Sep 16 05:03:21 carrera kernel: md: md2: data-check done.
+<span class="fragment">(  timestamp  )</span> <span class="fragment">(      something that happened          )</span>
+          </code></pre>
+          <h2 class="fragment">timestamp + data = log</h2>
+        </section>
+
+        <section>
+          <h2> life of a log </h2>
+          <p> <img src="images/lifecycle.png" class="plain" width="700"> </p>
+          (as a real-time stream)
+        </section>
+
+        <section>
+          <img src="images/logstash.png" class="plain">
+          <h3> how can logstash help? </h3>
+        </section>
+
+        <section>
+          logstash is open source, free, and awesome.
+        </section>
+
+        <section>
+          <h2> example: apache logs </h2>
+
+          <pre><code>217.227.233.68 - - [13/Sep/2012:02:38:26 -0400] "GET /images/jordan-80.png HTTP/1.1" 200 6146 "http://www.semicomplete.com/articles/ssh-security/" "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0"
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="fragment-highlight"><span class="fragment">input {
+  file {
+    type =&gt; "web"
+<focus>    path =&gt; "/var/log/httpd/access.log"</focus> 
+  }
+}</span>
+
+<span class="fragment">filter {
+  grok {
+    type =&gt; "web"
+<focus>    pattern =&gt; "%{COMBINEDAPACHELOG}"</focus>  
+  }</span>
+<span class="fragment">
+  date {
+    type =&gt; "web"
+<focus>    timestamp =&gt; "dd/MMM/yyyy:HH:mm:ss Z"</focus>  
+  }
+}</span>
+
+<span class="fragment">output {
+<focus>  elasticsearch { }</focus>
+}</span></code></pre>
+        </section>
+
+        <section>
+          <img src="images/kibana-logstash-downloads.png" class="full">
+          <br><br>
+          <h2> top downloads for logstash </h2>
+        </section>
+
+        <section>
+          <img src="images/kibana-chef-agent.png" class="full">
+          <br><br>
+          <h2> folks install logstash with chef </h2>
+        </section>
+
+        <section>
+          <img src="images/kibana-chef-hits-6min-each.png" class="full">
+          <br><br>
+          <h2> go deeper, zoom in </h2>
+        </section>
+
+        <section>
+          <h2> what else can we solve? </h2>
+        </section>
+
+        <section>
+          <h2> /regex/ </h2> 
+        </section>
+
+        <section>
+          <h2> /what does this match/ </h2> 
+          <pre><code>(((\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) ((?!<[0-9])((?:2[0123]|[01][0-9])):((?:[0-5][0-9]))(?::((?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)))(?![0-9]))) (?:(<(\b(?:[0-9]+)\b).(\b(?:[0-9]+)\b)>) )?(((?:(\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|((((?:[\w._/%-]+))(?:\[(\b(?:[1-9][0-9]*)\b)\])?):)
+          </code></pre>
+        </section>
+        <section>
+          <h2> &nbsp; </h2>
+          <div>
+            <pre style="opacity: 0.3"><code>(((\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) ((?!<[0-9])((?:2[0123]|[01][0-9])):((?:[0-5][0-9]))(?::((?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)))(?![0-9]))) (?:(<(\b(?:[0-9]+)\b).(\b(?:[0-9]+)\b)>) )?(((?:(\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|((((?:[\w._/%-]+))(?:\[(\b(?:[1-9][0-9]*)\b)\])?):)</code></pre>
+            <span style="position: absolute; top: 4em; left: 2em;">
+              <h3> this regexp matches </h3>
+              <h2> common syslog logs on linux </h2>
+              <div class="fragment" style="position: absolute; top: 2em; left: 4em; border: 1px solid black; background-color: #374; padding: .5em; box-shadow: 0 0px 15px 15px rgba(0,0,0,0.2); border-radius: 15px;; width: 10em;">
+                <img src="images/trollface.png" class="plain" width="230">
+                <h3>(or does it?)</h3>
+              </div>
+            </span>
+          </div>
+        </section>
+
+        <section>
+          <h2> how do you read this?</h2>
+
+          <pre><code>Jan 28 07:01:03 frontend44 sshd[3897]: Accepted publickey ...
+
+<span class="fragment">  [timestamp]   [hostname] [program]: [ some kind of message ] </span>
+</code></pre>
+        </section>
+
+        <section>
+          <h2> grok saves you </h2>
+
+          <ul>
+            <li> over 100 patterns
+            <li> numbers, network addresses, urls, quoted strings, etc
+            <li> no 'regexp' knowledge necessary
+          <ul>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <ul>
+            <li> %{NUMBER:bytes}
+            <li> %{QUOTEDSTRING:referrer}
+            <li> %{URLPATHPARAM:request}
+          </li>
+        </section>
+
+        <section>
+          <h2> Not everything is a string </h2>
+
+          <ul>
+            <li> %{PATTERN:NAME:TYPE}
+            <li> %{NUMBER:bytes:int}
+            <li> %{NUMBER:duration:float}
+          </li>
+        </section>
+
+        <section>
+          <h2> %{SYNTAX:SEMANTIC} </h2>
+
+          <pre>
+Log:  Sep 17 02:40:14 carrera auditd: Audit daemon rotating logs
+
+Grok: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{SYSLOGPROG:program}: %{DATA:message}
+</pre>
+
+          <ul style="width: 100%">
+            <li class="fragment"><pre>SYSLOGTIMESTAMP: %{MONTH} +%{MONTHDAY} %{TIME}</pre>
+            <li class="fragment"><pre>HOSTNAME: \b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b)</pre>
+            <li class="fragment"><pre>SYSLOGPROG %{PROG:program}(?:\[%{POSINT:pid}\])?</pre>
+          </ul>
+        </section>
+
+        <section>
+          <h2> patterns with unit tests </h2>
+
+          <pre><code>Loaded suite test/alltests
+Started
+...................................
+Finished in 4.39923 seconds.
+
+35 tests, 72461 assertions, 0 failures, 0 errors
+           ↖↖↖↖
+            pattern correctness tests</code></pre>
+        </section>
+
+        <!-- time parsing -->
+        <section>
+          <h2> what time is it? </h2>
+
+          <hr>
+
+          <table>
+            <tr>
+              <td class="fragment">1304060505
+              <td class="fragment" nowrap>29/Apr/2011:07:05:26 +0000
+            <tr>
+              <td class="fragment" nowrap>Fri, 21 Nov 1997 09:55:06 -0600
+              <td class="fragment">Oct 11 20:21:47
+            <tr>
+              <td class="fragment">020805 13:51:24
+              <td class="fragment">110429.071055,118
+            <tr>
+              <td class="fragment">@4000000037c219bf2ef02e94
+            </tr>
+          </table>
+
+          <hr>
+
+          <h3 class="fragment">
+            logstash date filter fixes this bullshit
+          </h3>
+        </section>
+
+        <section>
+          <h2> date fixing </h2>
+
+          <ul>
+            <li> standards: ISO8601 / RFC3339 / xs:dateTime 
+            <li> Example: 2012-09-19T22:14:30.425-0800
+            <li> unified timestamp format for searching/sorting.
+          </ul>
+
+          <pre><code>filter {
+  date {
+    # Turn 020805 13:51:24
+    # Into 2002-08-05T13:51:24.000Z
+<focus>    mysqltimestamp =&gt; "YYMMdd HH:mm:ss"</focus>  }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> no new time formats! </h2>
+          <div class="fragment">
+            <img src="images/psychoaxe.jpg">
+            <h2> seriously </h1>
+          </div>
+        </section>
+
+        <!-- multiline merge -->
+        <section>
+          <h3> this is one event </h3>
+          <pre><code>Exception in thread "main" Fooz$FancyPantsException
+        at Fooz.bar(Fooz.java:14)
+        at Fooz.foo(Fooz.java:10)
+        at Fooz.main(Fooz.java:6)</code></pre>
+
+          <div class="fragment">
+            <p>Solution:</p>
+            <pre><code>filter {
+  multiline {
+    # If the message starts with whitespace,
+    pattern =&gt; "^\s"
+    # it belongs to the previous line.
+    what =&gt; previous
+  }
+}</code></pre></div>
+        </section>
+
+        <!-- apache graph example -->
+        <section>
+          <h2> apache metrics </h2>
+          <pre><code>filter {
+  grok { 
+    type =&gt; "apache-access"
+    pattern =&gt; "%{COMBINEDAPACHELOG}" 
+  }
+}
+
+output {
+<focus>  statsd {</focus>
+    # Count one hit every event by response
+    #   Tracks 'apache.HOSTNAME.response.200' as a metric!
+<focus>    increment =&gt; "apache.%{@source_host}.response.%{response}"</focus>  }
+}</code></pre>
+          <p class="fragment">graphite, ganglia, circonus, boundary, librato, opentsdb, and graylog2<?p>
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png" class="full">
+          <h2> apache→grok→statsd→graphite </h2>
+        </section>
+
+        <section>
+          <img src="images/stats-negative-min.png" class="full">
+          <h2> 'duration' less than zero?! </h2>
+        </section>
+
+        <section>
+          <img src="images/apache-negative-duration.png" class="full">
+          <h2> whaaat. </h2>
+        </section>
+
+        <section>
+          <h2> request duration &lt; 0 !?! </h2>
+
+          <ul>
+            <li class="fragment"> apache uses gettimeofday()
+            <li class="fragment"> ntp skew affects gettimeofday()
+            <li class="fragment"> time skew backwards == negative request time
+          </ul>
+        </section>
+
+        <section>
+          <h2> logstash power </h2>
+        </section>
+
+        <section>
+          <blockquote> logstash is a unix pipe on steroids </blockquote>
+          <small>- John Vincent (@lusis)</small>
+        </section>
+
+        <section>
+          <h2> 27 inputs | 23 filters | 45 outputs </h2>
+        </section>
+
+        <section>
+          <h2> inputs </h2>
+          where events come from
+        </section>
+
+        <section>
+          <h2> filters </h2>
+          process and modify events
+        </section>
+
+        <section>
+          <h2> outputs </h2>
+          send events somewhere else
+        </section>
+
+        <section>
+          <h2> scaling out </h2>
+          <img src="images/distributed.png" style="width: 100%;">
+        </section>
+
+  <!-- Project Focus -->
+        <section>
+          <h1> project focuses </h1>
+          <h2> function, design, community </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash should fit your infrastructure </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> design: </h3>
+          <h2> logstash is extendable </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> if a newbie has a bad time, it's a bug </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community: </h3>
+          <h2> contributions: more than code </h2>
+        </section>
+
+        <section>
+          <h3 class="lead-in"> community tools: </h3>
+          <ul>
+            <li> <a href="http://kibana.org/">kibana</a> (Rashid Khan)
+            <li> <a href="http://forge.puppetlabs.com/simonmcc/logstash">puppet module</a> (Simon McCartney, Kris Buytaert)
+            <li> <a href="https://github.com/jedi4ever/logstash-cli">logstash-cli</a> (Patrick Debois)
+          </ul>
+        </section>
+
+  <!-- dreamhost stuff -->
+        <section>
+          <h2> logstash @ DreamHost </h2>
+
+          <ul>
+            <li class="fragment"> 40k events/sec peak
+            <li class="fragment"> 450 million events/day
+            <li class="fragment"> 300gb data/day
+            <li class="fragment"> 600 servers 
+            <li class="fragment"> 7 logstash/elasticsearch servers
+          </ul>
+        </section>
+
+        <section>
+          <h2> logstash @ DreamHost (plan) </h2>
+
+          <ul>
+            <li class="fragment"> Trace problems through infrastructure events
+            <li class="fragment"> Reduce Ops team 'human keyboard'
+            <li class="fragment"> Gives log access to other teams.
+            <li class="fragment"> Provide real-time visibility to customers.
+            <li class="fragment"> Thousands of servers.
+            <li class="fragment"> Billions of events per day.
+          </ul>
+        </section>
+
+        <section>
+          <h2> get your 'stash on </h2>
+
+          <ul>
+            <li> <a href="http://logstash.net/">logstash.net</a>
+            <li> logstash-users@googlegroups.com
+            <li> #logstash on freenode irc (I am 'whack')
+            <li> <a href="http://logstash.jira.com">logstash.jira.com</a>
+          </ul>
+
+          <hr>
+
+          Questions? Now or later (twitter: @jordansissel)
+
+        </section>
+
+        <section>
+          <h2> references </h2>
+
+          <ul>
+            <li> xkcd perl comic: https://xkcd.com/208/
+            <li> outdoor printer smash gif clip from the Office Space movie
+          </ul>
+
+          (omitted references are unintentional)
+      </div> <!-- end of slide area -->
+
+      <!-- The navigational controls UI -->
+      <aside class="controls">
+        <a class="left" href="#">&#x25C4;</a>
+        <a class="right" href="#">&#x25BA;</a>
+        <a class="up" href="#">&#x25B2;</a>
+        <a class="down" href="#">&#x25BC;</a>
+      </aside>
+
+      <!-- Presentation progress bar -->
+      <div class="progress"><span></span></div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+
+    <script>
+      // Load reveal.js as well as a classList polyfill if needed
+      head.js( !document.body.classList ? 'lib/js/classList.js' : null )
+        .js( 'js/reveal.js', function() {
+
+        // Parse the query string into a key/value object
+        var query = {};
+        location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+          query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+        } );
+
+        // Fires when a slide with data-state=customevent is activated
+        Reveal.addEventListener( 'customevent', function() {
+          console.log( '"customevent" has fired' );
+        } );
+
+        // Fires each time a new slide is activated
+        Reveal.addEventListener( 'slidechanged', function( event ) {
+          // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+        } );
+
+        // Full list of configuration options available here:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+          controls: true,
+          progress: true,
+          history: true,
+          
+          theme: "default", // default/neon/beige
+          transition: "linear" 
+        });
+
+      } );
+      
+      // Load highlight.js for syntax highlighting of code samples
+      //head.js( 'lib/js/highlight.js', function() { 
+        //hljs.initHighlightingOnLoad(); 
+      //} );
+
+      // If we're runnning the notes server we need to include some additional JS
+      // TODO Is there a better way to determine if we're running the notes server?
+      if( window.location.host === 'localhost:1947' ) {
+        head.js( 'socket.io/socket.io.js', 'plugin/speakernotes/client.js' );
+      }
+
+
+    </script>
+    
+  </body>
+</html>
