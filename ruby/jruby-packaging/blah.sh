@@ -1,26 +1,45 @@
 #!/bin/sh
 
-cp ~/build/jruby/lib/jruby-complete.jar .
+jar=example.jar
+echo "Copying jar"
+cp ~/build/jruby/lib/jruby-complete.jar $jar
 
+echo "Generating runner"
 cat > runner.rb <<RUBY
-start = Time.now
-begin
-  require "geoip"
-rescue LoadError => e
-  puts e
+
+def boomstick(path)
+  start = Time.now
+  begin
+    require(path)
+  rescue LoadError => e
+    puts e.class => e.to_s
+  end
+  duration = Time.now - start
+  puts "require(#{path}) took #{duration}"
 end
-duration = Time.now - start
-puts "Duration: #{duration}"
+
+boomstick("geoip") # this should succeed
+boomstick("geoip") # do it twice to time it
+boomstick("ftw") # another success
+boomstick("json") # another success
+boomstick("this-does-not-exist") # show failed load case
+boomstick("this-does-not-exist") # show failed load case x2
 RUBY
 
-# Add the gems
-jar uf jruby-complete.jar -C /home/jls/projects/logstash/vendor/bundle/jruby/1.9 gems
-# Compile runner.rb
-java -jar jruby-complete.jar -S jrubyc runner.rb
-# Set it as the entry point
-jar uf jruby-complete.jar runner.class
-jar ufe jruby-complete.jar runner
-#jar i jruby-complete.jar
+echo "Adding gems to the jar"
+jar uf $jar \
+  -C /home/jls/projects/logstash/vendor/bundle/jruby/1.9 gems \
+  -C /home/jls/projects/logstash/vendor/bundle/jruby/1.9 specifications
 
-java -jar jruby-complete.jar
-GEM_HOME="file://$PWD/jruby-complete.jar!gems" java -jar jruby-complete.jar
+echo "Compiling runner"
+java -jar $jar -S jrubyc runner.rb
+# Set it as the entry point
+
+echo "Adding runner.class to the jar"
+jar uf $jar runner.class
+
+echo "Setting runner as entry point"
+jar ufe $jar runner
+
+#echo "Indexing jar"
+#jar i $jar
