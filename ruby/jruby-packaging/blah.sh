@@ -23,4 +23,4 @@ jar ufe $jar runner
 #jar i $jar
 
 echo "Running jar"
-java -jar $jar
+java -jar $jar | tee out
