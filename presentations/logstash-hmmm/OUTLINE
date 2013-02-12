@@ -1,0 +1,40 @@
+* intro
+
+* log problem: access
+  * ops has root, thus has access, 
+  * restricted access:
+    * infosec policy restricts it
+    * infrastructure has limited access control
+  * customer support needs it.
+  * devs need it
+  * sales needs it
+  * finance needs it
+
+* log problem: vendors
+  * 'log manuals'
+  * no consistency
+
+* log problem: consumption
+  * expert knowledge required to understand logs
+  * unknown structure
+  * crazy timestamps
+
+* log problem: curation
+  * where to put logs?
+  * how long do you need to keep them?
+  * in what form should you keep them?
+
+* log problem: compliance
+  * PCI, Sarbanes-Oxley, FISMA 
+
+* logstash
+  * pipeline
+    * inputs -> filters -> outputs
+  * kibana
+
+* community
+  * newbies have a bad time? It's a bug
+  * irc, mailling list
+  * book
+  * cookbook
+  * kibana, logstash-cli, puppet 
