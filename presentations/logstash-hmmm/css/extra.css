@@ -19,3 +19,10 @@ img.full {
 .bold {
   font-weight: bold !important;
 }
+
+table.list {
+  margin: auto;
+}
+table.list td {
+  padding-left: 1em;
+}
