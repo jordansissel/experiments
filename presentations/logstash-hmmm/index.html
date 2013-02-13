@@ -48,26 +48,62 @@
           </div>
         </section> 
 
+        <!-- Introduction {{{ ->
         <section data-markdown>
           ## hello!
         </section>
+        <!-- }}} -->
+
+        <!-- problems {{{ -->
+        <section data-markdown>
+          # problems
+        </section>
 
         <section data-markdown>
-          * log problem: access
-        </section>
-        <section data-markdown>
-          * log problem: consumption 
-        </section>
-        <section data-markdown>
-          * log problem: curation
-        </section>
-        <section data-markdown>
-          * log problem: compliance
-        </section>
-        <section data-markdown>
-          * log problem: tooling
+          ## access
+
+          * Who manages access?
+          * How fine-graned are access controls?
+          * Who needs access?
         </section>
 
+        <section data-markdown>
+          ## consumption
+
+          * who can understand/process the logs?
+          * are these the same who need to consume them?
+          * have any tools that can process the logs?
+        </section>
+
+        <section data-markdown>
+          ## curation
+
+          * how long to keep logs?
+          * until they fill up disk 
+          * ... and crash production
+          * ... when you're asleep and on-call.
+        </section>
+
+        <section data-markdown>
+          ## compliance
+
+          * PCI
+          * FISMA
+          * Sarbanes-Oxley
+          * HIPAA
+        </section>
+
+        <section data-markdown>
+          ## tooling
+
+          * what helps you do things with logs?
+          * search, analyze, report!
+          * too specialized (webalizer, etc)
+          * don't scale (ssh + grep)
+        </section>
+        <!-- }}} -->
+
+        <!-- Case Study: DreamHost {{{ -->
         <section>
           <h3 class="text-left"> case study: </h3>
           <h2 class="text-right"> email at DreamHost </h2>
@@ -124,76 +160,259 @@
         </section>
 
         <section data-markdown>
-          slow tools == slower support staff
+          ## Let's Reduce MTTSR
+          
+          (Mean Time to Technical Support Resolution)
         </section>
-
 
         <section data-markdown>
-            * centralized log collection with logstash
-            * hundreds of servers ship logs to one cluster
-            * provide single search interface on the web
+          ## New Solution
 
-          * results:
-            * search results in seconds, not minutes
-            * search specific time spans, not just "today" or "yesterday"
-            * happier, faster customer support folks
+          <img src="images/logstash.png" class="plain">
         </section>
 
+        <section data-markdown>
+          ## New Solution
+
+          * hundreds of servers ship logs to a logstash cluster
+          * provide single search interface on the web
+        </section>
+
+        <section data-markdown>
+          ## results
+
+          * log search results in seconds, not minutes
+          * search specific time spans, not just "today" or "yesterday"
+          * happier, more effective customer support folks
+        </section>
+
+        <section data-markdown>
+          ## helps the business
+
+          <blockquote class="text-left"> 
+            <b>Empower People</b>: By empowering our employees to be truly
+            helpful, we empower our customers with products and services they
+            need to do their business.
+          </blockquote>
+          <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
+        </section>
 
         <section>
-            * "by an order of awesome" 
-              * Support staff commenting on logstash compared to previous solution.
+          <h2> How much improved?</h2>
+          <p style="padding-top: 2em" class="text-left">Technical Support Says</p>
 
-            * implementation details
-              * mail logs only
-              * 600-ish servers shipping logs with lumberjack
-              * 7-node logstash+elasticsearch cluster
-              * each node: 8 cores, 4TB, 16GB
+          <blockquote class="text-left">by an order of awesome</blockquote>
+          <blockquote class="text-left">10000000000%</blockquote>
+        </section>
 
-            * rough numbers
-              * peak 10,000 events/second
-              * average 500,000,000 events/day
-              * average 4,000,000,000 billion events/week
-              * average 1 terabyte/week
-              * average 10% cpu utilization across cluster
+        <section data-markdown>
+          ## implementation details
+          * mail logs only
+          * 600-ish servers shipping logs with <a href="https://github.com/jordansissel/lumberjack">lumberjack</a>
+          * 7-node logstash/elasticsearch cluster
+          * each node: 8 cores, 4TB, 16GB
+        </section>
 
-            * capacity options
-              * retention: 1TB/week == roughly 150 days
-              * cpu usage: can process 10x higher event rates 
+        <section data-markdown>
+          ## rough numbers
+          * peak 10,000 events/second
+          * average 500,000,000 events/day
+          * average 4,000,000,000 billion events/week
+          * average 1 terabyte/week
+          * average 10% cpu utilization across cluster
+        </section>
+
+        <!--
+        <section data-markdown>
+          ## capacity options
+          * retention: 1TB/week == roughly 150 days
+          * cpu usage: can probably handle 10x more load
+        </section>
+        -->
+        <!-- }}} -->
               
-          * logstash
-            * pipeline and ecosystem
-            * filters
-              * common: grok, multiline, date
-              * manipulate: mutate, anonymize, urldecode
-              * improve events: geoip, useragent
-            * transports
-              * redis, zeromq, stomp, irc, xmpp, rabbitmq, websocket
-            * metrics outputs
-              * graphite, ganglia, opentsdb, datadog, librato, circonus, boundary, riemann
-            * storage outputs:
-              * elasticsearch, file, mongodb, redis, riak
-            * monitoring outputs:
-              * nagios, pagerduty, zabbix, 
-            * examples:
-              * apache (show before/after)
-              * mysql (show before/after)
-              * syslog (show before/after)
-            * extendable (>100 plugins)
+        <section data-markdown>
+          <img src="images/logstash.png" class="plain full left">
 
-          * community
+          <h3>So, about logstash.</h3>
+
+          <p>how can it help you?</p>
+
+        </section>
+
+        <!-- the agent and plugins {{{ -->
+        <section data-markdown>
+          ## the agent
+
+          inputs | filters | outputs
+        </section>
+
+        <section data-markdown>
+          ## inputs
+
+          where logs come from.
+        </section>
+
+        <section data-markdown>
+          ## inputs: local
+
+          * files
+          * standard input
+          * windows eventlog
+        </section>
+
+        <section>
+          <h2> inputs: network</h2>
+
+          <table class="list">
+            <tr>
+              <td> gemfire </td>
+              <td> irc </td>
+            </tr> <tr>
+              <td> rabbitmq </td>
+              <td> redis </td>
+            </tr> <tr>
+              <td> relp </td>
+              <td> stomp </td>
+            </tr> <tr>
+              <td> syslog </td>
+              <td> tcp and udp </td>
+            </tr> <tr>
+              <td> websockets </td>
+              <td> xmpp </td>
+            </tr>
+          </table>
+        </section>
+
+        <section data-markdown>
+          ## inputs: external
+
+          * Heroku
+          * Amazon SQS
+          * Twitter Stream API
+          * Drupal DBLog
+        </section>
+
+        <section data-markdown>
+          ## filters
+
+          processing events for awesome
+        </section>
+
+        <section data-markdown>
+          ## filters: common parsing
+
+          * grok
+          * date 
+          * grep
+          * multiline
+        </section>
+
+        <section data-markdown>
+          ## filters: complex parsing
+          * key=value things="like this"
+          * { "json": "parsing" }
+          * &lt;xml parsing="true" /&gt;
+          * csv,parsing,enabled
+          * also=have&amp;url=parsing
+        </section>
+
+        <section data-markdown>
+          ## filters: improve event data
+
+          * geoip lookups
+          * user agent parsing
+          * syslog decoding
+          * dns lookups
+          * zeromq call outs
+        </section>
+
+        <section data-markdown>
+          ## filters: modify events
+
+          * mutate
+          * anonymize
+          * translate
+        </section>
+
+        <section data-markdown>
+          ## outputs
+
+          where events go
+        </section>
+
+        <section data-markdown>
+          ## outputs: metrics
+
+          * boundary
+          * circonus
+          * cloudwatch
+          * datadog
+          * ganglia
+          * graphite
+          * librato
+          * opentsdb
+          * riemann
+        </section>
+
+        <section data-markdown>
+          ## outputs: storage
+          * elasticsearch
+          * file
+          * mongodb
+          * redis
+          * riak
+        </section>
+
+        <section data-markdown>
+          ## outputs: monitor &amp; report
+          * nagios
+          * email
+          * pagerduty
+          * zabbix
+          * irc
+        </section>
+        <!-- }}} -->
+
+        <!-- examples {{{ -->
+        <section data-markdown>
+          ## examples
+        </section>
+
+        <section data-markdown>
+              * apache (show before/after)
+        </section>
+
+        <section data-markdown>
+              * mysql (show before/after)
+        </section>
+
+        <section data-markdown>
+              * syslog (show before/after)
+        </section>
+        <!-- }}} -->
+
+        <section data-markdown>
+          ## extendable 
+          (>100 plugins)
+        </section>
+
+        <section data-markdown>
+          ## community
             * newbies have a bad time? It's a bug.
             * communication: irc, mailing list
             * book: http://www.logstashbook.com/
             * tips/tricks: http://cookbook.logstash.net/
             * extra goodness: kibana, logstash-cli, puppet 
+        </section>
 
-          * project metrics
-            * 18000 unique monthly visitors to logstash.net 
-            * 537 users on logstash.jira.com
-            * 275 chatters in IRC
-            * 134 code contributors
-            </section>
+        <section data-markdown>
+          ## project metrics
+          * 18000 unique monthly visitors to logstash.net 
+          * 537 users on logstash.jira.com
+          * 275 chatters in IRC
+          * 134 code contributors
+        </section>
       </div>
 
     </div>
