@@ -26,3 +26,21 @@ table.list {
 table.list td {
   padding-left: 1em;
 }
+
+
+table.inner-border {
+  width: 100%;
+  border-collapse: collapse;
+  border-style: hidden
+}
+
+table.inner-border tr:first-child {
+  background-color: #220;
+}
+
+table.inner-border td, table.inner-border th {
+  border: 5px solid #880;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
+}
