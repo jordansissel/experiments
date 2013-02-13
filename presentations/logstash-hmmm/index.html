@@ -139,14 +139,17 @@
           <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
         </section>
 
-        <section data-markdown>
-          ## Situation
-          * Customer is having email problems,
-          * Customers having email problems is bad,
-          * Logs are necessary for diagnosis,
-          * Technical Support needs access,
-          * Operations has access,
-          * InfoSec policies restrict certain access.
+        <section>
+          <h2> Situation </h2>
+
+          <ul>
+            <li class="fragment"> Customer is having email problems,
+            <li class="fragment"> and Customers having email problems is bad,
+            <li class="fragment"> Logs are necessary for diagnosis,
+            <li class="fragment"> so Technical Support needs access,
+            <li class="fragment"> but Operations has access,
+            <li class="fragment"> and InfoSec policies restrict certain access.
+          </ul>
         </section>
 
         <section data-markdown>
@@ -382,21 +385,102 @@
         </section>
         <!-- }}} -->
 
+        <!-- deployment models {{{ -->
+        <section>
+          <h3> simple standalone </h3> 
+
+          <table class="inner-border">
+            <tr>
+              <th> inputs </th>
+              <th> filters </th>
+              <th> outputs </th>
+            </tr>
+            <tr>
+              <td> 
+                /var/log/messages <br>
+                /var/log/apache/access.log <br>
+                /var/log/mysql/slow.log <br>
+              </td>
+              <td> 
+                grok <br>
+                date <br>
+                multiline <br>
+                anonymize <br>
+              </td>
+              <td>
+                elasticsearch <br>
+                ops irc channel <br>
+              </td>
+            </tr>
+            <!--
+            <tr>
+              <td colspan="3">
+                Summary: read files, parse with filters, send to elasticsearch
+              </td>
+            </tr>
+            -->
+          </table>
+        </section>
+
+        <section data-markdown>
+          ## scale out?
+
+          * expand on inputs|filters|outputs
+          * "inputs" are your business machines
+          * "filters" are a processing tier
+          * "outputs" are a storage and integration tier
+        </section>
+
+        <section>
+          <h3> tiered </h3> 
+
+          <table class="inner-border">
+            <tr>
+              <th> inputs </th>
+              <th> filters </th>
+              <th> outputs </th>
+            </tr>
+            <tr>
+              <td> 
+                frontends <br>
+                databases <br>
+                routers <br>
+              </td>
+              <td> 
+                parse <br>
+                anonymize <br>
+              </td>
+              <td>
+                elasticsearch <br>
+                graphite <br>
+                nagios <br>
+                live tail <br>
+              </td>
+              <tr>
+                <td colspan="3"></td>
+              </tr>
+            </tr>
+          </table>
+
+          <ul>
+            <li class="fragment"> inputs are your business machines
+            <li class="fragment"> filters are machines that processes events
+            <li class="fragment"> outputs are machines that store events
+          </ul>
+        </section>
+
+        <section>
+          <img src="images/logstash-and-metrics.png" class="plain">
+
+          <p>
+          [image made by Rashid Khan]
+          </p>
+        </section>
+        <!-- }}} -->
+
         <!-- examples {{{ -->
         <section data-markdown>
           ## examples
-        </section>
-
-        <section data-markdown>
-              * apache (show before/after)
-        </section>
-
-        <section data-markdown>
-              * mysql (show before/after)
-        </section>
-
-        <section data-markdown>
-              * syslog (show before/after)
         </section>
         <!-- }}} -->
 
