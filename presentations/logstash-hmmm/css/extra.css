@@ -1,0 +1,18 @@
+
+img.plain {
+  border: inherit !important;
+  background: inherit !important;
+}
+
+img.full {
+  margin: auto;
+  height: 100%;
+  display: block;
+}
+
+.right { float: right; }
+.left { float: left; }
+
+h4 {
+  display: block;
+}
