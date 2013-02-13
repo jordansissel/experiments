@@ -1,3 +1,8 @@
+<!-- TODO
+  * Kibana stuff?
+  * Live demo slot?
+  * Horrible log examples for transitions
+  -->
 <!doctype html>
 <html lang="en">
 
@@ -137,10 +142,11 @@
         <section data-markdown>
           ## Situation
           * Customer is having email problems,
-          * and customers having email problems is bad,
-          * but logs are necessary for diagnosis,
-          * so Technical Support needs access,
-          * but Operations controls access.
+          * Customers having email problems is bad,
+          * Logs are necessary for diagnosis,
+          * Technical Support needs access,
+          * Operations has access,
+          * InfoSec policies restrict certain access.
         </section>
 
         <section data-markdown>
@@ -176,6 +182,8 @@
 
           * hundreds of servers ship logs to a logstash cluster
           * provide single search interface on the web
+
+          MAYBE PUT A DIAGRAM HERE :)
         </section>
 
         <section data-markdown>
@@ -207,7 +215,7 @@
 
         <section data-markdown>
           ## implementation details
-          * mail logs only
+          * /var/log/mail.{info,warn,log}, /var/log/amavisd.log
           * 600-ish servers shipping logs with <a href="https://github.com/jordansissel/lumberjack">lumberjack</a>
           * 7-node logstash/elasticsearch cluster
           * each node: 8 cores, 4TB, 16GB
@@ -216,10 +224,10 @@
         <section data-markdown>
           ## rough numbers
           * peak 10,000 events/second
-          * average 500,000,000 events/day
-          * average 4,000,000,000 billion events/week
-          * average 1 terabyte/week
-          * average 10% cpu utilization across cluster
+          * 500,000,000 events/day
+          * 4,000,000,000 events/week
+          * 1 terabyte/week
+          * peak 10% cpu utilization across cluster
         </section>
 
         <!--
@@ -399,19 +407,20 @@
 
         <section data-markdown>
           ## community
-            * newbies have a bad time? It's a bug.
-            * communication: irc, mailing list
-            * book: http://www.logstashbook.com/
-            * tips/tricks: http://cookbook.logstash.net/
-            * extra goodness: kibana, logstash-cli, puppet 
+          * newbies have a bad time? It's a bug.
+          * communication: irc, mailing list
+          * book: http://www.logstashbook.com/
+          * tips/tricks: http://cookbook.logstash.net/
+          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbook
         </section>
 
         <section data-markdown>
           ## project metrics
           * 18000 unique monthly visitors to logstash.net 
-          * 537 users on logstash.jira.com
-          * 275 chatters in IRC
-          * 134 code contributors
+          * 736 users on logstash-users@googlegroups.com
+          * 540 users on logstash.jira.com
+          * 275 folks in #logstash on freenode IRC
+          * 130 code contributors
         </section>
       </div>
 

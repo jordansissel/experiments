@@ -1,4 +1,5 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed;400,700);
+/* @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed;400,700); */
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,700);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic);
 /**
  * Black theme for reveal.js.
@@ -15,7 +16,7 @@ body {
 
 .reveal {
   font-family: "Open Sans", Times, "Times New Roman", serif;
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 200;
   letter-spacing: -0.02em;
   color: #eeeeee;
@@ -38,7 +39,7 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #eeeeee;
-  font-family: "Roboto Condensed", Impact, sans-serif;
+  font-family: "Roboto", sans-serif;
   line-height: 0.9em;
   letter-spacing: -0.03em;
   text-transform: none;

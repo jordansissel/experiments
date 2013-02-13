@@ -5,8 +5,8 @@ img.plain {
 }
 
 img.full {
-  margin: auto;
-  height: 100%;
+  /* margin: auto; */
+  /* height: 100%; */
   display: block;
 }
 
