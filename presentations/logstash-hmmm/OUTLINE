@@ -40,14 +40,15 @@
 
   * results:
     * search results in seconds, not minutes
-    * search specific time spans, not just "yesterday"
-    * happier customer support folks get more done
+    * search specific time spans, not just "today" or "yesterday"
+    * happier, faster customer support folks
 
   * "by an order of awesome" 
     * Support staff commenting on logstash compared to previous solution.
 
   * implementation details
-    * 600 servers shipping logs with lumberjack
+    * mail logs only
+    * 600-ish servers shipping logs with lumberjack
     * 7-node logstash+elasticsearch cluster
     * each node: 8 cores, 4TB, 16GB
 
@@ -62,23 +63,38 @@
     * retention: 1TB/week == roughly 150 days
     * cpu usage: can process 10x higher event rates 
     
-
-* logstash - problem solved.
-  * log problem: access
-  * log problem: curation
-  * log problem: compliance
-    
-  * bad logs + tools == consumption
-    * log problem: software providers
-    * log problem: consumption
-    * log problem: tooling
+* logstash
+  * pipeline and ecosystem
+  * filters
+    * common: grok, multiline, date
+    * manipulate: mutate, anonymize, urldecode
+    * improve events: geoip, useragent
+  * transports
+    * redis, zeromq, stomp, irc, xmpp, rabbitmq, websocket
+  * metrics outputs
+    * graphite, ganglia, opentsdb, datadog, librato, circonus, boundary, riemann
+  * storage outputs:
+    * elasticsearch, file, mongodb, redis, riak
+  * monitoring outputs:
+    * nagios, pagerduty, zabbix, 
+  * examples:
+    * apache (show before/after)
+    * mysql (show before/after)
+    * syslog (show before/after)
+  * extendable (>100 plugins)
 
 * community
-  * newbies have a bad time? It's a bug
-  * irc, mailling list
-  * book
-  * cookbook
-  * kibana, logstash-cli, puppet 
+  * newbies have a bad time? It's a bug.
+  * communication: irc, mailing list
+  * book: http://www.logstashbook.com/
+  * tips/tricks: http://cookbook.logstash.net/
+  * extra goodness: kibana, logstash-cli, puppet 
+
+* project metrics
+  * 18000 unique monthly visitors to logstash.net 
+  * 537 users on logstash.jira.com
+  * 275 chatters in IRC
+  * 134 code contributors
 
 **** DETAILED SECTIONS
   * log problem: access
