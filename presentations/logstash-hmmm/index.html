@@ -41,7 +41,7 @@
         <section> 
           <img src="images/logstash.png" class="plain full left">
           <div class="right">
-            <h2>logstash</h2>
+            <h2 class="bold">logstash</h2>
             <hr>
             <h4 style="text-align: right"> Jordan Sissel </h4>
             <h4 style="text-align: right"> DreamHost </h4>
@@ -49,7 +49,7 @@
         </section> 
 
         <section data-markdown>
-          ## Hello!
+          ## hello!
         </section>
 
         <section data-markdown>
@@ -68,44 +68,79 @@
           * log problem: tooling
         </section>
 
+        <section>
+          <h3 class="text-left"> case study: </h3>
+          <h2 class="text-right"> email at DreamHost </h2>
+        </section>
+
+        <section>
+          <blockquote>
+            Help! I'm not getting my mail!
+          </blockquote>
+          <p class="text-right">- A DreamHost Customer</p>
+        </section>
+
         <section data-markdown>
-          * Case Study: Email at DreamHost
-            * Email problems?
-              * Customer files ticket "I'm not getting my mail!"
-              * Customer Support needs access
-              * Operations has access and control.
+          ## Why do we care?
 
-            * logstash + DreamHost values 
-              * Provide Superhero Service
-              * Empower People
-                logstash empowers Customer Support to further
-                provide superhero service.
-              (not all values listed!)
-              link to: http://dreamhost.com/about-us/dreamhost-values/
+          * does this need fixing?
+          * what's the business requirement?
+        </section>
 
-            * Customer: "I'm not getting my mail!"
+        <section>
+          <h3 class="text-left">A DreamHost Core Value</h3>
 
-            * previous solution: 
-              * access: Ops gives Customer Support ssh access
-              * tooling: scripts ssh+grep hundreds of servers
-              * curation: 100GB of logs per day
-              * problem: takes *many minutes* to search today's logs.
-              * problem: much longer if your event happened yesterday.
+          <blockquote class="text-left"> 
+            <b>Provide Superhero Service</b>: DreamHost strives to max out the value
+            and customer service we put
+            into everything we do. 
+          </blockquote>
+          <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
+        </section>
 
-            * previous solution
-              * slow tools == slower support staff
-              * reduced support efficiency due to bad tooling
+        <section data-markdown>
+          ## Situation
+          * Customer is having email problems,
+          * and customers having email problems is bad,
+          * but logs are necessary for diagnosis,
+          * so Technical Support needs access,
+          * but Operations controls access.
+        </section>
 
-            * new solution:
-              * centralized log collection with logstash
-              * hundreds of servers ship logs to one cluster
-              * provide single search interface on the web
+        <section data-markdown>
+          ## Old Solution
 
-            * results:
-              * search results in seconds, not minutes
-              * search specific time spans, not just "today" or "yesterday"
-              * happier, faster customer support folks
+          * access: Ops gives Technical Support ssh access.
+          * tooling: scripts ssh+grep hundreds of servers.
+          * curation: many GBs of logs per day, per server.
+        </section>
 
+        <section data-markdown>
+          ## Old Solution
+
+          * problem: grep is slow on gigabytes of data.
+          * result: *many minutes* to search today's logs.
+          * reduced support efficiency due to bad tooling
+        </section>
+
+        <section data-markdown>
+          slow tools == slower support staff
+        </section>
+
+
+        <section data-markdown>
+            * centralized log collection with logstash
+            * hundreds of servers ship logs to one cluster
+            * provide single search interface on the web
+
+          * results:
+            * search results in seconds, not minutes
+            * search specific time spans, not just "today" or "yesterday"
+            * happier, faster customer support folks
+        </section>
+
+
+        <section>
             * "by an order of awesome" 
               * Support staff commenting on logstash compared to previous solution.
 
@@ -174,10 +209,10 @@
         controls: true,
         progress: true,
         history: true,
-        center: true,
+        center: false,
 
         theme: Reveal.getQueryHash().theme || "night-jls", // available themes are in /css/theme
-        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+        transition: Reveal.getQueryHash().transition || 'fade', // default/cube/page/concave/zoom/linear/fade/none
 
         // Optional libraries used to extend on reveal.js
         dependencies: [
