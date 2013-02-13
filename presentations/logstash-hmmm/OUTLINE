@@ -1,36 +1,77 @@
 * intro
 
 * log problem: access
-  * ops has root, thus has access, 
-  * restricted access:
-    * infosec policy restricts it
-    * infrastructure has limited access control
-  * customer support needs it.
-  * devs need it
-  * sales needs it
-  * finance needs it
-
-* log problem: vendors
-  * 'log manuals'
-  * no consistency
-
-* log problem: consumption
-  * expert knowledge required to understand logs
-  * unknown structure
-  * crazy timestamps
-
+* log problem: consumption 
 * log problem: curation
-  * where to put logs?
-  * how long do you need to keep them?
-  * in what form should you keep them?
-
 * log problem: compliance
-  * PCI, Sarbanes-Oxley, FISMA 
+* log problem: tooling
 
-* logstash
-  * pipeline
-    * inputs -> filters -> outputs
-  * kibana
+* Case Study: Email at DreamHost
+  * Email problems?
+    * Customer files ticket "I'm not getting my mail!"
+    * Customer Support needs access
+    * Operations has access and control.
+
+  * logstash + DreamHost values 
+    * Provide Superhero Service
+    * Empower People
+      logstash empowers Customer Support to further
+      provide superhero service.
+    (not all values listed!)
+    link to: http://dreamhost.com/about-us/dreamhost-values/
+
+  * Customer: "I'm not getting my mail!"
+
+  * previous solution: 
+    * access: Ops gives Customer Support ssh access
+    * tooling: scripts ssh+grep hundreds of servers
+    * curation: 100GB of logs per day
+    * problem: takes *many minutes* to search today's logs.
+    * problem: much longer if your event happened yesterday.
+
+  * previous solution
+    * slow tools == slower support staff
+    * reduced support efficiency due to bad tooling
+
+  * new solution:
+    * centralized log collection with logstash
+    * hundreds of servers ship logs to one cluster
+    * provide single search interface on the web
+
+  * results:
+    * search results in seconds, not minutes
+    * search specific time spans, not just "yesterday"
+    * happier customer support folks get more done
+
+  * "by an order of awesome" 
+    * Support staff commenting on logstash compared to previous solution.
+
+  * implementation details
+    * 600 servers shipping logs with lumberjack
+    * 7-node logstash+elasticsearch cluster
+    * each node: 8 cores, 4TB, 16GB
+
+  * rough numbers
+    * peak 10,000 events/second
+    * average 500,000,000 events/day
+    * average 4,000,000,000 billion events/week
+    * average 1 terabyte/week
+    * average 10% cpu utilization across cluster
+
+  * capacity options
+    * retention: 1TB/week == roughly 150 days
+    * cpu usage: can process 10x higher event rates 
+    
+
+* logstash - problem solved.
+  * log problem: access
+  * log problem: curation
+  * log problem: compliance
+    
+  * bad logs + tools == consumption
+    * log problem: software providers
+    * log problem: consumption
+    * log problem: tooling
 
 * community
   * newbies have a bad time? It's a bug
@@ -38,3 +79,46 @@
   * book
   * cookbook
   * kibana, logstash-cli, puppet 
+
+**** DETAILED SECTIONS
+  * log problem: access
+    * ops has root, thus has access, 
+    * restricted access:
+      * infosec policy restricts it
+      * infrastructure has limited access control
+    * customer support needs it.
+    * devs need it
+    * sales needs it
+    * finance needs it
+
+  * log problem: software providers
+    * 'log manuals'
+    * no consistency
+
+  * log problem: consumption
+    * expert knowledge required to understand logs
+    * unknown structure
+    * crazy timestamps
+    * examples:
+      * apache
+      * mysql
+      * syslog
+      * dmesg
+      * nagios
+
+  * log problem: curation
+    * where to put logs?
+    * how long do you need to keep them?
+    * in what form should you keep them?
+
+  * log problem: compliance
+    * PCI (take credit cards?)
+    * Sarbanes-Oxley (public companies)
+    * FISMA (federal agencies)
+    * HIPAA (health industry)
+    (all examples are US-based)
+    (these generally affect access and curation)
+
+  * log problem: tooling
+    * too specialized: webalizer, analog
+    * limited interfaces: only reports
