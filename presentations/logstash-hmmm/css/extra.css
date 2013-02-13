@@ -13,6 +13,9 @@ img.full {
 .right { float: right; }
 .left { float: left; }
 
-h4 {
-  display: block;
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+.bold {
+  font-weight: bold !important;
 }
