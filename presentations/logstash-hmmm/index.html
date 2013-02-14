@@ -183,10 +183,10 @@
         <section data-markdown>
           ## New Solution
 
-          * hundreds of servers ship logs to a logstash cluster
+          * hundreds of servers ship logs to a central logstash cluster
           * provide single search interface on the web
 
-          MAYBE PUT A DIAGRAM HERE :)
+          <img src="images/logstash-dreamhost-day.png" class="plain">
         </section>
 
         <section data-markdown>
@@ -249,6 +249,14 @@
 
           <p>how can it help you?</p>
 
+          <hr>
+
+          <ul>
+            <li class="fragment"> powerful and flexible log processing
+            <li class="fragment"> excellent search/analytics
+            <li class="fragment"> integrates well with your infrastructure
+            <li class="fragment"> helpful and friendly community
+          </ul>
         </section>
 
         <!-- the agent and plugins {{{ -->
@@ -270,6 +278,7 @@
           * files
           * standard input
           * windows eventlog
+          * external programs
         </section>
 
         <section>
@@ -280,17 +289,20 @@
               <td> gemfire </td>
               <td> irc </td>
             </tr> <tr>
-              <td> rabbitmq </td>
+              <td> lumberjack </td>
+              <td> rabbimq </td>
+            </tr> <tr>
               <td> redis </td>
-            </tr> <tr>
               <td> relp </td>
+            </tr> <tr>
               <td> stomp </td>
-            </tr> <tr>
               <td> syslog </td>
-              <td> tcp and udp </td>
             </tr> <tr>
+              <td> tcp and udp </td>
               <td> websockets </td>
+            </tr> <tr>
               <td> xmpp </td>
+              <td> zeromq </td>
             </tr>
           </table>
         </section>
@@ -311,21 +323,71 @@
         </section>
 
         <section data-markdown>
-          ## filters: common parsing
+          ## filters: grok
 
-          * grok
-          * date 
-          * grep
-          * multiline
+          See this log:
+
+              37.57.128.238 - - [13/Sep/2012:02:37:24 -0400] "GET / HTTP/1.1" 200 41687 
+              ( ip address)      (  some timestamp thing   )  (http request)  rsp bytes
+
+          Describe it in grok:
+
+              %{IP:client} - - \[%{HTTPDATE:timestamp}\] "%{WORD:verb} %{URIPATH:request} HTTP/%{NUMBER:http_version}" %{NUMBER:response} %{NUMBER:bytes}
+
+          becomes:
+
+              {
+                "client": "37.57.128.238",
+                "timestamp": "13/Sep/2012:02:37:24 -0400",
+                "verb": "GET",
+                "request": "/",
+                "http_version": "1.1",
+                "response": 200,
+                "bytes": 41687,
+              }
+
         </section>
 
         <section data-markdown>
-          ## filters: complex parsing
-          * key=value things="like this"
-          * { "json": "parsing" }
-          * &lt;xml parsing="true" /&gt;
-          * csv,parsing,enabled
-          * also=have&amp;url=parsing
+          ## filters: date
+
+          <table>
+            <tr>
+              <td class="fragment">1304060505
+              <td class="fragment" nowrap>29/Apr/2011:07:05:26 +0000
+            <tr>
+              <td class="fragment" nowrap>Fri, 21 Nov 1997 09:55:06 -0600
+              <td class="fragment">Oct 11 20:21:47
+            <tr>
+              <td class="fragment">020805 13:51:24
+              <td class="fragment">110429.071055,118
+            <tr>
+              <td class="fragment">@4000000037c219bf2ef02e94
+            </tr>
+          </table>
+
+          <div class="fragment">
+            <pre><code style="font-size:130%; line-height: 130%;">
+            filter {
+              date {
+                # Parse apache's "13/Sep/2012:02:37:24 -0400"
+                match =&gt; [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z" ]
+              }
+            }
+            </code></pre>
+          </div>
+
+        </section>
+
+        <section>
+          <h3> filters: complex parsing</h3>
+          <ul>
+            <li class="fragment"> key=value things="like this"
+            <li class="fragment"> { "json": "parsing" }
+            <li class="fragment"> &lt;xml parsing="true" /&gt;
+            <li class="fragment"> csv,parsing,enabled
+            <li class="fragment"> also=have&amp;url=parsing
+          </ul>
         </section>
 
         <section data-markdown>
@@ -386,6 +448,10 @@
         <!-- }}} -->
 
         <!-- deployment models {{{ -->
+        <section data-markdown>
+          ## deployment scenarios
+        </section>
+
         <section>
           <h3> simple standalone </h3> 
 
@@ -425,7 +491,7 @@
         <section data-markdown>
           ## scale out?
 
-          * expand on inputs|filters|outputs
+          * expand on (inputs | filters | outputs)
           * "inputs" are your business machines
           * "filters" are a processing tier
           * "outputs" are a storage and integration tier
@@ -481,21 +547,39 @@
         <!-- examples {{{ -->
         <section data-markdown>
           ## examples
+
+        </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png">
+          <p> apache response codes to graphite</p>
         </section>
         <!-- }}} -->
 
+        <!-- about the project {{{ -->
+        <section data-markdown>
+          ## about the project
+        </section>
+
         <section data-markdown>
           ## extendable 
-          (>100 plugins)
+
+          * 100+ plugins (inputs, filters, outputs)
+          * something missing? Easy to add!
+        </section>
+
+        <section data-markdown>
+          ## project values
+          * newbies have a bad time? It's a bug.
+          * contributions are valued (code, bugs, docs, support, etc)
         </section>
 
         <section data-markdown>
           ## community
-          * newbies have a bad time? It's a bug.
           * communication: irc, mailing list
           * book: http://www.logstashbook.com/
-          * tips/tricks: http://cookbook.logstash.net/
-          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbook
+          * tips/tricks: http://cookbook.logstash.net/ 
+          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbooks
         </section>
 
         <section data-markdown>
@@ -506,6 +590,7 @@
           * 275 folks in #logstash on freenode IRC
           * 130 code contributors
         </section>
+        <!-- }}} -->
       </div>
 
     </div>
