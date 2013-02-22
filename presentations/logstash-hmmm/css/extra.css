@@ -58,3 +58,13 @@ table.inner-border td, table.inner-border th {
   position: absolute;
 }
 
+
+.unreadable {
+  font-size: 35% !important;
+  margin: 0;
+  padding: 0;
+}
+
+.unreadable code {
+  max-height: inherit !important;
+}
