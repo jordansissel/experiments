@@ -92,10 +92,10 @@
         <section data-markdown>
           ## compliance
 
-          * PCI
-          * FISMA
-          * Sarbanes-Oxley
-          * HIPAA
+          * PCI (credit cards)
+          * FISMA (federal agencies)
+          * Sarbanes-Oxley (public companies) 
+          * HIPAA (health industry)
         </section>
 
         <section data-markdown>
@@ -124,7 +124,6 @@
         <section data-markdown>
           ## Why do we care?
 
-          * does this need fixing?
           * what's the business requirement?
         </section>
 
@@ -133,8 +132,7 @@
 
           <blockquote class="text-left"> 
             <b>Provide Superhero Service</b>: DreamHost strives to max out the value
-            and customer service we put
-            into everything we do. 
+            and customer service we put into everything we do. 
           </blockquote>
           <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
         </section>
@@ -219,7 +217,7 @@
         <section data-markdown>
           ## implementation details
           * /var/log/mail.{info,warn,log}, /var/log/amavisd.log
-          * 600-ish servers shipping logs with <a href="https://github.com/jordansissel/lumberjack">lumberjack</a>
+          * 600-ish servers shipping logs
           * 7-node logstash/elasticsearch cluster
           * each node: 8 cores, 4TB, 16GB
         </section>
@@ -241,7 +239,8 @@
         </section>
         -->
         <!-- }}} -->
-              
+
+
         <section data-markdown>
           <img src="images/logstash.png" class="plain full left">
 
@@ -259,15 +258,48 @@
           </ul>
         </section>
 
-        <!-- now what? (graph) {{{ -->
+        <section> <!-- {{{ Simple event flow (files->filters->elasticsearch -->
+          <div class="full">
+            <img src="images/simple-inputs.jpg" class="full plain">
+            <div style="position: absolute; font-size: 7em; top: 270px; left: 450px; color: black; text-shadow: 3px 3px 3px #000" class="fragment"> <b> ? </b> </div>
+          </div>
+        </section>
+
+        <!-- 
+          * Add slide showing sample apache log
+          * highlight fields
+          * highlight timestamp
+          -->
+
         <section>
-          <h3> got logs, now what? </h3>
+          <div class="full">
+            <img src="images/simple-inputs-filters.jpg" class="full plain">
+            <div style="position: absolute; font-size: 7em; top: 270px; left: 700px; color: black; text-shadow: 3px 3px 3px #000" class="fragment"> <b> ? </b> </div>
+          </div>
         </section>
 
         <section>
-          <img src="images/frontend-response-codes.png">
-          <p> apache response codes to graphite</p>
+          <img src="images/kibana-search.png" class="full plain">
+          <p> maybe you want to search? </p>
         </section>
+
+        <section>
+          <img src="images/frontend-response-codes.png" class="full plain">
+          <p> maybe you want a graph? </p>
+        </section>
+
+        <section>
+          <div class="full">
+            <img src="images/simple-inputs-filters.jpg" class="full plain">
+            <div style="position: absolute; font-size: 1em; top: 270px; left: 700px; color: black" class="fragment"> 
+              <b> what <br> tools? </b>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <img src="images/simple-inputs-filters-outputs.jpg" class="full plain">
+        </section> <!-- }}} -->
 
         <section>
           <h3> how do we get there? </h3>
