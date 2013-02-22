@@ -106,6 +106,16 @@
           * too specialized (webalizer, etc)
           * don't scale (ssh + grep)
         </section>
+
+        <section data-markdown>
+          ## summary
+
+          * access
+          * consumption
+          * curation
+          * compliance
+          * tooling
+        </section>
         <!-- }}} -->
 
         <!-- Case Study: DreamHost {{{ -->
@@ -155,15 +165,15 @@
 
           * access: Ops gives Technical Support ssh access.
           * tooling: scripts ssh+grep hundreds of servers.
-          * curation: many GBs of logs per day, per server.
+          * curation: daily log rotation, a few days of retention
         </section>
 
         <section data-markdown>
           ## Old Solution
 
-          * problem: grep is slow on gigabytes of data.
-          * result: *many minutes* to search today's logs.
-          * reduced support efficiency due to bad tooling
+          * grep is slow on gigabytes of data.
+          * takes 5+ minutes to grep GBs of logs on many servers
+          * result: reduced support efficiency due to bad tooling
         </section>
 
         <section data-markdown>
