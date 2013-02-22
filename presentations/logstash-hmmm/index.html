@@ -20,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <link rel="stylesheet" href="css/reveal.min.css">
-    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+    <link rel="stylesheet" href="css/theme/night-jls.css" id="theme">
 
     <!-- For syntax highlighting -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
@@ -59,7 +59,7 @@
         </section>
 
         <section data-markdown>
-          ## Project Principles
+          first principles
         </section>
 
         <section>
@@ -70,11 +70,11 @@
         </section>
 
         <section>
-          <h2 class="text-left"> Make it work.  </h2>
+          <h2 class="text-left"> 1. Make it work.  </h2>
           <br>
-          <h2 class="text-center"> Make it right.  </h2>
+          <h2 class="text-center fragment"> 2. Make it right.  </h2>
           <br>
-          <h2 class="text-right"> Make it fast.  </h2>
+          <h2 class="text-right fragment"> 3. Make it fast.  </h2>
         </section>
         <!-- }}} -->
 
@@ -118,12 +118,17 @@
         </section>
 
         <section data-markdown>
+          ## compliance
+
+          impacts access and curation requirements.
+        </section>
+
+        <section data-markdown>
           ## tooling
 
           * what helps you do things with logs?
-          * search, analyze, report!
-          * too specialized (webalizer, etc)
-          * don't scale (ssh + grep)
+          * some too specialized (webalizer, etc)
+          * some don't scale (ssh + grep)
         </section>
 
         <section data-markdown>
@@ -190,9 +195,12 @@
         <section>
           <h2> Old Solution </h2>
 
-          <img src="images/spinner.png" class="plain">
-          <div>
-            Loading  <blink> ▄ </blink>
+          <pre><code>% ssh-and-grep-some-stuff.pl user@example.com</code></pre>
+          <div class="fragment">
+            <img src="images/spinner.png" class="plain">
+            <div>
+              Loading  <blink> ▄ </blink>
+            </div>
           </div>
           <div class="fragment" style="margin-top: 2em">
             ... is it actually doing anything?
@@ -200,10 +208,8 @@
         </section>
 
         <section data-markdown>
-          ## Old Solution
-          * grep is slow on gigabytes of data.
-          * 5+ minutes to grep many GBs of logs on many servers
-          * result: reduced support efficiency due to bad tooling
+          ### result: reduced support efficiency 
+          ### due to bad tooling
         </section>
 
         <section data-markdown>
@@ -312,7 +318,9 @@
           * highlight timestamp
           -->
         <section> <!-- apache parsing filter example {{{ -->
-          Sample event
+          <h3> parse with grok </h3>
+
+          <p> Sample event </p>
           <pre class="wrap"><code class="wrap">24.22.31.135 - - [22/Feb/2013:15:19:47 -0500] "GET /blog/geekery/xvfb-firefox.html HTTP/1.1" 200 10975 "-" "Screaming Frog SEO Spider/2.10"</code></pre>
 
           <div class="fragment" style="position: relative">
@@ -320,31 +328,25 @@
             <div>
               <pre class="fragment overlay"><code>
                24.22.31.135 
-               - 
-               - 
                [22/Feb/2013:15:19:47 -0500] 
-               "GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
                GET 
                /blog/geekery/xvfb-firefox.html
                HTTP/1.1
                200
                10975 
-               "-"
-               "Screaming Frog SEO Spider/2.10"
+               -
+               Screaming Frog SEO Spider/2.10
               </code></pre>
               <pre class="fragment overlay"><code>
 ip:            24.22.31.135 
-???:           - 
-???:           - 
 timestamp:     [22/Feb/2013:15:19:47 -0500] 
-request:       "GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
   verb:        GET 
   path:        /blog/geekery/xvfb-firefox.html
   protocol:    HTTP/1.1
 response code: 200
 bytes sent:    10975 
-referrer:      "-"
-user agent:    "Screaming Frog SEO Spider/2.10"
+referrer:      -
+user agent:    Screaming Frog SEO Spider/2.10
               </code></pre>
             </div>
           </div>
@@ -369,7 +371,7 @@ user agent:    "Screaming Frog SEO Spider/2.10"
         </section>
 
         <section data-markdown>
-          ## Where is 24.22.31.135?
+          ## where is 24.22.31.135?
 
           <center>
             <table class="fragment">
@@ -427,6 +429,142 @@ user agent:    "Screaming Frog SEO Spider/2.10"
         </section>
         <!-- }}} -->
  
+
+        <!-- about the project {{{ -->
+        <section data-markdown>
+          ## about the project
+        </section>
+
+        <section data-markdown>
+          ## extendable 
+
+          * 100+ plugins (inputs, filters, outputs)
+          * something missing? Easy to add!
+        </section>
+
+        <section data-markdown>
+          ## project values
+          * newbies have a bad time? It's a bug.
+          * all contributions are valued (code, bugs, docs, support, etc)
+        </section>
+
+        <section data-markdown>
+          ## community
+          * communication: irc, mailing list
+          * book: http://www.logstashbook.com/
+          * tips/tricks: http://cookbook.logstash.net/ 
+          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbooks
+        </section>
+
+        <section data-markdown>
+          ## project metrics
+          * 18000 unique monthly visitors to logstash.net 
+          * 736 users on logstash-users@googlegroups.com
+          * 540 users on logstash.jira.com
+          * 275 folks in #logstash on freenode IRC
+          * 130 code contributors
+        </section>
+        <!-- }}} -->
+      </div>
+    </div>
+
+    <div style="display: none;"> <!-- any non-shown sections here -->
+      <!-- deployment models {{{ -->
+      <section data-markdown>
+        ## deployment scenarios
+      </section>
+
+      <section>
+        <h3> simple standalone </h3> 
+
+        <table class="inner-border">
+          <tr>
+            <th> inputs </th>
+            <th> filters </th>
+            <th> outputs </th>
+          </tr>
+          <tr>
+            <td> 
+              /var/log/messages <br>
+              /var/log/apache/access.log <br>
+              /var/log/mysql/slow.log <br>
+            </td>
+            <td> 
+              grok <br>
+              date <br>
+              multiline <br>
+              anonymize <br>
+            </td>
+            <td>
+              elasticsearch <br>
+              ops irc channel <br>
+            </td>
+          </tr>
+          <!--
+          <tr>
+            <td colspan="3">
+              Summary: read files, parse with filters, send to elasticsearch
+            </td>
+          </tr>
+          -->
+        </table>
+      </section>
+
+      <section data-markdown>
+        ## scale out?
+
+        * expand on (inputs | filters | outputs)
+        * "inputs" are your business machines
+        * "filters" are a processing tier
+        * "outputs" are a storage and integration tier
+      </section>
+
+      <section>
+        <h3> tiered </h3> 
+
+        <table class="inner-border">
+          <tr>
+            <th> inputs </th>
+            <th> filters </th>
+            <th> outputs </th>
+          </tr>
+          <tr>
+            <td> 
+              frontends <br>
+              databases <br>
+              routers <br>
+            </td>
+            <td> 
+              parse <br>
+              anonymize <br>
+            </td>
+            <td>
+              elasticsearch <br>
+              graphite <br>
+              nagios <br>
+              live tail <br>
+            </td>
+            <tr>
+              <td colspan="3"></td>
+            </tr>
+          </tr>
+        </table>
+
+        <ul>
+          <li class="fragment"> inputs are your business machines
+          <li class="fragment"> filters are machines that processes events
+          <li class="fragment"> outputs are machines that store events
+        </ul>
+      </section>
+
+      <section>
+        <img src="images/logstash-and-metrics.png" class="plain">
+
+        <p>
+        [image made by Rashid Khan]
+        </p>
+      </section>
+      <!-- }}} -->
         <!-- the agent and plugins {{{ -->
         <section data-markdown>
           ## the agent
@@ -614,142 +752,6 @@ user agent:    "Screaming Frog SEO Spider/2.10"
           * irc
         </section>
         <!-- }}} -->
-
-        <!-- about the project {{{ -->
-        <section data-markdown>
-          ## about the project
-        </section>
-
-        <section data-markdown>
-          ## extendable 
-
-          * 100+ plugins (inputs, filters, outputs)
-          * something missing? Easy to add!
-        </section>
-
-        <section data-markdown>
-          ## project values
-          * newbies have a bad time? It's a bug.
-          * all contributions are valued (code, bugs, docs, support, etc)
-        </section>
-
-        <section data-markdown>
-          ## community
-          * communication: irc, mailing list
-          * book: http://www.logstashbook.com/
-          * tips/tricks: http://cookbook.logstash.net/ 
-          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbooks
-        </section>
-
-        <section data-markdown>
-          ## project metrics
-          * 18000 unique monthly visitors to logstash.net 
-          * 736 users on logstash-users@googlegroups.com
-          * 540 users on logstash.jira.com
-          * 275 folks in #logstash on freenode IRC
-          * 130 code contributors
-        </section>
-        <!-- }}} -->
-      </div>
-    </div>
-
-    <div style="display: none;"> <!-- any non-shown sections here -->
-      <!-- deployment models {{{ -->
-      <section data-markdown>
-        ## deployment scenarios
-      </section>
-
-      <section>
-        <h3> simple standalone </h3> 
-
-        <table class="inner-border">
-          <tr>
-            <th> inputs </th>
-            <th> filters </th>
-            <th> outputs </th>
-          </tr>
-          <tr>
-            <td> 
-              /var/log/messages <br>
-              /var/log/apache/access.log <br>
-              /var/log/mysql/slow.log <br>
-            </td>
-            <td> 
-              grok <br>
-              date <br>
-              multiline <br>
-              anonymize <br>
-            </td>
-            <td>
-              elasticsearch <br>
-              ops irc channel <br>
-            </td>
-          </tr>
-          <!--
-          <tr>
-            <td colspan="3">
-              Summary: read files, parse with filters, send to elasticsearch
-            </td>
-          </tr>
-          -->
-        </table>
-      </section>
-
-      <section data-markdown>
-        ## scale out?
-
-        * expand on (inputs | filters | outputs)
-        * "inputs" are your business machines
-        * "filters" are a processing tier
-        * "outputs" are a storage and integration tier
-      </section>
-
-      <section>
-        <h3> tiered </h3> 
-
-        <table class="inner-border">
-          <tr>
-            <th> inputs </th>
-            <th> filters </th>
-            <th> outputs </th>
-          </tr>
-          <tr>
-            <td> 
-              frontends <br>
-              databases <br>
-              routers <br>
-            </td>
-            <td> 
-              parse <br>
-              anonymize <br>
-            </td>
-            <td>
-              elasticsearch <br>
-              graphite <br>
-              nagios <br>
-              live tail <br>
-            </td>
-            <tr>
-              <td colspan="3"></td>
-            </tr>
-          </tr>
-        </table>
-
-        <ul>
-          <li class="fragment"> inputs are your business machines
-          <li class="fragment"> filters are machines that processes events
-          <li class="fragment"> outputs are machines that store events
-        </ul>
-      </section>
-
-      <section>
-        <img src="images/logstash-and-metrics.png" class="plain">
-
-        <p>
-        [image made by Rashid Khan]
-        </p>
-      </section>
-      <!-- }}} -->
     </div>
     <script src="lib/js/head.min.js"></script>
     <script src="js/reveal.min.js"></script>
