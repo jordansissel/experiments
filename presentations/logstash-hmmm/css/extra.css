@@ -53,3 +53,8 @@ table.inner-border td, table.inner-border th {
   white-space: normal;
   overflow: inherit !important;
 }
+
+.fragment.overlay {
+  position: absolute;
+}
+

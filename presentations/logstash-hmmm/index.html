@@ -53,9 +53,28 @@
           </div>
         </section> 
 
-        <!-- Introduction {{{ ->
+        <!-- Introduction {{{ -->
         <section data-markdown>
           ## hello!
+        </section>
+
+        <section data-markdown>
+          ## Project Principles
+        </section>
+
+        <section>
+          <h2 class="text-right">
+          If a newbie has a bad time,<br>
+          it is a bug.
+          </h2>
+        </section>
+
+        <section>
+          <h2 class="text-left"> Make it work.  </h2>
+          <br>
+          <h2 class="text-center"> Make it right.  </h2>
+          <br>
+          <h2 class="text-right"> Make it fast.  </h2>
         </section>
         <!-- }}} -->
 
@@ -263,7 +282,6 @@
         -->
         <!-- }}} -->
 
-
         <section data-markdown>
           <img src="images/logstash.png" class="plain full left">
 
@@ -297,33 +315,78 @@
           Sample event
           <pre class="wrap"><code class="wrap">24.22.31.135 - - [22/Feb/2013:15:19:47 -0500] "GET /blog/geekery/xvfb-firefox.html HTTP/1.1" 200 10975 "-" "Screaming Frog SEO Spider/2.10"</code></pre>
 
-          Identifiable fields?
-          <pre class="fragment"><code>
-24.22.31.135 
-- 
-- 
-[22/Feb/2013:15:19:47 -0500] 
-"GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
-200
-10975 
-"-"
-"Screaming Frog SEO Spider/2.10"
-          </code></pre>
-        </section>
-
-        <section>
-          Labeled fields?
-          <pre><code>
+          <div class="fragment" style="position: relative">
+            <p>Break it down - </p>
+            <div>
+              <pre class="fragment overlay"><code>
+               24.22.31.135 
+               - 
+               - 
+               [22/Feb/2013:15:19:47 -0500] 
+               "GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
+               GET 
+               /blog/geekery/xvfb-firefox.html
+               HTTP/1.1
+               200
+               10975 
+               "-"
+               "Screaming Frog SEO Spider/2.10"
+              </code></pre>
+              <pre class="fragment overlay"><code>
 ip:            24.22.31.135 
 ???:           - 
 ???:           - 
 timestamp:     [22/Feb/2013:15:19:47 -0500] 
 request:       "GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
+  verb:        GET 
+  path:        /blog/geekery/xvfb-firefox.html
+  protocol:    HTTP/1.1
 response code: 200
 bytes sent:    10975 
 referrer:      "-"
 user agent:    "Screaming Frog SEO Spider/2.10"
-          </code></pre>
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section data-markdown>
+          ## what times is it?
+          <table>
+            <tr>
+              <td class="fragment">1304060505
+              <td class="fragment" nowrap>22/Feb/2013:15:19:47 -0500
+            <tr>
+              <td class="fragment" nowrap>Fri, 21 Nov 1997 09:55:06 -0600
+              <td class="fragment">Oct 11 20:21:47
+            <tr>
+              <td class="fragment">020805 13:51:24
+              <td class="fragment">110429.071055,118
+            <tr>
+              <td class="fragment">@4000000037c219bf2ef02e94
+            </tr>
+          </table>
+        </section>
+
+        <section data-markdown>
+          ## Where is 24.22.31.135?
+
+          <center>
+            <table class="fragment">
+              <tr>
+                <td>city</td><td>  Portland</td>
+              </tr>
+              <tr>
+                <td>country</td><td>   United States</td>
+              </tr>
+              <tr>
+                <td>latitude</td><td>   45.50729999999999</td>
+              </tr>
+              <tr>
+                <td>longitude</td><td>  -122.69319999999999</td>
+              </tr>
+            </table>
+          </center>
         </section>
         <!-- }}} -->
 
@@ -359,6 +422,8 @@ user agent:    "Screaming Frog SEO Spider/2.10"
 
         <section>
           <h3> how do we get there? </h3>
+
+          <img src="images/logstash.png" class="plain fragment">
         </section>
         <!-- }}} -->
  
@@ -550,103 +615,6 @@ user agent:    "Screaming Frog SEO Spider/2.10"
         </section>
         <!-- }}} -->
 
-        <!-- deployment models {{{ -->
-        <section data-markdown>
-          ## deployment scenarios
-        </section>
-
-        <section>
-          <h3> simple standalone </h3> 
-
-          <table class="inner-border">
-            <tr>
-              <th> inputs </th>
-              <th> filters </th>
-              <th> outputs </th>
-            </tr>
-            <tr>
-              <td> 
-                /var/log/messages <br>
-                /var/log/apache/access.log <br>
-                /var/log/mysql/slow.log <br>
-              </td>
-              <td> 
-                grok <br>
-                date <br>
-                multiline <br>
-                anonymize <br>
-              </td>
-              <td>
-                elasticsearch <br>
-                ops irc channel <br>
-              </td>
-            </tr>
-            <!--
-            <tr>
-              <td colspan="3">
-                Summary: read files, parse with filters, send to elasticsearch
-              </td>
-            </tr>
-            -->
-          </table>
-        </section>
-
-        <section data-markdown>
-          ## scale out?
-
-          * expand on (inputs | filters | outputs)
-          * "inputs" are your business machines
-          * "filters" are a processing tier
-          * "outputs" are a storage and integration tier
-        </section>
-
-        <section>
-          <h3> tiered </h3> 
-
-          <table class="inner-border">
-            <tr>
-              <th> inputs </th>
-              <th> filters </th>
-              <th> outputs </th>
-            </tr>
-            <tr>
-              <td> 
-                frontends <br>
-                databases <br>
-                routers <br>
-              </td>
-              <td> 
-                parse <br>
-                anonymize <br>
-              </td>
-              <td>
-                elasticsearch <br>
-                graphite <br>
-                nagios <br>
-                live tail <br>
-              </td>
-              <tr>
-                <td colspan="3"></td>
-              </tr>
-            </tr>
-          </table>
-
-          <ul>
-            <li class="fragment"> inputs are your business machines
-            <li class="fragment"> filters are machines that processes events
-            <li class="fragment"> outputs are machines that store events
-          </ul>
-        </section>
-
-        <section>
-          <img src="images/logstash-and-metrics.png" class="plain">
-
-          <p>
-          [image made by Rashid Khan]
-          </p>
-        </section>
-        <!-- }}} -->
-
         <!-- about the project {{{ -->
         <section data-markdown>
           ## about the project
@@ -683,9 +651,106 @@ user agent:    "Screaming Frog SEO Spider/2.10"
         </section>
         <!-- }}} -->
       </div>
-
     </div>
 
+    <div style="display: none;"> <!-- any non-shown sections here -->
+      <!-- deployment models {{{ -->
+      <section data-markdown>
+        ## deployment scenarios
+      </section>
+
+      <section>
+        <h3> simple standalone </h3> 
+
+        <table class="inner-border">
+          <tr>
+            <th> inputs </th>
+            <th> filters </th>
+            <th> outputs </th>
+          </tr>
+          <tr>
+            <td> 
+              /var/log/messages <br>
+              /var/log/apache/access.log <br>
+              /var/log/mysql/slow.log <br>
+            </td>
+            <td> 
+              grok <br>
+              date <br>
+              multiline <br>
+              anonymize <br>
+            </td>
+            <td>
+              elasticsearch <br>
+              ops irc channel <br>
+            </td>
+          </tr>
+          <!--
+          <tr>
+            <td colspan="3">
+              Summary: read files, parse with filters, send to elasticsearch
+            </td>
+          </tr>
+          -->
+        </table>
+      </section>
+
+      <section data-markdown>
+        ## scale out?
+
+        * expand on (inputs | filters | outputs)
+        * "inputs" are your business machines
+        * "filters" are a processing tier
+        * "outputs" are a storage and integration tier
+      </section>
+
+      <section>
+        <h3> tiered </h3> 
+
+        <table class="inner-border">
+          <tr>
+            <th> inputs </th>
+            <th> filters </th>
+            <th> outputs </th>
+          </tr>
+          <tr>
+            <td> 
+              frontends <br>
+              databases <br>
+              routers <br>
+            </td>
+            <td> 
+              parse <br>
+              anonymize <br>
+            </td>
+            <td>
+              elasticsearch <br>
+              graphite <br>
+              nagios <br>
+              live tail <br>
+            </td>
+            <tr>
+              <td colspan="3"></td>
+            </tr>
+          </tr>
+        </table>
+
+        <ul>
+          <li class="fragment"> inputs are your business machines
+          <li class="fragment"> filters are machines that processes events
+          <li class="fragment"> outputs are machines that store events
+        </ul>
+      </section>
+
+      <section>
+        <img src="images/logstash-and-metrics.png" class="plain">
+
+        <p>
+        [image made by Rashid Khan]
+        </p>
+      </section>
+      <!-- }}} -->
+    </div>
     <script src="lib/js/head.min.js"></script>
     <script src="js/reveal.min.js"></script>
 
