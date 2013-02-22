@@ -168,11 +168,22 @@
           * curation: daily log rotation, a few days of retention
         </section>
 
+        <section>
+          <h2> Old Solution </h2>
+
+          <img src="images/spinner.png" class="plain">
+          <div>
+            Loading  <blink> ▄ </blink>
+          </div>
+          <div class="fragment" style="margin-top: 2em">
+            ... is it actually doing anything?
+          </div>
+        </section>
+
         <section data-markdown>
           ## Old Solution
-
           * grep is slow on gigabytes of data.
-          * takes 5+ minutes to grep GBs of logs on many servers
+          * 5+ minutes to grep many GBs of logs on many servers
           * result: reduced support efficiency due to bad tooling
         </section>
 
@@ -191,8 +202,9 @@
         <section data-markdown>
           ## New Solution
 
-          * hundreds of servers ship logs to a central logstash cluster
-          * provide single search interface on the web
+          * hundreds of servers logging events
+          * central logstash cluster
+          * one search interface on the web
 
           <img src="images/logstash-dreamhost-day.png" class="plain">
         </section>
@@ -200,9 +212,9 @@
         <section data-markdown>
           ## results
 
-          * log search results in seconds, not minutes
-          * search specific time spans, not just "today" or "yesterday"
-          * happier, more effective customer support folks
+          * faster results
+          * better experience
+          * more effective customer support
         </section>
 
         <section data-markdown>
@@ -214,6 +226,7 @@
             need to do their business.
           </blockquote>
           <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
+
         </section>
 
         <section>
@@ -235,8 +248,8 @@
         <section data-markdown>
           ## rough numbers
           * peak 10,000 events/second
-          * 500,000,000 events/day
-          * 4,000,000,000 events/week
+          * 500 million events/day
+          * 4 billion events/week
           * 1 terabyte/week
           * peak 10% cpu utilization across cluster
         </section>
@@ -280,13 +293,46 @@
           * highlight fields
           * highlight timestamp
           -->
+        <section> <!-- apache parsing filter example {{{ -->
+          Sample event
+          <pre class="wrap"><code class="wrap">24.22.31.135 - - [22/Feb/2013:15:19:47 -0500] "GET /blog/geekery/xvfb-firefox.html HTTP/1.1" 200 10975 "-" "Screaming Frog SEO Spider/2.10"</code></pre>
+
+          Identifiable fields?
+          <pre class="fragment"><code>
+24.22.31.135 
+- 
+- 
+[22/Feb/2013:15:19:47 -0500] 
+"GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
+200
+10975 
+"-"
+"Screaming Frog SEO Spider/2.10"
+          </code></pre>
+        </section>
+
+        <section>
+          Labeled fields?
+          <pre><code>
+ip:            24.22.31.135 
+???:           - 
+???:           - 
+timestamp:     [22/Feb/2013:15:19:47 -0500] 
+request:       "GET /blog/geekery/xvfb-firefox.html HTTP/1.1"
+response code: 200
+bytes sent:    10975 
+referrer:      "-"
+user agent:    "Screaming Frog SEO Spider/2.10"
+          </code></pre>
+        </section>
+        <!-- }}} -->
 
         <section>
           <div class="full">
             <img src="images/simple-inputs-filters.jpg" class="full plain">
             <div style="position: absolute; font-size: 7em; top: 270px; left: 700px; color: black; text-shadow: 3px 3px 3px #000" class="fragment"> <b> ? </b> </div>
           </div>
-        </section>
+        </section> 
 
         <section>
           <img src="images/kibana-search.png" class="full plain">

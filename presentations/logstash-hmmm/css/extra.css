@@ -47,3 +47,9 @@ table.inner-border td, table.inner-border th {
   padding-bottom: 0.5em;
   padding-left: 0.5em;
 }
+
+.wrap {
+  text-wrap: normal !important;
+  white-space: normal;
+  overflow: inherit !important;
+}
