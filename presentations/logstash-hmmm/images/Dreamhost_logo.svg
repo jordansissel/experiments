@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="261"
+   height="261"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     transform="translate(-525.71429,-405.93362)"
+     id="layer1">
+    <g
+       transform="translate(1.9285692,1.9285693)"
+       id="g3176">
+      <rect
+         width="257.14285"
+         height="257.14285"
+         ry="30.252102"
+         x="525.71429"
+         y="405.93362"
+         id="rect2396"
+         style="opacity:1;fill:#003466;fill-opacity:1;stroke:none;stroke-width:28.20000076;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <g
+         transform="translate(277.86389,-1.5010925)"
+         id="g2402">
+        <path
+           d="M 282.85714,540.93361 C 282.85714,540.93361 282.85714,490.57647 282.85714,490.57647 C 282.85714,471.63596 298.15248,444.1479 322.14286,444.1479 C 322.14286,444.1479 375.74604,444.1479 380,444.1479 C 384.43193,444.1479 387.85714,447.85376 387.85714,452.00504 C 387.85714,452.00504 387.85714,466.29075 387.85714,466.29075 C 387.85714,507.31347 348.61016,549.50504 308.57143,549.50504 C 308.57143,549.50504 290.625,549.50504 290.625,549.50504 C 286.35383,549.50504 282.85714,544.63221 282.85714,540.93361 z"
+           id="path2398"
+           style="fill:#336799;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           d="M 276.07143,579.86218 C 276.07143,579.86218 342.17605,620.37703 399.64286,567.71932 C 460.92262,511.56775 423.21429,435.57647 423.21429,435.57647 C 494.90541,483.66253 484.47605,562.16756 450.71429,598.43361 C 371.76092,683.24336 278.71808,602.90716 276.07143,579.86218 z"
+           id="path2400"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>
