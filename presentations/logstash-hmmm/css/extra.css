@@ -10,7 +10,10 @@ img.full {
   display: block;
   margin: 0 !important;
   padding: 0 !important;
+  margin: auto !important;;
   margin-top: -1em !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
 }
 
 .right { float: right; }
@@ -54,8 +57,10 @@ table.inner-border td, table.inner-border th {
   overflow: inherit !important;
 }
 
-.fragment.overlay {
-  position: absolute;
+.overlay {
+  position: absolute !important;
+  top: 0px !important;
+  left: 0px !important;
 }
 
 
@@ -67,4 +72,9 @@ table.inner-border td, table.inner-border th {
 
 .unreadable code {
   max-height: inherit !important;
+}
+
+.bigger {
+  font-size: 130% !important;
+  line-height: 130% !important;
 }
