@@ -154,66 +154,9 @@
           </code></pre>
         </section> <!-- }}} -->
 
-        <!-- problems {{{ -->
-        <section data-markdown>
-          # problems
-        </section>
-
-        <section data-markdown>
-          ## access
-
-          * Who controls access?
-          * Who needs access?
-          * What granularity of access controls?
-        </section>
-
-        <section data-markdown>
-          ## consumption
-
-          * who can understand the logs?
-          * are these the same who need to consume them?
-          * have any tools that can process the logs?
-        </section>
-
-        <section data-markdown>
-          ## curation
-
-          * how long to keep logs?
-          * until they fill up disk 
-          * ... and crash production
-          * ... when you're asleep and on-call.
-        </section>
-
-        <section data-markdown>
-          ## compliance
-
-          * PCI (credit cards)
-          * FISMA (federal agencies)
-          * Sarbanes-Oxley (public companies) 
-          * HIPAA (health industry)
-        </section>
-
-        <section data-markdown>
-          ## tooling
-
-          * what helps you do things with logs?
-          * some too specialized (webalizer, etc)
-          * some don't scale (ssh + grep)
-        </section>
-
-        <section data-markdown>
-          ## summary
-
-          * access
-          * consumption
-          * curation
-          * compliance
-          * tooling
-        </section>
-
         <!-- tooling/xkcd/oneliner example {{{ -->
         <section data-markdown>
-          ## tooling example!
+          ## a realistic example
         </section>
 
         <section> <!-- unreadable apache segment {{{ -->
@@ -295,8 +238,6 @@
         </section>
         <!-- }}} -->
 
-        <!-- }}} -->
-
         <!-- other tools {{{ -->
         <section data-markdown>
           ## other tools
@@ -313,6 +254,7 @@
         <!-- Case Study: DreamHost {{{ -->
         <section>
           <h3 class="text-left"> case study: </h3>
+          <img src="images/Dreamhost_logo.svg" class="left plain">
           <h2 class="text-right"> email at DreamHost </h2>
         </section>
 
@@ -667,7 +609,7 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
 
         <!-- the agent and plugins {{{ -->
         <section data-markdown>
-          ## the agent
+          ## the logstash agent
 
           inputs | filters | outputs
         </section>
@@ -675,7 +617,8 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
         <section data-markdown>
           ## inputs
 
-          where logs come from.
+          * where logs come from.
+          * 30 inputs today
         </section>
 
         <section data-markdown>
@@ -725,7 +668,8 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
         <section data-markdown>
           ## filters
 
-          processing events for awesome
+          * powerful tools for processing events
+          * 25 filters today
         </section>
 
         <section>
@@ -801,7 +745,8 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
         <section data-markdown>
           ## outputs
 
-          where events go
+          * where events go
+          * 46 outputs today
         </section>
 
         <section data-markdown>
@@ -979,6 +924,64 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
         </p>
       </section>
       <!-- }}} -->
+        <!-- problems {{{ -->
+        <section data-markdown>
+          # things to ponder
+        </section>
+
+        <section data-markdown>
+          ## access
+
+          * Who controls access?
+          * Who needs access?
+          * What granularity of access controls?
+        </section>
+
+        <section data-markdown>
+          ## consumption
+
+          * who can understand the logs?
+          * are these the same who need to consume them?
+          * have any tools that can process the logs?
+        </section>
+
+        <section data-markdown>
+          ## curation
+
+          * how long to keep logs?
+          * until they fill up disk 
+          * ... and crash production
+          * ... when you're asleep and on-call.
+        </section>
+
+        <section data-markdown>
+          ## compliance
+
+          * PCI (credit cards)
+          * FISMA (federal agencies)
+          * Sarbanes-Oxley (public companies) 
+          * HIPAA (health industry)
+        </section>
+
+        <section data-markdown>
+          ## tooling
+
+          * what helps you do things with logs?
+          * some too specialized (webalizer, etc)
+          * some don't scale (ssh + grep)
+        </section>
+
+        <section data-markdown>
+          ## summary
+
+          * access
+          * consumption
+          * curation
+          * compliance
+          * tooling
+        </section>
+
+        <!-- }}} -->
     </div>
 
     <!-- scripts {{{ -->
