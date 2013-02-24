@@ -78,3 +78,9 @@ table.inner-border td, table.inner-border th {
   font-size: 130% !important;
   line-height: 130% !important;
 }
+
+.wide {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
