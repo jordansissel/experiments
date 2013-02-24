@@ -156,7 +156,7 @@
 
         <!-- tooling/xkcd/oneliner example {{{ -->
         <section data-markdown>
-          ## a realistic example
+          ## it was a good idea at the time...
         </section>
 
         <section> <!-- unreadable apache segment w/ quote {{{ -->
@@ -224,6 +224,33 @@
           <img src="images/frontend-response-codes.png" class="full plain">
         </section> 
 
+        <section style="height: 100%"> <!-- apache regexp {{{ -->
+          <h2>How did we do it?</h2>
+
+          <pre class="fragment" style="text-wrap: suppress !important; white-space: pre;">
+(((?:(\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,
+62}))*(\.?|\b))|((?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?
+:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]
+{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (([a-zA-Z0-9
+_-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
+/(\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?
+:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b
+)/((?&gt;\d\d){1,2}):((?!&lt;[0-9])((?:2[0123]|[01][0-9])):((?:[0-5][0-9]))(?::((
+?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)))(?![0-9])) ((?:[+-]?(?:[0-9]+))))\] &quot;
+(?:(\b\w+\b) (\S+)(?: HTTP/((?:((?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]
++)?)|(?:\.[0-9]+)))))))?|-)&quot; ((?:((?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-
+9]+)?)|(?:\.[0-9]+)))))) (?:((?:((?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9
+]+)?)|(?:\.[0-9]+))))))|-) (((?&gt;(?&lt;!\\)(?&gt;&quot;(?&gt;\\.|[^\\&quot;]+)+&quot;|&quot;&quot;|(?&gt;'(?&gt;\\.|
+[^\\']+)+')|''|(?&gt;`(?&gt;\\.|[^\\`]+)+`)|``)))) (((?&gt;(?&lt;!\\)(?&gt;&quot;(?&gt;\\.|[^\\&quot;]+
+)+&quot;|&quot;&quot;|(?&gt;'(?&gt;\\.|[^\\']+)+')|''|(?&gt;`(?&gt;\\.|[^\\`]+)+`)|``)))))
+</pre>
+        </section> <!-- }}} -->
+    
+        <section style="height: 100%">
+          <img src="images/sad-medic.png" class="full">
+          [image from zhatdoktah.tumblr.com]
+        </section>
+
         <section style="height: 100%">
           <img src="images/xkcd-perlswing-many.png">
           <p>do this every day?</p>
@@ -241,7 +268,7 @@
 
         <!-- other tools {{{ -->
         <section data-markdown>
-          ## related tools
+          ## Other options!
 
           * graylog2
           * flume
@@ -255,7 +282,7 @@
         <section>
           <h3 class="text-left"> case study: </h3>
           <img src="images/Dreamhost_logo.svg" class="left plain">
-          <h2 class="text-right"> email at DreamHost </h2>
+          <h2 class="text-right"> email @ DreamHost </h2>
         </section>
 
         <section>
@@ -325,7 +352,7 @@
         <section data-markdown>
           ## Let's Reduce MTTR
           
-          (Mean Time To Repair)
+          (Mean Time To Resolve/Repair)
         </section>
 
         <section data-markdown>
