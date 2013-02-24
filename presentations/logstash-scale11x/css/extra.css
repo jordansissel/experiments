@@ -84,3 +84,7 @@ table.inner-border td, table.inner-border th {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+.small {
+  font-size: 0.5em !important;
+}
