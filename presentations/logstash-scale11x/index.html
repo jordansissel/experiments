@@ -83,6 +83,7 @@
           a prologue.
 
           <img src="images/alarm-clock.jpg" class="plain fragment right" style="display: block;">
+
         </section>
 
         <section style="height: 100%">
@@ -160,7 +161,7 @@
 
         <!-- tooling/xkcd/oneliner example {{{ -->
         <section data-markdown>
-          ## it was a good idea at the time...
+          ## "it was a good idea at the time..."
         </section>
 
         <section> <!-- unreadable apache segment w/ quote {{{ -->
@@ -255,6 +256,7 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
         <section style="height: 100%">
           <img src="images/sad-medic.png" class="full">
           <p class="small text-right">[image from zhatdoktah.tumblr.com]</p>
+          <aside class="notes"> this is terrible. you wrote some crazy regular expression and now you're covered in birds. what the hell happened </aside>
         </section>
 
         <section style="height: 100%">
@@ -265,6 +267,7 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
         <section>
           <img src="images/computer-keyboard-jacket.jpg" style="border: 0px;">
           <p class="small">[image from CNET, credit Piccsy]</p>
+          <aside class="notes"> human keyboard == people use you as a computer interface </aside>
         </section>
 
         <section>
@@ -282,6 +285,8 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
           * hadoop
           * storm
           * elsa
+
+          <aside class="notes"> other open source options </aside>
         </section>
         <!-- }}} -->
 
@@ -303,6 +308,8 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
           ## Why do we care?
 
           * what's the business requirement?
+
+          <aside class="notes"> do things because they benefit the business! </aside>
         </section>
 
         <section>
@@ -360,6 +367,8 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
           ## Let's Reduce MTTR
           
           (Mean Time To Resolve/Repair)
+
+          <aside class="notes"> because faster customer support improves the business </aside>
         </section>
 
         <section data-markdown>
@@ -376,6 +385,7 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
           * one search interface on the web
 
           <img src="images/logstash-dreamhost-day.png" class="plain">
+          <aside class="notes"> and hopefully one web interface requires less training </aside>
         </section>
 
         <section data-markdown>
@@ -415,11 +425,11 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
 
         <section data-markdown>
           ## event metrics
-          * peak 10,000 events/second
+          * 10,000 events/second
           * 500 million events/day
           * 4 billion events/week
           * 1 terabyte/week
-          * peak 10% cpu utilization across cluster
+          * 10% peak cpu utilization across cluster
         </section>
 
         <!--
@@ -557,6 +567,21 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
         </section>
 
         <section>
+          <img src="images/kibana-dashboard.png" class="plain">
+          <p> maybe you want analytics? </p>
+        </section>
+
+        <section>
+          <img src="images/kibana-dashboard2.png" class="plain">
+          <p> maybe you want analytics? </p>
+        </section>
+
+        <section>
+          <img src="images/kibana-dashboard3.png" class="plain">
+          <p> maybe you want analytics? </p>
+        </section>
+
+        <section>
           <img src="images/frontend-response-codes.png" class="full plain">
           <p> maybe you want a graph? </p>
         </section>
@@ -569,6 +594,7 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
           ## scale out?
 
           * pipe logstash to logstash
+          * inputs to filters to outputs to inputs to ...
         </section>
 
         <section>
@@ -688,7 +714,7 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
               <td> irc </td>
             </tr> <tr>
               <td> lumberjack </td>
-              <td> rabbimq </td>
+              <td> rabbitmq </td>
             </tr> <tr>
               <td> redis </td>
               <td> relp </td>
