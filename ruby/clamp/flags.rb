@@ -1,13 +1,23 @@
 require "clamp"
 
 class Foo < Clamp::Command
-  option "--foo", :flag, "Hello", :default => true
-  option "--no-foo", :flag, "Hello" do |val|
-    @foo = false
+  #
+  option "--bar", :flag, "Whatever"
+
+  def bar?
+    return <whatever value for --bar, true/false usually>
   end
 
+
+  option "--baz", "WHOA", "asdfasdf"
+  def bar
+    return <whatever value for --baz ...>
+  end
+  
+
+
   def execute
-    p :foo? => foo?
+    puts "--bar: #{bar?}"
   end
 end
 
