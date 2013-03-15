@@ -1,0 +1,90 @@
+
+img.plain {
+  border: inherit !important;
+  background: inherit !important;
+}
+
+img.full {
+  /* margin: auto; */
+  /* height: 100%; */
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin: auto !important;;
+  margin-top: -1em !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
+}
+
+.right { float: right; }
+.left { float: left; }
+
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+.bold {
+  font-weight: bold !important;
+}
+
+table.list {
+  margin: auto;
+}
+table.list td {
+  padding-left: 4em;
+}
+
+
+table.inner-border {
+  width: 100%;
+  border-collapse: collapse;
+  border-style: hidden
+}
+
+table.inner-border tr:first-child {
+  background-color: #220;
+}
+
+table.inner-border td, table.inner-border th {
+  border: 5px solid #880;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
+}
+
+.wrap {
+  text-wrap: normal !important;
+  white-space: normal;
+  overflow: inherit !important;
+}
+
+.overlay {
+  position: absolute !important;
+  top: 0px !important;
+  left: 0px !important;
+}
+
+
+.unreadable {
+  font-size: 35% !important;
+  margin: 0;
+  padding: 0;
+}
+
+.unreadable code {
+  max-height: inherit !important;
+}
+
+.bigger {
+  font-size: 130% !important;
+  line-height: 130% !important;
+}
+
+.wide {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.small {
+  font-size: 0.5em !important;
+}
