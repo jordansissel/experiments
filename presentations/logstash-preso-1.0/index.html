@@ -1,4 +1,5 @@
-<!-- TODO
+<!-- header shit {{{ -->
+<!-- TODO 
   * Kibana stuff?
   * Live demo slot?
   * Horrible log examples for transitions
@@ -9,7 +10,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>logstash - SCALE11x</title>
+    <title>logstash - overview</title>
 
     <meta name="description" content="logstash">
     <meta name="author" content="Jordan SIssel">
@@ -43,6 +44,7 @@
       <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
 
+<!-- }}} -->
         <section> 
           <img src="images/logstash.png" class="plain full left">
           <div class="right">
@@ -53,7 +55,7 @@
           </div>
         </section> 
 
-        <!-- Introduction {{{ -->
+        <!-- Introduction {{{ (3m) -->
         <section>
           <h2> hello! </h2>
 
@@ -64,17 +66,6 @@
             <li> logging @ DreamHost
             <li> logstash project lead
           </ul>
-        </section>
-        
-        <section data-markdown>
-          ## stuff I do
-
-          * dad + husband
-          * fpm
-          * xdotool
-          * sysadvent.blogspot.com
-          * hangops.com with @solarce
-          * nethack
         </section>
         <!-- }}} -->
 
@@ -277,20 +268,6 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
         <!-- }}} -->
   <!-- }}} -->
 
-        <!-- other tools (1m) {{{ -->
-        <section data-markdown>
-          ## Other options!
-
-          * graylog2
-          * flume
-          * hadoop
-          * storm
-          * elsa
-
-          <aside class="notes"> other open source options </aside>
-        </section>
-        <!-- }}} -->
-
         <!-- Case Study: DreamHost (7m40s) {{{ -->
         <section>
           <h3 class="text-left"> case study: </h3>
@@ -411,7 +388,7 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
         </section>
 
         <section>
-          <h2> How much improved?</h2>
+          <h2> Big improvement. </h2>
           <p style="padding-top: 2em" class="text-left">Technical Support Says</p>
 
           <blockquote class="text-left">by an order of awesome</blockquote>
@@ -429,8 +406,8 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
         <section data-markdown>
           ## event metrics
           * 10,000 events/second
-          * 500 million events/day
-          * 4 billion events/week
+          * 750 million events/day
+          * 5 billion events/week
           * 1 terabyte/week
           * 10% peak cpu utilization across cluster
         </section>
@@ -488,7 +465,7 @@ _-]+)) (([a-zA-Z0-9_-]+)) \[(((?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))
           * highlight timestamp
           -->
         <section> <!-- apache parsing filter example {{{ -->
-          <h3> understanding logs with grok </h3>
+          <h3> understanding logs </h3>
 
           <p> Sample event </p>
           <pre class="wrap"><code class="wrap bigger">24.22.31.135 - - [22/Feb/2013:15:19:47 -0500] "GET /blog/geekery/xvfb-firefox.html HTTP/1.1" 200 10975 "-" "Screaming Frog SEO Spider/2.10"</code></pre>
@@ -634,6 +611,11 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
 
         <section>
           <div>
+            <span class="left" style="width: 50%">business &amp; infrastructure</span>
+            <span class="rigth" style="width: 50%">log processors</span>
+          </div>
+          <hr>
+          <div>
             <img src="images/tiered-redis-output.jpg" class="plain" height="350">
             <img src="images/tiered-redis-input-complete.jpg" class="plain" height="350">
           </div>
@@ -676,22 +658,94 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
           <p class="text-left">first principles</p><hr>
           <h2 class="text-right"> Open Source (Apache 2.0) </h2>
         </section>
-
-        <section>
-          <p class="text-left">first principles</p><hr>
-          <h2 class="text-right"> Should be easy to integrate. </h2>
-        </section>
         <!-- }}} -->
 
         <section>
           <img src="images/logstash.png" class="plain">
         </section>
 
+        <!-- FAQ {{{ -->
+        <section data-markdown>
+          ## Frequently Asked Questions
+        </section> 
+
+        <section>
+          <blockquote class="text-left">Can it handle perforce logs?</blockquote>
+          <blockquote class="text-center fragment">Can it handle nginx logs?</blockquote>
+          <blockquote class="text-right fragment">Can it handle postgres logs?</blockquote>
+          <blockquote class="fragment">Can it handle XXX logs?</blockquote>
+          <h1 class="fragment">YES</h1>
+
+          <aside class="notes"> Can it handle my logs? Yes. Best way to get started is to pick a sample log event and ask for help processing it in the logstash IRC channel or on the mailing list. The community will help you get started! </aside>
+        </section> 
+
+        <section>
+          <blockquote>I work at a small company, is it good for me?</blockquote>
+          <h1 class="fragment">YES</h1>
+
+          <aside class="notes"> You can have logstash up and running in minutes. </aside>
+        </section> 
+
+        <section>
+          <blockquote>I work at a large company, is it good for me?</blockquote>
+
+          <h1 class="fragment">YES</h1>
+          <aside class="notes"> logstash scales well and helps reduce cross-team friction by reducing the human keyboard problem and improving accessibility and value of your logs</aside>
+        </section> 
+        <!-- }}} -->
+        <!-- about the project (2m50s) {{{ -->
+        <section data-markdown>
+          ## about the project
+        </section>
+
+        <section data-markdown>
+          ## community
+          * irc: #logstash on freenode
+          * mail: logstash-users@googlegroups.com
+          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbooks
+        </section>
+
+        <section data-markdown>
+          ## cookbook.logstash.net
+
+          * community site for sharing configs, log recipes, etc
+        </section>
+
+        <section>
+          <img src="images/logstashbook.png" class="full plain">
+
+          written by James Turnbull; author of Pro Puppet and more.
+        </section>
+
+        <section data-markdown>
+          ## the logstash book
+
+          * why use logstash?
+          * how to get started?
+          * how to scale?
+          * how to extend?
+          * $10 ebook
+        </section>
+
+        <section data-markdown>
+          ## Want more?
+
+          ## Hands-on logstash workshop
+
+          ## Governor's room @ 1:30PM
+        </section>
+        <!-- }}} -->
+      </div>
+    </div>
+
+    <div style="display: none;"> <!-- any non-shown sections here -->
         <!-- the agent and plugins (5m30s) {{{ -->
         <section data-markdown>
           ## the logstash agent
 
           inputs | filters | outputs
+
+          <aside class="notes">skim through these quickly, yo!</aside>
         </section>
 
         <section data-markdown>
@@ -856,55 +910,6 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
           * irc
         </section>
         <!-- }}} -->
-
-        <!-- about the project (2m50s) {{{ -->
-        <section data-markdown>
-          ## about the project
-        </section>
-
-        <section data-markdown>
-          ## community
-          * irc: #logstash on freenode
-          * mail: logstash-users@googlegroups.com
-          * extra goodness: kibana, logstash-cli, puppet modules, chef cookbooks
-        </section>
-
-        <section data-markdown>
-          ## cookbook.logstash.net
-
-          * community site for sharing configs, log recipes, etc
-        </section>
-
-        <section>
-          <img src="images/logstashbook.png" class="full plain">
-
-          written by James Turnbull; author of Pro Puppet and more.
-        </section>
-
-        <section data-markdown>
-          ## the logstash book
-
-          * why use logstash?
-          * how to get started?
-          * how to scale?
-          * how to extend?
-          * $10 ebook
-        </section>
-
-        <section data-markdown>
-          ## project metrics
-          * 18000 unique monthly visitors to logstash.net 
-          * 730 users on logstash-users@googlegroups.com
-          * 540 users on logstash.jira.com
-          * 275 folks in #logstash on freenode IRC
-          * 130 code contributors
-          * 100+ plugins (inputs, filters, outputs)
-        </section>
-        <!-- }}} -->
-      </div>
-    </div>
-
-    <div style="display: none;"> <!-- any non-shown sections here -->
         <!-- problems {{{ -->
         <section data-markdown>
           # things to ponder
@@ -1014,6 +1019,19 @@ user agent:    Screaming Frog SEO Spider/2.10</code></pre>
             </tr>
           </table>
         </section> <!-- }}} -->
+        <!-- other tools (1m) {{{ -->
+        <section data-markdown>
+          ## Other options!
+
+          * graylog2
+          * flume
+          * hadoop
+          * storm
+          * elsa
+
+          <aside class="notes"> other open source options </aside>
+        </section>
+        <!-- }}} -->
     </div>
 
     <!-- scripts {{{ -->
