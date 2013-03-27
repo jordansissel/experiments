@@ -1,0 +1,627 @@
+<!-- header crap {{{ -->
+<!-- TODO 
+  * Kibana stuff?
+  * Live demo slot?
+  * Horrible log examples for transitions
+  -->
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>logstash - overview</title>
+
+    <meta name="description" content="logstash">
+    <meta name="author" content="Jordan SIssel">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/night-jls.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="css/extra.css">
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+<!-- }}} -->
+        <section> 
+          <img src="images/logstash.png" class="plain full left">
+          <div class="right">
+            <h2 class="bold">logstash</h2>
+            <hr>
+            <h4 style="text-align: right"> Jordan Sissel </h4>
+            <h4 style="text-align: right"> logger @ DreamHost </h4>
+          </div>
+        </section> 
+
+        <section data-markdown>
+          # Event Processing
+        </section>
+
+        <section data-markdown>
+          ## operating logstash 
+
+          * logstash is written in ruby
+          * logstash releases are java jars
+          * JRuby is awesome.
+        </section>
+
+        <section>
+          <blockquote class="fragment"> Java is bloatware! </blockquote>
+          <blockquote class="fragment"> Java is slow! </blockquote>
+          <blockquote class="fragment"> We can't use java because ... <span class="fragment">computers!</span> </blockquote>
+
+          <div class="fragment">
+            Take this delorean back to 1997, please.
+          </div>
+        </section>
+
+        <section>
+          <h2> Bad default heap sizes </h2>
+          <pre><code>  public class Mem {
+    public static void main(String[] args) {
+      // Prints the maximum memory size available to this JVM instance.
+      System.out.println(Runtime.getRuntime().maxMemory());
+    }
+  }</code></pre>
+
+          <ul>
+            <li> IcedTea JVM: default max heap is 25% of physical memory
+            <li> HotSpot (???)
+            <li> Start with `java -Xmx120m` and tune as you please.
+            <li> Default GC will not free memory back to the host system.
+          </ul>
+        </section>
+
+        <section>
+          <h2> Slow inputs?</h2>
+
+          Many inputs can run multiple workers easily.
+
+          <pre class="bigger"><code>input {
+  amqp {
+    # Use 12 threads to read from amqp
+    threads => 12
+    ...
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> Slow filters? </h2>
+
+          Filters run as a 'worker'; can run many.
+
+          <pre class="bigger"><code># Run 8 filter workers (default=1)
+% logstash agent -w 8 -f logstash.conf</code></pre>
+        </section>
+
+        <section>
+          <h2> Scale Transport </h2>
+
+          <ul>
+            <li> Run multiple receivers
+            <li> Tell outputs about all recievers
+          </ul>
+        </section>
+
+        <section>
+          <h2> Scale Transport (redis) </h2>
+          <pre><code>input {
+  redis { host => "redis1" ... }
+  redis { host => "redis2" ... }
+  redis { host => "redis3" ... }
+}</code></pre>
+
+          <pre><code>output {
+  redis {
+    # One is chosen at random and used until 
+    # failure. Then we choose again.
+    host => [ "redis1", "redis2", "redis3" ]
+  }
+}</code></pre>
+        </section>
+
+        <section data-markdown>
+          # Monitoring and Debugging
+        </section>
+
+        <section>
+          <h2> Tracing events </h2>
+
+          <pre class="bigger"><code>input {
+  redis {
+    # Add our hostname to every event 
+    # in the field "logstash"
+    add_field => [ "logstash", 
+        "myhostname.example.com" ]
+  }
+}
+</code></pre>
+        </section>
+
+        <section data-markdown>
+          ## Grok
+
+          http://grokdebug.herokuapp.com/
+        </section>
+
+        <section data-markdown>
+          <h2> Watch live </h2>
+
+          <pre class="bigger" style="height:100%"><code>output {
+  <span class="fragment"># Connect with a websocket client
+  websocket { ... }</span>
+  <span class="fragment"># or with a tcp client (netcat!)
+  tcp { mode => server ... }</span>
+  <span class="fragment"># or pubsub with zeromq
+  zeromq {
+    topology => pubsub 
+    mode => server
+  }</span>
+}</code></pre>
+
+        </section>
+
+        <section data-markdown>
+          ## Measure 
+        </section>
+
+        <section>
+          <h2> metrics filter</h2>
+
+          <pre class="bigger"><code>filter {
+  metrics {
+    # Counts events. Emits rates, etc.
+    meter => "events"
+    add_tag => "throughput"
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> statsd output</h2>
+
+          <pre class="bigger"><code>output {
+  statsd {
+    # Count events using a statsd server.
+    increment => "events"
+  }
+}</code></pre>
+        </section>
+
+        <section data-markdown>
+          ## Debug
+        </section>
+
+        <section data-markdown>
+          ### top -Hp logstashpid
+
+          TODO(sissel): Include 'top' output showing thread names
+
+        </section>
+
+        <section data-markdown>
+          ### visualvm, jstack, etc
+
+          It's the jvm, so you get all the awesome jvm inspection/debug tools.
+
+        </section>
+
+        <section data-markdown>
+          # ElasticSearch
+
+        </section>
+
+        <section data-markdown>
+          ## Multiple logstash indexers
+
+          * Many logstsah agents can write to ES simultaneously
+
+        </section>
+
+        <section data-markdown>
+          ## Monitoring ES
+
+        </section>
+
+        <section data-markdown>
+          ### TODO(sissel): Cluster metrics
+        </section>
+
+        <section data-markdown>
+          ### TODO(sissel): Index metrics
+        </section>
+
+        <section data-markdown>
+          ### TODO(sissel): Process metrics
+
+        </section>
+
+        <section data-markdown>
+          ## Index Templates
+
+          Lets you apply configuration to any new indexes matching a pattern.
+
+              logstash-*
+
+          TODO(sissel): Include a sample template.
+
+        </section>
+
+        <section data-markdown>
+          ## Compression
+
+          Enable it.
+
+        </section>
+
+        <section data-markdown>
+          ## Curation
+
+          * delete daily indexes
+          * TODO(sissel): link to python script that does it
+        </section>
+      </div>
+    </div>
+
+    <div style="display: none;"> <!-- any non-shown sections here -->
+        <!-- the agent and plugins (5m30s) {{{ -->
+        <section data-markdown>
+          ## the logstash agent
+
+          inputs | filters | outputs
+
+          <aside class="notes">skim through these quickly, yo!</aside>
+        </section>
+
+        <section data-markdown>
+          ## inputs
+
+          * where logs come from.
+          * 30 inputs today
+        </section>
+
+        <section data-markdown>
+          ## inputs: local
+
+          * files
+          * standard input
+          * windows eventlog
+          * external programs
+        </section>
+
+        <section>
+          <h2> inputs: network transport</h2>
+
+          <table class="list">
+            <tr>
+              <td> gemfire </td>
+              <td> irc </td>
+            </tr> <tr>
+              <td> lumberjack </td>
+              <td> rabbitmq </td>
+            </tr> <tr>
+              <td> redis </td>
+              <td> relp </td>
+            </tr> <tr>
+              <td> stomp </td>
+              <td> syslog </td>
+            </tr> <tr>
+              <td> tcp and udp </td>
+              <td> websockets </td>
+            </tr> <tr>
+              <td> xmpp </td>
+              <td> zeromq </td>
+            </tr>
+          </table>
+        </section>
+
+        <section data-markdown>
+          ## inputs: external
+
+          * Heroku
+          * Amazon SQS
+          * Twitter Stream API
+          * Drupal DBLog
+        </section>
+
+        <section data-markdown>
+          ## filters
+
+          * powerful tools for processing events
+          * 25 filters today
+        </section>
+
+        <section>
+          <h3> filters: unwinding craziness </h3>
+          <ul>
+            <li class="fragment"> parse crazy log formats
+            <li class="fragment"> parse wild date formats
+          </ul>
+
+        </section>
+
+        <section>
+          <h3> filters: complex parsing</h3>
+          <ul>
+            <li class="fragment"> key=value things="like this"
+            <li class="fragment"> { "json": "parsing" }
+            <li class="fragment"> &lt;xml parsing="true" /&gt;
+            <li class="fragment"> csv,parsing,enabled
+            <li class="fragment"> also=have&amp;url=parsing
+            <li class="fragment"> multi-<br>line<br> events
+          </ul>
+        </section>
+
+        <section data-markdown>
+          ## filters: improve event data
+
+          * geoip lookups
+          * user agent parsing
+          * syslog decoding
+          * dns lookups
+          * zeromq call outs
+        </section>
+
+        <section data-markdown>
+          ## filters: modify events
+
+          * mutate
+          * anonymize
+          * translate
+        </section>
+
+        <section data-markdown>
+          ## outputs
+
+          * where events go
+          * 46 outputs today
+        </section>
+
+        <section data-markdown>
+          ## outputs: metrics
+
+          * boundary
+          * circonus
+          * cloudwatch
+          * datadog
+          * ganglia
+          * graphite
+          * librato
+          * opentsdb
+          * riemann
+        </section>
+
+        <section data-markdown>
+          ## outputs: storage
+          * elasticsearch
+          * files
+          * mongodb
+          * redis
+          * riak
+        </section>
+
+        <section data-markdown>
+          <h2> outputs: network transport</h2>
+
+          <table class="list">
+            <tr>
+              <td> gemfire </td>
+              <td> irc </td>
+            </tr> <tr>
+              <td> lumberjack </td>
+              <td> rabbitmq </td>
+            </tr> <tr>
+              <td> redis </td>
+              <td> relp </td>
+            </tr> <tr>
+              <td> stomp </td>
+              <td> syslog </td>
+            </tr> <tr>
+              <td> tcp and udp </td>
+              <td> websockets </td>
+            </tr> <tr>
+              <td> xmpp </td>
+              <td> zeromq </td>
+            </tr>
+          </table>
+        </section>
+
+        <section data-markdown>
+          ## outputs: monitor &amp; report
+          * nagios
+          * email
+          * pagerduty
+          * zabbix
+          * irc
+        </section>
+        <!-- }}} -->
+        <!-- problems {{{ -->
+        <section data-markdown>
+          # things to ponder
+        </section>
+
+        <section data-markdown>
+          ## access
+
+          * Who controls access?
+          * Who needs access?
+          * What granularity of access controls?
+        </section>
+
+        <section data-markdown>
+          ## consumption
+
+          * who can understand the logs?
+          * are these the same who need to consume them?
+          * have any tools that can process the logs?
+        </section>
+
+        <section data-markdown>
+          ## curation
+
+          * how long to keep logs?
+          * until they fill up disk 
+          * ... and crash production
+          * ... when you're asleep and on-call.
+        </section>
+
+        <section data-markdown>
+          ## compliance
+
+          * PCI (credit cards)
+          * FISMA (federal agencies)
+          * Sarbanes-Oxley (public companies) 
+          * HIPAA (health industry)
+        </section>
+
+        <section data-markdown>
+          ## tooling
+
+          * what helps you do things with logs?
+          * some too specialized (webalizer, etc)
+          * some don't scale (ssh + grep)
+        </section>
+
+        <section data-markdown>
+          ## summary
+
+          * access
+          * consumption
+          * curation
+          * compliance
+          * tooling
+        </section>
+
+        <!-- }}} -->
+        <section> <!-- too-specific grok/date filter examples {{{ -->
+          <h2> filters: grok </h2>
+
+          <pre><code>37.57.128.238 - - [13/Sep/2012:02:37:24 -0400] "GET / HTTP/1.1" 200 41687 </code></pre>
+
+          How do we read that?
+          <pre class="fragment"><code>( client ip )      (  some timestamp thing   )  (http request)  rsp bytes</code></pre>
+
+          <!--
+          <div class="fragment">
+            Describe it in grok:
+            <pre class="wrap"><code>%{IP:client} - - \[%{HTTPDATE:timestamp}\] "%{WORD:verb} %{URIPATH:request} HTTP/%{NUMBER:http_version}" %{NUMBER:response} %{NUMBER:bytes}</code></pre>
+          </div>
+          -->
+
+          <div class="fragment">
+          becomes :
+
+          <pre><code>{
+  "client": "37.57.128.238",
+  "timestamp": "13/Sep/2012:02:37:24 -0400",
+  "verb": "GET",
+  "request": "/",
+  "http_version": "1.1",
+  "response": 200,
+  "bytes": 41687,
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> filters: date </h2>
+
+          <table class="wide">
+            <tr class="fragment" class="wide">
+              <td>13/Sep/2012:02:37:24 -0400</td>
+              <td>2012-09-13T06:37:24.000Z</td>
+            </tr>
+            <tr class="fragment" class="wide">
+              <td>1361667592.342</td>
+              <td>2013-02-24T00:59:52.342Z</td>
+            </tr>
+            <tr class="fragment" class="wide">
+              <td>@4000000037c219bf2ef02e94</td>
+              <td>1999-08-24T04:04:05.787Z</td>
+            </tr>
+            <tr class="fragment" class="wide">
+              <td>020805 13:51:24</td>
+              <td>2002-08-05T20:51:24.000Z</td>
+            </tr>
+          </table>
+        </section> <!-- }}} -->
+        <!-- other tools (1m) {{{ -->
+        <section data-markdown>
+          ## Other options!
+
+          * graylog2
+          * flume
+          * hadoop
+          * storm
+          * elsa
+
+          <aside class="notes"> other open source options </aside>
+        </section>
+        <!-- }}} -->
+        <section data-markdown> 
+          ## the logstash book
+
+          * why use logstash?
+          * how to get started?
+          * how to scale?
+          * how to extend?
+          * $10 ebook
+        </section>
+    </div>
+
+    <!-- scripts {{{ -->
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: false,
+
+        theme: Reveal.getQueryHash().theme || "night-jls", // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'fade', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          //{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+    <!-- }}} -->
+  </body>
+</html>
