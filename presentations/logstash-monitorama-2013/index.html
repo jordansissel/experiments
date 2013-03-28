@@ -56,21 +56,7 @@
           </div>
         </section> 
 
-        <!-- Introduction {{{ (1m) -->
-        <section>
-          <h2> hello! </h2>
-
-          <img src="images/jordan.jpg" class="right" style="width: 50%">
-          <ul style="margin-top:100px">
-            <li> sysadmin by trade
-            <li> i love to code
-            <li> logging @ DreamHost
-            <li> logstash project lead
-          </ul>
-        </section>
-        <!-- }}} -->
-
-        <!-- first principles (1m50s) (5 slides) {{{ -->
+        <!-- first principles  (2 slides) {{{ -->
         <section data-markdown>
           first principles
         </section>
@@ -83,109 +69,31 @@
           </h2>
           <h1 class="text-right"> it is a bug.</h1>
         </section>
-
-        <section>
-          <p class="text-left">first principles</p><hr>
-          <h2 class="text-left"> make it possible,  </h2>
-          <br>
-          <h2 class="text-center fragment"> make it correct,  </h2>
-          <br>
-          <h2 class="text-right fragment"> make it fast.  </h2>
-        </section>
-
-        <section>
-          <p class="text-left">first principles</p><hr>
-          <h2 class="text-left"> open source,  </h2>
-          <br>
-          <h2 class="text-center fragment"> open community,  </h2>
-          <br>
-          <h2 class="text-right fragment"> open everything.  </h2>
-        </section>
         <!-- }}} -->
 
-        <!-- Case Study: DreamHost (6 slides) {{{ -->
+        <!-- Case Study: DreamHost (2 slides) {{{ -->
         <section>
-          <h3 class="text-left"> case study: </h3>
           <img src="images/Dreamhost_logo.svg" class="left plain">
-          <h2 class="text-right"> email @ DreamHost </h2>
+          <h2 class="text-right"> logs @ DreamHost </h2>
         </section>
 
         <section>
           <h3 class="text-left"> case study: email @ DreamHost </h3>
           <img src="images/Dreamhost_logo.svg" class="left plain">
           <ul style="margin-top:1em;">
+            <li> Want customers to be happy!
+            <li> Want employees to be happy!
             <li> Hundreds of servers
             <li> Many different products
-            <li> Thousands of logs
+            <li> Thousands of log sources
             <li> Billions of events per day
-            <li> Customers need to be happy!
           </ul>
         </section>
+        <!-- end dreamhost stuff }}} -->
 
+        <!-- logstash / scaling {{{ -->
         <section>
-          <div class="fragment">
-            <a href="http://www.eso.org/public/images/eso0848a/" style="background-color:black;" class="small text-right">[Image credit ESO (www.eso.org)]</a>
-            <img src="images/eso0848a.jpg" class="full plain">
-          </div>
-          <h3 style="position: absolute; top: 1em; background: url('images/fadedblack.png'); width: 100%; padding:0.5em;" class="text-left">
-            <code>$ grep user@host mail.log</code>
-            <div>
-              <blink> ▄ </blink>
-            </div>
-            <div class="fragment" style="padding-top:1em;">
-              <code> brb, searching the universe... </code>
-            </div>
-            <div class="fragment">
-              <code> watch kitten while you wait </code>
-              <img src="images/kitty.jpg" style="width: 50%;" class="text-right">
-            </div>
-          </h3>
-        </section>
-
-        <section>
-          <h3 class="text-left"> case study: email @ DreamHost </h3>
-          <img src="images/Dreamhost_logo.svg" class="left plain">
-          <blockquote class="text-left right">
-            <b>Provide Superhero Service</b>: DreamHost strives to max out the value
-            and customer service we put into everything we do. 
-          </blockquote>
-          <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
-        </section>
-
-        <section>
-          <h3 class="text-left"> case study: email @ DreamHost </h3>
-          <img src="images/Dreamhost_logo.svg" class="left plain">
-          <blockquote class="right text-left"> 
-            <b>Empower People</b>: By empowering our employees to be truly
-            helpful, we empower our customers with products and services they
-            need to do their business.
-          </blockquote>
-          <i><a href="http://dreamhost.com/about-us/dreamhost-values/">- The DreamHost Way </a></i>
-        </section>
-
-        <section>
-          <h3 class="text-left"> case study: email @ DreamHost </h3>
-          <img src="images/Dreamhost_logo.svg" class="left plain">
-          <h2 class="text-center"> logstash! </h2>
-          <hr>
-          <ul>
-            <li> Reduce time spent waiting for answers
-            <li> Reduce team friction
-            <li> Make tech support more effective
-          </ul>
-        </section> <!-- end dreamhost stuff }}} -->
-
-    <!-- logstash / how can it help, flow, etc (10m20s) {{{ -->
-        <section> <!-- {{{ event flow (files->filters->elasticsearch -->
-          <h2> Basics </h2>
-          <ul>
-            <li class="fragment wide"> unix: pipe text
-              <pre class="wide"><code class="bigger wide">ps -ef | awk '/firefox/ {print $2}' | xargs kill</code></pre>
-            <li class="fragment"> powershell: pipe objects
-              <pre class="wide"><code class="bigger wide">ps | select { $_.Name == "firefox" } | kill</code></pre>
-            <li class="fragment"> logstash is a pipe for events
-            <li class="fragment"> data + timestamp == good for logstash
-          </ul>
+          <img src="images/logstash.png" class="full plain">
         </section>
 
         <section>
@@ -203,9 +111,9 @@
         <section>
           <img src="images/tiered-outputs-to-inputs.jpg" class="full plain">
         </section>
-
         <!-- }}} -->
 
+        <!-- example scaled deploy {{{ -->
         <section>
           <h3> example  </h3>
           <span class="left">
@@ -250,10 +158,6 @@
         </section>
         <!-- }}} -->
  
-        <section>
-          <img src="images/logstash.png" class="plain">
-        </section>
-
         <!-- {{{ java -->
         <section data-markdown>
           ## operating logstash 
@@ -341,13 +245,16 @@
 
         <section>
           <h2> Scale Transport (redis) </h2>
-          <pre><code>input {
+          <pre class="bigger"><code>input {
   redis { host => "redis1" ... }
   redis { host => "redis2" ... }
   redis { host => "redis3" ... }
 }</code></pre>
+        </section>
 
-          <pre><code>output {
+        <section>
+          <h2> Scale Transport (redis) </h2>
+          <pre class="bigger"><code>output {
   redis {
     # One is chosen at random and used until 
     # failure. Then we choose again.
@@ -355,7 +262,6 @@
   }
 }</code></pre>
         </section> <!-- }}} -->
-
 
         <!-- monitoring/debugging {{{ -->
         <section data-markdown>
@@ -379,7 +285,7 @@
         <section data-markdown>
           ## Grok
 
-          http://grokdebug.herokuapp.com/
+          grokdebug.herokuapp.com
         </section>
 
         <section data-markdown>
