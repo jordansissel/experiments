@@ -310,16 +310,13 @@
         </section>
 
         <section>
-          <h2> Scale Transport: How </h2>
+          <h2> Available Transport </h2>
 
-          <ul>
-            <li> Multiple readers
-            <li> Each output knows about all readers
-          </ul>
+          example with redis.
         </section>
 
         <section>
-          <h2> Scale Transport (redis) </h2>
+          <h2> Available Transport (redis) </h2>
           <pre class="bigger"><code>input {
   redis { host => "redis1" ... }
   redis { host => "redis2" ... }
@@ -328,7 +325,7 @@
         </section>
 
         <section>
-          <h2> Scale Transport (redis) </h2>
+          <h2> Available Transport (redis) </h2>
           <pre style="font-size: 100%"><code>output {
   redis {
     # One is chosen at random and used until 
@@ -369,7 +366,7 @@
         </section> 
 
         <section data-markdown>
-          ## Shipper ecosystem
+          ## logstash ecosystem
 
           * beaver
           * woodchuck
@@ -608,11 +605,12 @@ index.store.compress.tv: true</code></pre>
 
           ---
 
-          ## Hackathon: I want your help!
+          ## Hackathon stuff!
 
           * documentation improvements
           * plugin fixes
           * prototypes to build
+          * learn and share!
 
         </section>
         <!-- }}} -->
