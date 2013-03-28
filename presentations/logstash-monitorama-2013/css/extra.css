@@ -57,6 +57,14 @@ table.inner-border td, table.inner-border th {
   overflow: inherit !important;
 }
 
+.wrapany {
+  text-wrap: unrestricted !important;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  overflow: inherit !important;
+}
+
 .overlay {
   position: absolute !important;
   top: 0px !important;
