@@ -151,6 +151,11 @@
         <section> <!-- unreadable regexp {{{ -->
           <pre class="full wrap" style="text-wrap:unrestricted !important;">(?&lt;a0&gt;(?&lt;a1&gt;(?&lt;a2&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b) +(?&lt;a3&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])) (?&lt;a4&gt;(?!&lt;[0-9])(?&lt;a5&gt;(?:2[0123]|[01][0-9])):(?&lt;a6&gt;(?:[0-5][0-9]))(?::(?&lt;a7&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9]))) (?&lt;a8&gt;(?:(?&lt;a9&gt;\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b))|(?&lt;a10&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])))) (?&lt;a11&gt;(?&lt;a12&gt;(?:[\w._/%-]+))(?:\[(?&lt;a13&gt;\b(?:[1-9][0-9]*)\b)\])?): (?&lt;a14&gt;(?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])):(?&lt;a15&gt;(?:[+-]?(?:[0-9]+))) \[(?&lt;a16&gt;(?&lt;a17&gt;(?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]))/(?&lt;a18&gt;\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b)/(?&lt;a19&gt;[0-9]+):(?&lt;a20&gt;(?!&lt;[0-9])(?&lt;a21&gt;(?:2[0123]|[01][0-9])):(?&lt;a22&gt;(?:[0-5][0-9]))(?::(?&lt;a23&gt;(?:(?:[0-5][0-9]|60)(?:[.,][0-9]+)?)))(?![0-9])).(?&lt;a24&gt;(?:[+-]?(?:[0-9]+))))\] (?&lt;a25&gt;\S+) (?&lt;a26&gt;\S+)/(?&lt;a27&gt;\S+) (?&lt;a28&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a29&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a30&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a31&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a32&gt;\S+) (?&lt;a33&gt;(?:[+-]?(?:[0-9]+))) (?&lt;a34&gt;\S+) (?&lt;a35&gt;.*?) (?&lt;a36&gt;.*?) (?&lt;a37&gt;\S+) (?&lt;a38&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a39&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a40&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a41&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a42&gt;\S+) (?&lt;a43&gt;(?:[+-]?(?:[0-9]+)))/(?&lt;a44&gt;(?:[+-]?(?:[0-9]+))) \{(?&lt;a45&gt;(?&lt;a46&gt;.*?))\} \{(?&lt;a47&gt;(?&lt;a48&gt;.*?))\} "(?&lt;a49&gt;\b\w+\b) (?&lt;a50&gt;(?&lt;a51&gt;(?:/[A-Za-z0-9$.+!*'(){},~:;=#%_-]*)+)(?:(?&lt;a52&gt;\?[A-Za-z0-9$.+!*'(){},~#%&/=:;_-]*))?) HTTP/(?&lt;a53&gt;(?:(?&lt;a54&gt;(?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+))))))")</pre>
         </section> <!-- }}} -->
+        <section style="height: 100%">
+          <img src="images/sad-medic.png" class="full">
+          <p class="small text-right">[image from zhatdoktah.tumblr.com]</p>
+          <aside class="notes"> this is terrible. you wrote some crazy regular expression and now you're covered in birds. what the hell happened </aside>
+        </section>
 
         <section>
           <img src="images/kibana-search.png" class="full plain">
@@ -201,8 +206,12 @@
             <li class="fragment"> so Technical Support needs access,
             <li class="fragment"> but Operations has access,
             <li class="fragment"> but InfoSec policies restrict certain access.
-            <li class="fragment"> and then logs fill up disk and crash production.
+            <li class="fragment"> and then ...
           </ul>
+        </section>
+
+        <section style="height: 100%">
+          <img src="images/nagios-sms5.png" class="full plain overlay">
         </section>
         <!-- end dreamhost stuff }}} -->
 
@@ -217,13 +226,12 @@
 
         <section>
           <h2> inputs | filters | outputs </h2>
-
-          <ul>
-            <li> 30 inputs
-            <li> 27 filters
-            <li> 47 outputs
-          </ul>
+          30 inputs | 27 filters | 47 outputs
         </section> 
+
+        <section>
+          <h2> let's pipe some events </h2>
+        </section>
 
         <section data-markdown>
           ## scale out?
