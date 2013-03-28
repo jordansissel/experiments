@@ -46,25 +46,6 @@
 
 <!-- }}} -->
 
-<!-- TODO?
-     * ES
-       * Tuning (compression, etc)
-       * Metrics (stuff to watch)
-       * Plugins (bigdesk, paramedic, etc)
-
-     * logstash examples
-       * postfix logs
-       * rails logs
-       * log4j tweaks
-
-     * performance stuff
-       * lumberjack goals
-
-     * operation
-       * HA/scalability discussion (es, transports, etc)
-       * monitoring logstash activity
-       * metrics from agents
-     -->
         <section> 
           <img src="images/logstash.png" class="plain full left">
           <div class="right">
@@ -154,6 +135,10 @@
             <div class="fragment" style="padding-top:1em;">
               <code> brb, searching the universe... </code>
             </div>
+            <div class="fragment">
+              <code> watch kitten while you wait </code>
+              <img src="images/kitty.jpg" style="width: 50%;" class="text-right">
+            </div>
           </h3>
         </section>
 
@@ -219,38 +204,344 @@
           <img src="images/tiered-outputs-to-inputs.jpg" class="full plain">
         </section>
 
-        <section>
-          <div>
-            <span class="left" style="width: 50%">business &amp; infrastructure</span>
-            <span class="rigth" style="width: 50%">log processors</span>
-          </div>
-          <hr>
-          <div>
-            <img src="images/tiered-redis-output.jpg" class="plain" height="350">
-            <img src="images/tiered-redis-input-complete.jpg" class="plain" height="350">
-          </div>
-          <div class="fragment" style="margin-top: -250px;">
-            <img src="images/tiered-redis-output.jpg" class="plain" height="250">
-            <img src="images/tiered-redis-input-complete.jpg" class="plain" height="250">
-          </div>
-          <div class="fragment" style="margin-top: -150px;">
-            <img src="images/tiered-redis-output.jpg" class="plain" height="150">
-            <img src="images/tiered-redis-input-complete.jpg" class="plain" height="150">
-          </div>
-        </section>
         <!-- }}} -->
 
         <section>
-          <img src="images/apache-icon.gif" style="height: 2em">
-          <img src="images/logstash.png" class="plain" style="width: 3em">
-          <img src="images/redis.png" class="plain" style="width: 3em">
-          <img src="images/elasticsearch.png" class="plain" style="width: 5em">
+          <h3> example  </h3>
+          <span class="left">
+            <img src="images/apache-icon.gif" style="height: 2em" class="block">
+            <img src="images/apache-icon.gif" style="height: 2em" class="block">
+            <img src="images/apache-icon.gif" style="height: 2em" class="block">
+            <img src="images/apache-icon.gif" style="height: 2em" class="block">
+            <img src="images/apache-icon.gif" style="height: 2em" class="block">
+          </span>
+          <span style="font-size: 2em;" class="left"> <div>→</div> <div>→</div> <div>→</div> <div>→</div> </span>
+          <span class="left">
+            <img src="images/logstash.png" class="plain block" style="width: 3em">
+            <img src="images/logstash.png" class="plain block" style="width: 3em">
+          </span>
+          <span style="font-size: 2em;" class="left"> <div>→</div> <div>→</div> <div>→</div> <div>→</div> </span>
+          <span class="left">
+            <img src="images/redis.png" class="plain block" style="width: 3em">
+            <img src="images/redis.png" class="plain block" style="width: 3em">
+            <img src="images/redis.png" class="plain block" style="width: 3em">
+          </span>
+          <span style="font-size: 2em;" class="left"> <div>→</div> <div>→</div> <div>→</div> <div>→</div> </span>
+          <span class="left">
+            <img src="images/logstash.png" class="plain block" style="width: 2em">
+            <img src="images/logstash.png" class="plain block" style="width: 2em">
+            <img src="images/logstash.png" class="plain block" style="width: 2em">
+            <img src="images/logstash.png" class="plain block" style="width: 2em">
+          </span>
+          <span style="font-size: 2em;" class="left"> <div>→</div> <div>→</div> <div>→</div> <div>→</div> </span>
+          <span class="left">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 3em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 3em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 3em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 3em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 3em">
+          </span>
+          <span class="left">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 2em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 2em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 2em">
+            <img src="images/elasticsearch.png" class="plain block" style="width: 2em">
+          </span>
         </section>
         <!-- }}} -->
  
         <section>
           <img src="images/logstash.png" class="plain">
         </section>
+
+        <!-- {{{ java -->
+        <section data-markdown>
+          ## operating logstash 
+
+          * logstash is written in ruby
+          * logstash releases are java jars
+          * JRuby is awesome.
+        </section>
+
+        <section>
+          <blockquote> Java is bloatware! </blockquote>
+          <blockquote class="fragment"> Java is slow! </blockquote>
+          <blockquote class="fragment"> We can't use java because ... <span class="fragment">computers!</span> </blockquote>
+          <div class="fragment">
+            <img src="images/1983_delorean_dmc-12-pic-38289.jpeg" style="width: 60%;">
+            <a href="http://www.cargurus.com/Cars/1983-Delorean-DMC-12-Pictures-c12522">[image from cargurus.com]</a>
+            <p style="position:absolute; padding: 0.5em; top: 8em; left: 9em; background-color:rgba(0,0,0,0.7)">GO BACK TO 1997!</p>
+          </div>
+        </section>
+
+        <section>
+          <h2> Bad Defaults </h2>
+          <pre><code>  public class Mem {
+    public static void main(String[] args) {
+      // Prints the maximum memory size available to this JVM instance.
+      System.out.println(Runtime.getRuntime().maxMemory());
+    }
+  }</code></pre>
+
+          <ul>
+            <li> IcedTea JVM: default max heap is 25% of physical memory
+            <li> Try `java -Xmx100m` and tweak as necessary.
+            <li> Default GC will not free memory back to the host system.
+          </ul>
+        </section> 
+
+        <section data-markdown>
+          ## Alternate shippers
+
+          * beaver
+          * woodchuck
+          * awesant
+          * lumberjack
+          * syslog-shipper
+          * remote_syslog
+          * Message::Passing
+          * nxlog
+          * rsyslog
+          * syslog-ng
+
+        </section> 
+        <!-- }}} -->
+
+        <section> <!-- slow/perf stuff {{{ -->
+          <h2> Slow inputs?</h2>
+
+          Many inputs can run multiple workers easily.
+
+          <pre class="bigger"><code>input {
+  amqp {
+    # Use 12 threads to read from amqp
+    threads => 12
+    ...
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> Slow filters? </h2>
+
+          Filters run as a 'worker'; can run many.
+
+          <pre class="bigger"><code># Run 8 filter workers (default=1)
+% logstash agent -w 8 -f logstash.conf</code></pre>
+        </section>
+
+        <section>
+          <h2> Scale Transport </h2>
+
+          <ul>
+            <li> Run multiple receivers
+            <li> Tell outputs about all recievers
+          </ul>
+        </section>
+
+        <section>
+          <h2> Scale Transport (redis) </h2>
+          <pre><code>input {
+  redis { host => "redis1" ... }
+  redis { host => "redis2" ... }
+  redis { host => "redis3" ... }
+}</code></pre>
+
+          <pre><code>output {
+  redis {
+    # One is chosen at random and used until 
+    # failure. Then we choose again.
+    host => [ "redis1", "redis2", "redis3" ]
+  }
+}</code></pre>
+        </section> <!-- }}} -->
+
+
+        <!-- monitoring/debugging {{{ -->
+        <section data-markdown>
+          # Monitoring and Debugging
+        </section>
+
+        <section>
+          <h2> Tracing events </h2>
+
+          <pre class="bigger"><code>input {
+  redis {
+    # Add our hostname to every event 
+    # in the field "logstash"
+    add_field => [ "logstash", 
+        "myhostname.example.com" ]
+  }
+}
+</code></pre>
+        </section>
+
+        <section data-markdown>
+          ## Grok
+
+          http://grokdebug.herokuapp.com/
+        </section>
+
+        <section data-markdown>
+          <h2> Watch live </h2>
+
+          <pre style="font-size: 90%"><code>output {
+  <span class="fragment"># Connect with a websocket client
+  websocket { ... }</span>
+  <span class="fragment"># or with a tcp client (netcat!)
+  tcp { mode => server ... }</span>
+  <span class="fragment"># or pubsub with zeromq
+  zeromq {
+    topology => pubsub 
+    mode => server
+  }</span>
+}</code></pre>
+        </section>
+
+        <section data-markdown>
+          # Measure 
+        </section>
+
+        <section>
+          <h2> metrics filter</h2>
+
+          <pre class="bigger"><code>filter {
+  metrics {
+    # Counts events. Emits rates, etc.
+    meter => "events"
+    add_tag => "throughput"
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <h2> statsd output</h2>
+
+          <pre class="bigger"><code>output {
+  statsd {
+    # Count events using a statsd server.
+    increment => "events"
+  }
+}</code></pre>
+        </section>
+
+        <section data-markdown>
+          ## Debug
+        </section>
+
+        <section>
+          <h2> top -Hp logstashpid </h2>
+
+          <pre><code>
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND                
+27641 logstash  20   0 10.2g 287m  17m S   24  1.8   6:27.88 <span class="left-border highlight">|worker.1                 </span>
+27643 logstash  20   0 10.2g 287m  17m S   24  1.8   6:28.57 <span class="left-border highlight">|worker.2                 </span>
+27640 logstash  20   0 10.2g 287m  17m S   24  1.8   6:27.11 <span class="left-border highlight">|worker.0                 </span>
+27842 logstash  20   0 10.2g 287m  17m S   17  1.8   0:58.31 <span class="left-border highlight">&lt;lumberjack            </span>
+27647 logstash  20   0 10.2g 287m  17m S   17  1.8   4:51.72 <span class="left-border highlight">&gt;elasticsearch_        </span>
+27861 logstash  20   0 10.2g 287m  17m S   11  1.8   0:28.36 <span class="left-border highlight">&lt;lumberjack            </span>
+27648 logstash  20   0 10.2g 287m  17m S   10  1.8   2:42.59 <span class="left-border highlight">&gt;websocket             </span>
+27655 logstash  20   0 10.2g 287m  17m S   10  1.8   3:52.39 <span class="left-border highlight">&lt;lumberjack            </span>
+27711 logstash  20   0 10.2g 287m  17m S   10  1.8   1:48.34 <span class="left-border highlight">&lt;lumberjack            </span>
+27706 logstash  20   0 10.2g 287m  17m S    4  1.8   0:43.54 <span class="left-border highlight">&lt;lumberjack            </span>
+          </code></pre>
+        </section>
+
+        <section data-markdown>
+          ### visualvm, jstack, etc
+
+          It's the jvm, so you get all the awesome jvm inspection/debug tools.
+
+        </section><!-- }}} -->
+
+        <!-- elasticsearch {{{ -->
+        <section data-markdown>
+          # ElasticSearch
+
+        </section>
+
+        <section data-markdown>
+          ## Multiple logstash indexers
+
+          * Many logstsah agents can write to ES simultaneously
+
+        </section>
+
+        <section data-markdown>
+          ## Monitoring ES
+
+        </section>
+
+        <section data-markdown>
+          ## Cluster Metrics
+
+              % curl -s http://elasticsearch-server:9200/_cluster/health?pretty
+              {
+                "cluster_name" : "elasticsearch",
+                "status" : "yellow",
+                "timed_out" : false,
+                "number_of_nodes" : 2,
+                "number_of_data_nodes" : 1,
+                "active_primary_shards" : 95,
+                "active_shards" : 95,
+                "relocating_shards" : 0,
+                "initializing_shards" : 0,
+                "unassigned_shards" : 95
+              }
+        </section>
+
+        <section>
+          <h2> Index Metrics </h2>
+
+          <pre><code>% curl -s http://elasticsearch-server:9200/_status?pretty
+...
+  "indices" : {
+    "logstash-2013.03.12" : {
+      "index" : {
+        "primary_size" : "14.4mb",
+        "primary_size_in_bytes" : 15112895,
+        "size" : "14.4mb",
+        "size_in_bytes" : 15112895
+      },
+...</code></pre>
+        </section>
+
+        <section>
+          <h2> Process Metrics </h2>
+
+          <pre><code>% curl -s 'elasticsearch:9200/_nodes/jvm/stats?pretty' 
+...
+% curl -s 'elasticsearch:9200/_nodes/os/stats?pretty' 
+...
+% curl -s 'elasticsearch:9200/_nodes/indices/stats?pretty' 
+...
+% curl -s 'elasticsearch:9200/_nodes/fs/stats?pretty' 
+...</code></pre>
+        </section>
+
+        <section data-markdown>
+          ## Index Templates
+
+          * Apply configurations to new indexes
+          * Pattern-based
+          * like `logstash-*`
+        </section>
+
+        <section data-markdown>
+          ## Compression
+
+          Enable it. 55% storage improvement.
+
+              index.store.compress.stored: true
+              index.store.compress.tv: true
+        </section>
+
+        <section data-markdown>
+          ## Curation
+
+          * delete daily indexes older than X days
+          * LOGSTASH-211 has a script to do this.
+        </section> <!-- }}} -->
 
         <!-- about the project (2m50s) {{{ -->
         <section data-markdown>
@@ -286,6 +577,7 @@
           ## Hackathon: I want your help!
         </section>
         <!-- }}} -->
+      </div>
       </div>
     </div>
 

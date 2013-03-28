@@ -75,8 +75,8 @@ table.inner-border td, table.inner-border th {
 }
 
 .bigger {
-  font-size: 130% !important;
-  line-height: 130% !important;
+  font-size: 110% !important;
+  line-height: 110% !important;
 }
 
 .wide {
@@ -91,4 +91,14 @@ table.inner-border td, table.inner-border th {
 
 .block {
   display: block;
+}
+
+.left-border {
+  border-left: 1px solid white;
+}
+
+pre .highlight {
+  color: white !important;
+  background-color: #004400 !important;
+  font-weight: bold !important;
 }
