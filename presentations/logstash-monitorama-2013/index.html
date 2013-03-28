@@ -378,28 +378,28 @@
           * I use N-1, others use (N/2 - 1)
         </section>
 
-        <section data-markdown>
-          ## Cluster Metrics
+        <section>
+          <h2> Cluster Metrics </h2>
 
-              % curl -s http://elasticsearch-server:9200/_cluster/health?pretty
-              {
-                "cluster_name" : "elasticsearch",
-                "status" : "yellow",
-                "timed_out" : false,
-                "number_of_nodes" : 2,
-                "number_of_data_nodes" : 1,
-                "active_primary_shards" : 95,
-                "active_shards" : 95,
-                "relocating_shards" : 0,
-                "initializing_shards" : 0,
-                "unassigned_shards" : 95
-              }
+          <pre style="font-size: 90%"><code>% curl -s http://es:9200/_cluster/health
+{
+  "cluster_name" : "elasticsearch",
+  "status" : "yellow",
+  "timed_out" : false,
+  "number_of_nodes" : 2,
+  "number_of_data_nodes" : 1,
+  "active_primary_shards" : 95,
+  "active_shards" : 95,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 95
+}</code></pre>
         </section>
 
         <section>
           <h2> Index Metrics </h2>
 
-          <pre><code>% curl -s http://elasticsearch-server:9200/_status?pretty
+          <pre style="font-size: 90%"><code>% curl -s http://es:9200/_status
 ...
   "indices" : {
     "logstash-2013.03.12" : {
@@ -415,13 +415,13 @@
         <section>
           <h2> Process Metrics </h2>
 
-          <pre><code>% curl -s 'elasticsearch:9200/_nodes/jvm/stats?pretty' 
+          <pre style="font-size:90%"><code>% curl -s 'http://es:9200/_nodes/jvm/stats' 
 ...
-% curl -s 'elasticsearch:9200/_nodes/os/stats?pretty' 
+% curl -s 'http://es:9200/_nodes/os/stats' 
 ...
-% curl -s 'elasticsearch:9200/_nodes/indices/stats?pretty' 
+% curl -s 'http://es:9200/_nodes/indices/stats' 
 ...
-% curl -s 'elasticsearch:9200/_nodes/fs/stats?pretty' 
+% curl -s 'http://es:9200/_nodes/fs/stats' 
 ...</code></pre>
         </section>
 
