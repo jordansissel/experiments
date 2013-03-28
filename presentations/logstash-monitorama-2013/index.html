@@ -372,6 +372,13 @@
         </section>
 
         <section data-markdown>
+          # AVOID SPLIT BRAIN
+
+          * Set minimum number of nodes for master election
+          * I use N-1, others use (N/2 - 1)
+        </section>
+
+        <section data-markdown>
           ## Cluster Metrics
 
               % curl -s http://elasticsearch-server:9200/_cluster/health?pretty
@@ -422,17 +429,16 @@
           ## Index Templates
 
           * Apply configurations to new indexes
-          * Pattern-based
-          * like `logstash-*`
+          * for indexes named 'logstash-*' do ...
         </section>
 
         <section data-markdown>
           ## Compression
 
-          Enable it. 55% storage improvement.
+          <pre class="bigger"><code>index.store.compress.stored: true
+index.store.compress.tv: true</code></pre>
 
-              index.store.compress.stored: true
-              index.store.compress.tv: true
+          Enable it. 55% storage improvement.
         </section>
 
         <section data-markdown>
