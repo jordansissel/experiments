@@ -1,4 +1,5 @@
 require "uri"
+require "addressable/uri"
 
 uri_re = /^([A-z+-]+):\/\/([^A-z0-9_.]+)(?::[0-9]+)?(\/.*)/
 
@@ -15,6 +16,7 @@ end
 iterations = 1000000
 2.times do
   p "URI.parse" => time(iterations) { URI.parse(url) }
+  p "Addressable::URI.parse" => time(iterations) { Addressable::URI.parse(url) }
   p "regexp" => time(iterations) { uri_re.match(url) }
 end
 
