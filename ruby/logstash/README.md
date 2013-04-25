@@ -26,12 +26,8 @@ ruby 1.9.3p392 (2013-02-22 revision 39386) [x86\_64-linux]
 
 ruby 2.0.0p0 (2013-02-24 revision 39474) [x86\_64-linux]
 
-* perf.conf: fails to load 'hitimes' gem.
+* perf.conf: 5457/sec
 * perfdots.conf: 8180/sec
-
-Making ruby 2.0.0 work required some hacks to logstash's 'gembag' tool to even
-get gems to install. I didn't bother debugging why ruby can't find the hitimes
-gem
 
 ## rubinius 2.0.0.rc1
 
