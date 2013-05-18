@@ -1,0 +1,20 @@
+require "treetop"
+
+grammar LogStashSprintf
+  rule expression
+    (character / sprintf)*
+  end
+
+  rule character
+    [^%]+ / "\\%"
+  end
+
+  rule sprintf
+    ("%{" [^}]+ "}") {
+      def content
+        puts "OK"
+      end
+    }
+
+  end
+end
