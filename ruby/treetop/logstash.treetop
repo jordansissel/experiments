@@ -1,0 +1,59 @@
+grammar LogStashConfig
+  rule config
+    #(input / filter / output)*
+    input+
+  end
+
+  rule input
+    "input" "{" plugin+ "}"
+  end
+
+  rule filter
+    "filter" "{" plugin+ "}"
+  end
+
+  rule output
+    "output" "{" plugin+ "}"
+  end
+
+  rule plugin 
+    name "{" attribute* "}"
+  end
+
+  rule name
+    [A-Za-z0-9_-]+
+  end
+
+  rule attribute
+    name "=>" value
+  end
+
+  rule value
+    bareword / string / number / array / hash
+  end
+
+  rule bareword
+    [A-Za-z0-9_]+
+  end
+
+  rule string
+    ('"' (!'"' / "\\" .) '"')
+    / ("'" (!"'" / "\\" .) "'")
+  end
+
+  rule number
+    "-"? [0-9]+ ("." [0-9]*)?
+  end
+
+  rule array
+    "[" (value ("," value)*)? "]"
+  end
+
+  rule hash
+    "{" (hashentry ("," hashentry)*)? "}"
+  end
+
+  rule hashentry
+    name "=>" value
+  end
+end

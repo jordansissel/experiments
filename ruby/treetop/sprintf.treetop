@@ -1,0 +1,30 @@
+grammar Sprintf
+  rule string
+    (eval / charseq)* {
+      def compile
+        elements.collect(&:compile).join(" + ")
+      end
+    }
+  end
+
+  rule charseq
+    ([^%] / "\\%")+ { 
+      def compile
+        return %Q{"#{text_value}"}
+      end
+    }
+  end
+
+  rule eval
+    "%" "{" code "}" {
+      def compile
+        return %Q{obj["#{code.text_value}"]}
+        #return lambda { |obj| obj[code.text_value] }
+      end
+    }
+  end
+
+  rule code
+    [^}]+
+  end
+end
