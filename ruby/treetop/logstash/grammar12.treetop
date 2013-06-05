@@ -28,7 +28,7 @@ grammar LogStashConfig
   end
 
   rule plugin 
-    name _ "{" _ (attribute (whitespace attribute)*)* _ "}"
+    name _ "{" _ (attribute (whitespace attribute)*)? _ "}"
   end
 
   rule name
@@ -36,7 +36,7 @@ grammar LogStashConfig
   end
 
   rule attribute
-    name _ "=>" _ value
+    name _ "=>" _ (plugin / value)
   end
 
   rule value

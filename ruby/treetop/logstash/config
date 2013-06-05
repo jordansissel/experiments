@@ -1,4 +1,16 @@
 input {
+  zeromq {
+    codec => lumberjack {
+      secret_key => "..."
+      public_key => "..."
+    }
+    thing => bareword
+  }
+
+  redis {
+    codec => spool { }
+  }
+
   foo { 
     foo => [ ]
     foo => [ one ]
@@ -31,4 +43,6 @@ filter {
   }
 }
 
-output { }
+output { 
+  stdout { debug => true }
+}
