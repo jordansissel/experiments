@@ -4,7 +4,7 @@ grammar LogStashConfig
   end
 
   rule comment
-    "#" (!"\n")+ "\n"
+    (_ "#" [^\r\n]+ "\r"? "\n")+
   end
 
   rule _
@@ -16,10 +16,13 @@ grammar LogStashConfig
   end
 
   rule plugin_section
+    comment?
     ("input" / "filter" / "output") _ "{" 
+      comment?
       _
       (branch / plugins)
       _
+      comment?
     "}"
   end
 
@@ -28,7 +31,17 @@ grammar LogStashConfig
   end
 
   rule plugin 
-    name _ "{" _ (attribute (whitespace attribute)*)? _ "}"
+    comment?
+    name _ "{" 
+      comment?
+      _ 
+      (attribute 
+        (whitespace attribute)*
+      )? 
+      _ 
+      comment?
+    "}"
+    comment?
   end
 
   rule name
@@ -36,7 +49,9 @@ grammar LogStashConfig
   end
 
   rule attribute
+    comment?
     name _ "=>" _ (plugin / value)
+    comment?
   end
 
   rule value
@@ -57,16 +72,34 @@ grammar LogStashConfig
   end
 
   rule array
-    "[" _ (value (_ "," _ value)*)? _ "]"
+    "[" 
+    comment?
+    _ 
+    (
+      value 
+      (_ "," comment? _ value)*
+    )? 
+    comment?
+    _ 
+    "]"
   end
 
   rule hash
-    "{" _ (hashentry (whitespace hashentry)*)? _ "}"
+    "{" 
+      comment?
+      _ 
+      (
+        hashentry 
+        (comment? whitespace hashentry)*
+      )? 
+      comment?
+      _ 
+    "}"
         #return Hash[*entries.collect(&:to_a)]
   end
 
   rule hashentry
-    name _ "=>" _ value
+    name _ "=>" _ value comment?
   end
 
   # Conditions

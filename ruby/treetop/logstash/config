@@ -1,11 +1,17 @@
-input {
-  zeromq {
-    codec => lumberjack {
-      secret_key => "..."
-      public_key => "..."
-    }
-    thing => bareword
-  }
+# hello
+input {# comment
+  # comment
+  zeromq { # comment
+    # comment
+    codec => lumberjack { # comment
+      # comment
+      secret_key => "..." # comment
+      public_key => "..." # comment
+    }# comment
+    # comment
+    thing => bareword # comment
+    # comment
+  }# comment
 
   redis {
     codec => spool { }
@@ -14,12 +20,29 @@ input {
   foo { 
     foo => [ ]
     foo => [ one ]
-    foo => [ [] ]
-    foo => { }
-    foo => { 
-      foo => bar
-      foo => "baz"
-      foo => [ 1,2,3,4 ]
+    foo => [ [] ] # comment
+    foo => [# comment
+      # comment
+      # comment
+      # comment
+      1,# comment
+      # comment
+      # comment
+      # comment
+      # comment
+      2# comment
+    ] # comment
+    foo => { # comment
+      # comment
+    } # comment
+    foo => {  # comment
+      # comment
+      foo => bar # comment
+      # comment
+      foo => "baz" # comment
+      # comment
+      foo => [ 1,2,3,4 ] # comment
+      # comment
     }
     foo => bar
     foo => "bar"
@@ -44,5 +67,5 @@ filter {
 }
 
 output { 
-  stdout { debug => true }
+  stdout { debug => true } # comment
 }
