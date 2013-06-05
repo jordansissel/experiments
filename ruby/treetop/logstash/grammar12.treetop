@@ -1,0 +1,119 @@
+grammar LogStashConfig
+  rule config
+    _ plugin_section _ (_ plugin_section)* _
+  end
+
+  rule comment
+    "#" (!"\n")+ "\n"
+  end
+
+  rule _
+    (whitespace)?
+  end
+
+  rule whitespace
+    [ \t\r\n]+
+  end
+
+  rule plugin_section
+    ("input" / "filter" / "output") _ "{" 
+      _
+      (branch / plugins)
+      _
+    "}"
+  end
+
+  rule plugins
+    (plugin (_ plugin)*)?
+  end
+
+  rule plugin 
+    name _ "{" _ (attribute (whitespace attribute)*)* _ "}"
+  end
+
+  rule name
+    [A-Za-z0-9_-]+
+  end
+
+  rule attribute
+    name _ "=>" _ value
+  end
+
+  rule value
+    bareword / string / number / array / hash
+  end
+
+  rule bareword
+    [A-Za-z_] [A-Za-z0-9_]+
+  end
+
+  rule string
+    ('"' (('\"' / !'"' .)*) '"')
+    #/ ("'" (("'" / !"'" .)*) "'")
+  end
+
+  rule number
+    "-"? [0-9]+ ("." [0-9]*)? 
+  end
+
+  rule array
+    "[" _ (value (_ "," _ value)*)? _ "]"
+  end
+
+  rule hash
+    "{" _ (hashentry (whitespace hashentry)*)? _ "}"
+        #return Hash[*entries.collect(&:to_a)]
+  end
+
+  rule hashentry
+    name _ "=>" _ value
+  end
+
+  # Conditions
+  rule branch
+    if (_ elsif)* (_ else)?
+  end
+
+  rule if
+    "if" _ condition _ "{" _ plugins _ "}"
+  end
+
+  rule elsif
+    "elsif" _ condition _ "{" _ plugins _ "}"
+  end
+
+  rule else
+    "else" _ "{" _ plugins _ "}"
+  end
+
+  rule condition
+    expression (_ boolean_operator _ expression)*
+  end
+
+  rule expression
+    "(" _ condition _ ")"
+    / "!" _ condition
+    / rvalue _ comparison _ rvalue
+  end
+
+  rule rvalue
+    (string / number / array)
+  end
+
+  rule comparison
+    "==" / "!=" / "<" / ">" / "<=" / ">=" / "=~" / "!~" / "in"
+  end
+
+  rule boolean_operator
+    "and" / "or" / "xor" / "nand"
+  end
+
+  rule selector
+    selector_element+
+  end
+
+  rule selector_element
+    "[" (!"]")+ "]"
+  end
+  
+end
