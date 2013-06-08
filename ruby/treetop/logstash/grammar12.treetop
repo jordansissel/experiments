@@ -1,4 +1,4 @@
-grammar LogStash::Config
+grammar LogStashConfig
   rule config
     _ plugin_section _ (_ plugin_section)* _ <LogStash::Config::AST::Config>
   end
@@ -107,7 +107,6 @@ grammar LogStash::Config
       comment?
       _ 
     "}"
-        #return Hash[*entries.collect(&:to_a)]
     <LogStash::Config::AST::Hash>
   end
 
@@ -117,7 +116,7 @@ grammar LogStash::Config
   end
 
   rule hashentry
-    name _ "=>" _ value 
+    name:(number / bareword / string) _ "=>" _ value 
     <LogStash::Config::AST::HashEntry>
   end
 

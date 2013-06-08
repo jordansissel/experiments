@@ -11,7 +11,12 @@ r = parser.parse(config) rescue nil
 if r.nil?
   puts parser.failure_reason
 else
-  #require "pry"
-  #r.pry
-  puts r.ruby
+  first = r.ruby
+  second = parser.parse(first)
+
+  if second.nil?
+    puts parser.failure_reason
+  else
+    puts first == second.ruby
+  end
 end
