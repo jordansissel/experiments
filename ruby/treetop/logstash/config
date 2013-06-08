@@ -1,71 +1,10 @@
-# hello
-input {# comment
-  # comment
-  zeromq { # comment
-    # comment
-    codec => lumberjack { # comment
-      # comment
-      secret_key => "..." # comment
-      public_key => "..." # comment
-    }# comment
-    # comment
-    thing => bareword # comment
-    # comment
-  }# comment
-
-  redis {
-    codec => spool { }
-  }
-
-  foo { 
-    foo => [ ]
-    foo => [ one ]
-    foo => [ [] ] # comment
-    foo => [# comment
-      # comment
-      # comment
-      # comment
-      1,# comment
-      # comment
-      # comment
-      # comment
-      # comment
-      2# comment
-    ] # comment
-    foo => { # comment
-      # comment
-    } # comment
-    foo => {  # comment
-      # comment
-      foo => bar # comment
-      # comment
-      foo => "baz" # comment
-      # comment
-      foo => [ 1,2,3,4 ] # comment
-      # comment
+input {
+  zeromq {
+    codec => lumberjack {
+      secret_key => "..."
+      public_key => "..."
     }
-    foo => bar
-    foo => "bar"
-    foo => 100
-    foo => 3.14159
+    thing => bareword
+    endpoint => [ "tcp://1.2.3.4:4444", "tcp://1.2.3.4:4445" ]
   }
-
-  bar {}
-}
-
-filter {
-  if ("hello" < 3) { 
-    bar { } 
-    baz { } 
-  } elsif ("pants" =~ "foo") {
-    testing {
-      foo => bar
-    }
-  } else {
-    foo { }
-  }
-}
-
-output { 
-  stdout { debug => true } # comment
 }

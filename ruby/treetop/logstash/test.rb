@@ -1,5 +1,6 @@
 
 require "treetop"
+require "./grammar_nodes"
 require "./grammar12.rb"
 require "insist"
 
@@ -10,5 +11,7 @@ r = parser.parse(config) rescue nil
 if r.nil?
   puts parser.failure_reason
 else
-  puts !r.nil?
+  #require "pry"
+  #r.pry
+  puts r.ruby
 end
