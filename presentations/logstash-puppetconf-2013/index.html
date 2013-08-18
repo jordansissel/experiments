@@ -116,6 +116,21 @@
 }</code></pre>
         </section>
 
+        <section><h2>conditionals</h2>
+        <pre class="big"><code>output {
+  # Spam ops if an event is tagged 'oops'
+<span class="attention">  if "oops" in [tags] {</span>
+    email { to =&gt; "ops_loves_email@example.com" }
+
+    # Notify the ops room in hipchat, perhaps?
+    hipchat { ... }
+
+    # Or maybe page somebody?
+    pagerduty { description =&gt; "Stuff is busted!" }
+  }
+}</code></pre>
+        </section>
+
         <section><h2>feature: codecs</h2>
           explain what these are, why they are awesome.
         </section>
