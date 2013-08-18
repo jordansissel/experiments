@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic");
+@import "elements.less";
+@import "custom-mixins.less";
+@import "font-awesome/less/font-awesome.less";
+
+body {
+  background: #1c1e20;
+  //.radial-gradient(#333, #555a5f, #1c1e20);
+  //background: url("../../images/bg.jpg");
+  background: url("../../images/logstash-eyeless.svg");
+  background-size: 150% auto;
+  background-repeat: no-repeat;
+  background-position: 50% 60%;
+}
+
+div.border {
+  width: 100%;
+  height: 10%;
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  top: 0;
+}
+
+div.border-bottom {
+  width: 100%;
+  height: 10%;
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  bottom: 0;
+}
+
+// Hack to work around reveal.css's resetting of <i>'s style.
+i[class^="icon-"] {
+  font-family: "FontAwesome";
+  font-style: inherit;
+}
+
+.reveal {
+  background-color: rgba(0,0,0,0.8);
+  font-family: "Lato", sans-serif;
+  font-size: 36px;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  color: #FFF;
+
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1em;
+    margin: 0 0 20px 0;
+    color: #eeeeee;
+    font-family: "League Gothic", Impact, sans-serif;
+    letter-spacing: 0.02em;
+    text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8);
+  }
+
+  .float-right {
+    float: right;
+  }
+
+  .align-right {
+    margin-left: auto;
+    align: right;
+    text-align: right;
+  }
+
+  pre {
+    padding: 0.5em;
+    .rounded(10px);
+    .inner-shadow(5px, 5px, 2px, 0.5);
+    .drop-shadow(5px, 5px, 20px, 0.5);
+    border: 2px solid #777;
+    line-height: 1.2em;
+    background-color: #383838;
+  }
+
+  pre { width: 100%; }
+  code { width: 100% !important; }
+
+  pre.big {
+    font-size: 0.9em;
+  }
+
+  ul.checks {
+    list-style: none;
+    li:before {
+      content: @check;
+      font-family: "FontAwesome";
+      display: inline-block;
+      margin-left: -1.2em;
+      font-size: 1.2em;
+      width: 1.2em;
+    }
+  }
+
+  ul.checks.green {
+    li:before {
+      color: #0A0;
+    }
+  }
+  
+  .columns-2 > * {
+    display: inline-block;
+    float: left;
+    margin: 0.2em;
+    width: 45%;
+  }
+
+  .attention {
+    width: 100%;
+    background-color: rgba(0,255,50,0.15);
+  }
+
+  .attention:before {
+    content: @circle-arrow-right;
+    font-family: "FontAwesome";
+    display: inline-block;
+    margin-left: -1.5em;
+    width: 1.5em;
+  }
+}
+
+.controls {
+  opacity: 0.5;
+}
