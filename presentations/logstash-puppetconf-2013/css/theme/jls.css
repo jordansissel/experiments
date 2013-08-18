@@ -1648,6 +1648,17 @@ i[class^="icon-"] {
   font-size: 1.2em;
   width: 1.2em;
 }
+.reveal ul.smiles {
+  list-style: none;
+}
+.reveal ul.smiles li:before {
+  content: "\f118";
+  font-family: "FontAwesome";
+  display: inline-block;
+  margin-left: -1.2em;
+  font-size: 1.2em;
+  width: 1.2em;
+}
 .reveal ul.checks.green li:before {
   color: #0A0;
 }

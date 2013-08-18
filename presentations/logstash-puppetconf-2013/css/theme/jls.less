@@ -91,6 +91,18 @@ i[class^="icon-"] {
     }
   }
 
+  ul.smiles {
+    list-style: none;
+    li:before {
+      content: @smile;
+      font-family: "FontAwesome";
+      display: inline-block;
+      margin-left: -1.2em;
+      font-size: 1.2em;
+      width: 1.2em;
+    }
+  }
+
   ul.checks.green {
     li:before {
       color: #0A0;
