@@ -8,3 +8,12 @@
   background: radial-gradient(center, circle cover, @start 0%, @stop 100%);
   background-color: @color;
 }
+
+.text-outline(@color: #000, @distance: 3, @blur: 0) {
+  color: #BBB;
+  text-shadow:
+    -@distance -@distance @blur @color,
+    @distance -@distance @blur @color,
+    -@distance @distance @blur @color,
+    @distance @distance @blur @color;
+}

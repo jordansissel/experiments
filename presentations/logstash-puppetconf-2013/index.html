@@ -40,28 +40,35 @@
           <div class="align-right">logs are awesome.</div>
         </section>
 
-        <section><h2>Brief (re)Introduction</h2>
-          <h3> what is logstash? </h3>
-          (fill this in, yo)
+        <section><h2>Brief Introduction</h2></section>
+
+        <section><h1 class="rotate15"> OPEN SOURCE </h1> </section><!--{{{-->
+
+        <section>
+          <h3> Open means community </h3>
         </section>
 
-        <section class="align-right">
+        <section style="height: 50%;">
+          <img src="images/hugops.svg" style=" height: 100%;">
+        </section>
+
+        <section>
           <h3>
-            <span>If</span>
-            <span class="fragment">a</span>
-            <span class="fragment">new</span>
-            <span class="fragment">user</span>
-            <span class="fragment">has</span>
-            <span class="fragment">a</span>
-            <span class="fragment">bad</span>
-            <span class="fragment">time,</span>
+            If a new user has a bad time,
           </h3>
-          <h2>
+          <h1 class="align-right">
             <span class="fragment">IT'S</span>
             <span class="fragment">A</span>
             <span class="fragment">BUG.</span>
-          </h2>
-        </section>
+          </h1>
+        </section><!--}}}-->
+
+        <section><h2>what is a log?</h2><!--{{{-->
+        </section><!--}}}-->
+
+        <section><h2> what is logstash? </h2><!--{{{-->
+          (fill this in, yo)
+        </section><!--}}}-->
 
         <section><h2>what's coming up?</h2></section>
 
@@ -77,7 +84,7 @@
           </ul>
         </section>
 
-        <section><h2>conditionals</h2>
+        <section><h2>conditionals</h2><!--{{{-->
         <pre class="big"><code>output {
   # Notify nagios on http 5xx's
   # for events with a 'status' field.
@@ -129,20 +136,31 @@
     pagerduty { description =&gt; "Stuff is busted!" }
   }
 }</code></pre>
-        </section>
+        </section><!--}}}-->
 
-        <section><h2>feature: codecs</h2>
+        <section><h2>feature: codecs</h2><!--{{{-->
           explain what these are, why they are awesome.
-        </section>
+        </section><!--}}}-->
 
         <section><h2>ecosystem news</h2></section>
 
-        <section><h2>elasticsearch 0.90.x</h2>
-          (include cool features, like compression being on by default, etc)
-        </section>
+        <section><!--{{{ elasticsearch-->
+          <img src="images/bonsai1.png" class="float-right">
+          <h2 style="color: rgb(116, 183, 63); font-weight: 600; font-family: sans-serif" class="outline-white-soft">elasticsearch</h2>
+          (compression, facets, scroll queries, etc)
+        </section><!--}}}-->
 
-        <section><h2>kibana 3</h2>
-          (include screenshots, features, etc)
+        <!-- kibana {{{ -->
+        <section><img src="images/kibana.png"></section>
+        <!-- kibana }}} -->
+
+
+        <section><!-- puppet module --><!--{{{-->
+          <div class="lightbg">
+            <img src="images/logstash.png">
+            <i class="icon-plus outline-black" style="font-size: 4em; position:absolute; top:50%;"></i><i class="icon-plus" style="font-size:4.5em; color: rgba(0,0,0,0);"></i>
+            <img src="images/puppet.svg" style="height: 352px;">
+          </div>
         </section>
 
         <section><h2>logstash puppet module</h2>
@@ -177,7 +195,7 @@ logstash::output::elasticsearch {
   "index all the things": ;
 }</code></pre>
           </div>
-        </section>
+        </section><!--}}}-->
 
         <section><h2>expiring old logs</h2>
           (link to python script to do this?)

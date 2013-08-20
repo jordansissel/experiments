@@ -1676,6 +1676,26 @@ i[class^="icon-"] {
   margin-left: -1.5em;
   width: 1.5em;
 }
+.reveal .lightbg {
+  background-color: #ffffff;
+  padding: 15px;
+  border: 3px solid grey;
+}
+.reveal .rotate15 {
+  -webkit-transform: rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  transform: rotate(-15deg);
+}
+.reveal .outline-black {
+  color: #BBB;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000;
+}
+.reveal .outline-white-soft {
+  color: #BBB;
+  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.7), 1px -1px 1px rgba(255, 255, 255, 0.7), -1px 1px 1px rgba(255, 255, 255, 0.7), 1px 1px 1px rgba(255, 255, 255, 0.7);
+}
 .controls {
   opacity: 0.5;
 }
