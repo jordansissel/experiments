@@ -45,10 +45,14 @@
         <section><h1 class="rotate15"> OPEN SOURCE </h1> </section><!--{{{-->
 
         <section>
-          <h3> Open means community </h3>
+          <h3> open means community </h3>
         </section>
 
-        <section style="height: 50%;">
+        <section>
+          <img src="images/wall-of-text.png" style="height: 100%;">
+        </section>
+
+        <section style="height: 50%">
           <img src="images/hugops.svg" style=" height: 100%;">
         </section>
 
@@ -57,11 +61,12 @@
             If a new user has a bad time,
           </h3>
           <h1 class="align-right">
-            <span class="fragment">IT'S</span>
-            <span class="fragment">A</span>
-            <span class="fragment">BUG.</span>
+            <span data-fragment-index="0" class="fragment">IT'S</span>
+            <span data-fragment-index="1" class="fragment">A</span>
+            <span data-fragment-index="2" class="fragment">BUG.</span>
           </h1>
-        </section><!--}}}-->
+        </section>
+        <!--}}}-->
 
         <section><h2>what is a log?</h2><!--{{{-->
         </section><!--}}}-->
@@ -78,13 +83,17 @@
 
         <section>
           <h2>speed is way up!</h2>
-          <ul class="smiles green">
+          <ul class="smiles">
             <li class="fragment"> expect at least 3.5x more events/sec </li>
             <li class="fragment"> start-up time is dramatically improved </li>
           </ul>
         </section>
 
         <section><h2>conditionals</h2><!--{{{-->
+          <h3>if this, then that. </h3>
+        </section>
+
+        <section><h2>conditionals</h2>
         <pre class="big"><code>output {
   # Notify nagios on http 5xx's
   # for events with a 'status' field.
@@ -154,7 +163,6 @@
         <section><img src="images/kibana.png"></section>
         <!-- kibana }}} -->
 
-
         <section><!-- puppet module --><!--{{{-->
           <div class="lightbg">
             <img src="images/logstash.png">
@@ -197,8 +205,29 @@ logstash::output::elasticsearch {
           </div>
         </section><!--}}}-->
 
+        <section><h3>grokdebug.herokuapp.com</h3><!--{{{-->
+          interactively write and debug grok patterns
+        </section>
+        <section>
+          <img src="images/grokdebug.png" style="opacity: 0;">
+          <img src="images/grokdebug.png" style="position: absolute; top: 1em; left: 1em;">
+          <img data-fragment-index="0" src="images/grokdebug2.jpg" style="position: absolute; top: 1em; left: 1em;" class="fragment">
+        </section>
+        <section>
+          <img src="images/grokdebug-discover.jpg" style="opacity: 0;">
+          <img src="images/grokdebug-discover.jpg" style="position: absolute; top: 1em; left: 1em">
+          <img data-fragment-index="0" src="images/grokdebug-discover2.jpg" style="position: absolute; top: 1em; left: 1em;" class="fragment">
+        </section>
+
+        <section><h3>grokdebug.herokuapp.com</h3><!--{{{-->
+        </section>
+        <!--}}}-->
+
         <section><h2>expiring old logs</h2>
-          (link to python script to do this?)
+        <pre class="big"><code># Quickly delete logs older than 90 days
+% python logstash_index_cleaner.py -d 90
+</code></pre>
+        https://github.com/logstash/expire-logs
         </section>
 
         <section><h2>examples</h2></section>

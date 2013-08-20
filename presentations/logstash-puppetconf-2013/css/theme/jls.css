@@ -1696,6 +1696,12 @@ i[class^="icon-"] {
   color: #BBB;
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.7), 1px -1px 1px rgba(255, 255, 255, 0.7), -1px 1px 1px rgba(255, 255, 255, 0.7), 1px 1px 1px rgba(255, 255, 255, 0.7);
 }
-.controls {
-  opacity: 0.5;
+.reveal .wrap {
+  text-wrap: normal;
+}
+.controls .fragmented.navigate-right {
+  border-left-color: yellow !important;
+}
+.controls .fragmented.navigate-left {
+  border-right-color: yellow !important;
 }

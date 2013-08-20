@@ -145,8 +145,16 @@ i[class^="icon-"] {
   .outline-white-soft {
     .text-outline(rgba(255,255,255,0.7), 1px, 1px);
   }
+
+  .wrap {
+    text-wrap: normal;
+  }
 }
 
 .controls {
-  opacity: 0.5;
+  // Make navigation yellow arrows if there are more fragments to show.
+  .fragmented.navigate-right { border-left-color: yellow !important; }
+  .fragmented.navigate-left { border-right-color: yellow !important; }
 }
+
+
