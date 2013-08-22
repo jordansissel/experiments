@@ -1703,6 +1703,17 @@ i[class^="icon-"] {
   height: 100%;
   width: 100%;
 }
+.reveal .bg-full {
+  background-size: 100% 100%;
+}
+.reveal .shaded-background {
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 5px 5px 5px #000000;
+  -moz-box-shadow: 5px 5px 5px #000000;
+  box-shadow: 5px 5px 5px #000000;
+  padding: 0.3em;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
 .controls .fragmented.navigate-right {
   border-left-color: yellow !important;
 }
