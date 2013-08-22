@@ -1699,6 +1699,10 @@ i[class^="icon-"] {
 .reveal .wrap {
   text-wrap: normal;
 }
+.reveal .full {
+  height: 100%;
+  width: 100%;
+}
 .controls .fragmented.navigate-right {
   border-left-color: yellow !important;
 }
