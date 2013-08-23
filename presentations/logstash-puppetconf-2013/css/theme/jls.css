@@ -1566,7 +1566,7 @@ body {
   background-repeat: no-repeat;
   background-position: 50% 60%;
 }
-div.border {
+div.border-top {
   width: 100%;
   height: 10%;
   background-color: rgba(0, 0, 0, 0.5);
@@ -1608,10 +1608,18 @@ i[class^="icon-"] {
 .reveal .float-right {
   float: right;
 }
+.reveal .float-left {
+  float: left;
+}
 .reveal .align-right {
   margin-left: auto;
   align: right;
   text-align: right;
+}
+.reveal .align-left {
+  margin-right: auto;
+  align: left;
+  text-align: left;
 }
 .reveal pre {
   padding: 0.5em;
@@ -1713,6 +1721,44 @@ i[class^="icon-"] {
   box-shadow: 5px 5px 5px #000000;
   padding: 0.3em;
   border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.reveal .white-shaded-background {
+  background-color: rgba(128, 128, 128, 0.4);
+  color: #323232;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+  -webkit-box-shadow: 5px 5px 5px #000000;
+  -moz-box-shadow: 5px 5px 5px #000000;
+  box-shadow: 5px 5px 5px #000000;
+  padding: 0.3em;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.reveal .doublesize {
+  margin: 0;
+  font-weight: bold;
+  font-size: 200% !important;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding-left: 1em;
+  padding-right: 1em;
+}
+.reveal .greenbg {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+.reveal .yellowbg {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+.reveal .boxed {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  padding: 0.5em;
+}
+.reveal .bold {
+  font-weight: 800 !important;
+}
+.reveal .nowrap {
+  white-space: nowrap;
+}
+.reveal .marquee {
+  -webkit-marquee: auto medium infinite alternate normal;
+  overflow-x: -webkit-marquee;
 }
 .controls .fragmented.navigate-right {
   border-left-color: yellow !important;

@@ -29,8 +29,7 @@
   </head>
 
   <body>
-    <div class="border"></div>
-
+    <div class="border-top"></div>
     <div class="reveal">
       <div class="slides">
 
@@ -40,7 +39,7 @@
           <div class="align-right">logs are awesome.</div>
         </section>
 
-        <section>
+        <section> <!-- {{{ about me and intro -->
           <h1>hello.</h1>
         </section>
 
@@ -51,12 +50,27 @@
         <section data-background="images/TF2-Pyro-Burn-Everything.jpg">
           <h3 class="shaded-background float-right">hate-driven<br>development</h3>
         </section>
-        <section data-background="images/pyroland-rainbow.jpg"> 
-          <h1 class="shaded-background float-right">fpm</h1>
-        </section>
-        <section style="height: 50%"> <img src="images/hugops.svg" style=" height: 100%;"> </section>
 
-        <section><h2>Brief Introduction</h2></section>
+        <section data-background="images/pyroland-rainbow.jpg"> 
+          <h1 class="shaded-background float-right">
+            <div>fpm</div>
+          </h1>
+        </section>
+
+        <section style="height: 50%"> 
+          <img src="images/hugops.svg" style=" height: 100%;">
+          everyone has outages. show some love.
+        </section>
+        <!-- }}} -->
+
+        <section><h2>agenda</h2>
+          <ul>
+            <li> open source and community
+            <li> what is a log?
+            <li> what's new in logstash?
+            <li> logstash ecosystem news
+          </ul>
+        </section>
 
         <section><h1 class="rotate15"> OPEN SOURCE </h1> </section><!--{{{-->
 
@@ -82,33 +96,64 @@
         </section>
         <!--}}}-->
 
-        <!--}}}-->
-
         <section><h2>what is a log?</h2><!--{{{-->
         </section>
 
-        <section><h2>time + data</h2>
+        <section><h2>what is a log?</h2>
+          <pre><code style="font-size: 110%">192.168.1.101 - - [21/Aug/2013 19:49:33] "GET /js/config.js HTTP/1.1" 200 -
+
+<span class="fragment doublesize greenbg" data-fragment-index="1"> data </span><span class="fragment doublesize yellowbg" data-fragment-index="0">timestamp</span><span class="fragment doublesize greenbg" data-fragment-index="1">    data    </span>
+          </code></pre>
         </section>
+
+        <section><h2>what is a log?</h2>
+          <img src="images/frontend-metrics.jpg">
+        </section>
+
+        <section> <h2> time + data = log</h2> </section>
         <!--}}}-->
         
         <section><h2> what is logstash? </h2><!--{{{-->
+          <ul>
+            <li> input: take logs from somewhere
+            <li> filter: process logs
+            <li> output: ship them somewhere else
+            <li> ... in real-time
+          </ul>
         </section>
 
-        <section><h2> logstash goals</h2>
+        <section><h2> logstash should be: </h2>
+          <ul>
+            <li> fast
+            <li> easy to learn
+            <li> easy to deploy
+            <li> easy to operate
+            <li> easy to extend
+          </ul>
+        </section>
+        <section>
+          If you find it isn't fast and easy to use, then
+          <h1 class="fragment align-right"> it's a bug. </h1>
+
+          <h2 class="fragment greenbg boxed marquee">
+             and we can fix it.
+          </h2>
         </section>
         <!--}}}-->
 
-        <section><h2>what's coming up?</h2></section>
+        <section><h2>what's coming up?</h2></section><!--{{{-->
 
         <section><h2>logstash 1.2</h2>
           <h3> (coming next week!) </h3>
         </section>
 
+        <section><h2>125 plugins so far</h2></section>
+
         <section>
           <h2>speed is way up!</h2>
           <ul class="smiles">
-            <li class="fragment"> expect at least 3.5x more events/sec </li>
-            <li class="fragment"> start-up time is dramatically improved </li>
+            <li class="fragment"> 3.5x higher event rate </li>
+            <li class="fragment"> dramatically faster startup time</li>
           </ul>
         </section>
 
@@ -170,8 +215,18 @@
 }</code></pre>
         </section><!--}}}-->
 
-        <section><h2>feature: codecs</h2><!--{{{-->
-          explain what these are, why they are awesome.
+        <section><h2>new json schema</h2>
+            <li> Smaller in size
+            <li> Easier to use
+          </ul>
+        </section>
+
+        <section><h2>ships with kibana 3</h2></section>
+        <section data-background="images/logstash-web.png">
+          <h2 class="shaded-background bold nowrap" style="margin-top: 5em;"> do you recognize this? </h2>
+        </section>
+        <section data-background="images/kibana3-1.png" class="full">
+          <img class="shaded-background float-right" src="images/kibana.png" style="height: 93px; width: 260px;">
         </section><!--}}}-->
 
         <section><h2>ecosystem news</h2></section>
@@ -179,11 +234,33 @@
         <section><!--{{{ elasticsearch-->
           <img src="images/bonsai1.png" class="float-right">
           <h2 style="color: rgb(116, 183, 63); font-weight: 600; font-family: sans-serif" class="outline-white-soft">elasticsearch</h2>
-          (compression, facets, scroll queries, etc)
+          <ul>
+            <li> version 0.90.x is awesome </li>
+            <li> much improved memory usage </li>
+            <li> compression by default (55% savings)</li>
+          </ul>
         </section><!--}}}-->
 
         <!-- kibana {{{ -->
-        <section><img src="images/kibana.png"></section>
+        <section><img src="images/kibana.png">
+        <hr>
+          <h3>visualize. share. awesome.</h3>
+        </section>
+        <section data-background="images/kibana3-2.png"></section>
+        <section data-background="images/kibana3-1.png"></section>
+        <section data-background="images/kibana3-3.png"></section>
+        <section data-background="images/kibana3-4map.png"></section>
+
+        <section>
+          <h2>visualize all</h2>
+          <img src="images/kibana3-many-visuals.png">
+          <div style="width: 100%">
+            <span class="float-left" style="width: 33%">pie</span>
+            <span class="float-left" style="width: 33%">table</span>
+            <span class="float-left" style="width: 33%">bar</span>
+          </div>
+        </section>
+
         <!-- kibana }}} -->
 
         <section><!-- puppet module --><!--{{{-->
@@ -241,9 +318,6 @@ logstash::output::elasticsearch {
           <img src="images/grokdebug-discover.jpg" style="position: absolute; top: 1em; left: 1em">
           <img src="images/grokdebug-discover2.jpg" style="position: absolute; top: 1em; left: 1em;" class="fragment">
         </section>
-
-        <section><h3>grokdebug.herokuapp.com</h3><!--{{{-->
-        </section>
         <!--}}}-->
 
         <section><h2>expiring old logs</h2>
@@ -253,15 +327,18 @@ logstash::output::elasticsearch {
         https://github.com/logstash/expire-logs
         </section>
 
-        <section><h2>examples</h2></section>
-        <section><h3>puppet reports</h3></section>
-        <section><h3>metrics from mysql</h3></section>
+        <section>
+          <img src="images/logstash.png" class="float-right">
+          <h2 class="align-right">logstash.net</h2>
+          <div class="align-right">#logstash on freenode irc</div>
+          <div class="align-right">logstash-users@googlegroups.com</div>
+        </section>
+
       </div>
       <div class="border-bottom"></div>
     </div>
-
     <script src="lib/js/head.min.js"></script>
-    <script src="js/reveal.min.js"></script>
+    <script src="js/reveal.js"></script>
     <script src="js/config.js"></script>
   </body>
 </html>
