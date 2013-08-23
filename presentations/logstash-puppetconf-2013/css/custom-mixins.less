@@ -1,0 +1,19 @@
+
+.radial-gradient(@color, @start, @stop) {
+  background: -moz-radial-gradient(center, circle cover, @start 0%, @stop 100%);
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, @start), color-stop(100%, @stop));
+  background: -webkit-radial-gradient(center, circle cover, @start 0%, @stop 100%);
+  background: -o-radial-gradient(center, circle cover, @start 0%, @stop 100%);
+  background: -ms-radial-gradient(center, circle cover, @start 0%, @stop 100%);
+  background: radial-gradient(center, circle cover, @start 0%, @stop 100%);
+  background-color: @color;
+}
+
+.text-outline(@color: #000, @distance: 3, @blur: 0) {
+  color: #BBB;
+  text-shadow:
+    -@distance -@distance @blur @color,
+    @distance -@distance @blur @color,
+    -@distance @distance @blur @color,
+    @distance @distance @blur @color;
+}

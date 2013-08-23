@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>logstash @ Puppetconf 2013</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/jls.css" id="theme">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="border-top"></div>
+    <div class="reveal">
+      <div class="slides">
+
+        <section>
+          <img src="images/logstash.png" class="float-right">
+          <h1 class="align-right">logstash</h1>
+          <div class="align-right">logs are awesome.</div>
+        </section>
+
+        <section> <!-- {{{ about me and intro -->
+          <h1>hello.</h1>
+        </section>
+
+        <section>
+          <h3>I get angry at computers.</h1>
+        </section>
+
+        <section data-background="images/TF2-Pyro-Burn-Everything.jpg">
+          <h3 class="shaded-background float-right">hate-driven<br>development</h3>
+        </section>
+
+        <section data-background="images/pyroland-rainbow.jpg"> 
+          <h1 class="shaded-background float-right">
+            <div>fpm</div>
+          </h1>
+        </section>
+
+        <section style="height: 50%"> 
+          <img src="images/hugops.svg" style=" height: 100%;">
+          everyone has outages. show some love.
+        </section>
+        <!-- }}} -->
+
+        <section><h2>agenda</h2>
+          <ul>
+            <li> open source and community
+            <li> what is a log?
+            <li> what's new in logstash?
+            <li> logstash ecosystem news
+          </ul>
+        </section>
+
+        <section><h1 class="rotate15"> OPEN SOURCE </h1> </section><!--{{{-->
+
+        <section>
+          <h3> open means community </h3>
+        </section>
+
+        <section>
+          don't do this.
+          <br>
+          <img src="images/wall-of-text.png" style="height: 100%;">
+        </section>
+
+        <section>
+          <h3>
+            If a new user has a bad time,
+          </h3>
+          <h1 class="align-right">
+            <span class="fragment">IT'S</span>
+            <span class="fragment">A</span>
+            <span class="fragment">BUG.</span>
+          </h1>
+        </section>
+        <!--}}}-->
+
+        <section><h2>what is a log?</h2><!--{{{-->
+        </section>
+
+        <section><h2>what is a log?</h2>
+          <pre><code style="font-size: 110%">192.168.1.101 - - [21/Aug/2013 19:49:33] "GET /js/config.js HTTP/1.1" 200 -
+
+<span class="fragment doublesize greenbg" data-fragment-index="1"> data </span><span class="fragment doublesize yellowbg" data-fragment-index="0">timestamp</span><span class="fragment doublesize greenbg" data-fragment-index="1">    data    </span>
+          </code></pre>
+        </section>
+
+        <section><h2>what is a log?</h2>
+          <img src="images/frontend-metrics.jpg">
+        </section>
+
+        <section> <h2> time + data = log</h2> </section>
+        <!--}}}-->
+        
+        <section><h2> what is logstash? </h2><!--{{{-->
+          <ul>
+            <li> input: take logs from somewhere
+            <li> filter: process logs
+            <li> output: ship them somewhere else
+            <li> ... in real-time
+          </ul>
+        </section>
+
+        <section><h2> logstash should be: </h2>
+          <ul>
+            <li> fast
+            <li> easy to learn
+            <li> easy to deploy
+            <li> easy to operate
+            <li> easy to extend
+          </ul>
+        </section>
+        <section>
+          If you find it isn't fast and easy to use, then
+          <h1 class="fragment align-right"> it's a bug. </h1>
+
+          <h2 class="fragment greenbg boxed marquee">
+             and we can fix it.
+          </h2>
+        </section>
+        <!--}}}-->
+
+        <section><h2>what's coming up?</h2></section><!--{{{-->
+
+        <section><h2>logstash 1.2</h2>
+          <h3> (coming next week!) </h3>
+        </section>
+
+        <section><h2>125 plugins so far</h2></section>
+
+        <section>
+          <h2>speed is way up!</h2>
+          <ul class="smiles">
+            <li class="fragment"> 3.5x higher event rate </li>
+            <li class="fragment"> dramatically faster startup time</li>
+          </ul>
+        </section>
+
+        <section><h2>conditionals</h2><!--{{{-->
+          <h3>if this, then that. </h3>
+        </section>
+
+        <section><h2>conditionals</h2>
+        <pre class="big"><code>output {
+  # Notify nagios on http 5xx's
+  # for events with a 'status' field.
+<span class="attention">  if [status] &gt;= 500 {</span>
+    nagios { ... }
+  }
+}</code></pre>
+        </section>
+
+        <section><h2>conditionals</h2>
+        <pre class="big"><code>filter {
+  # Group filters by types
+<span class="attention">  if [type] == "syslog" {</span>
+    grok { ... }
+    date { ... }
+<span class="attention">    if [program] == "sshd" {</span>
+      grok { ... }
+    }
+  }
+}</code></pre>
+        </section>
+
+        <section><h2>conditionals</h2>
+        <pre class="big"><code>output {
+  # Put debug logs in a separate place.
+<span class="attention">  if [loglevel] =~ /INFO|DEBUG/ {</span>
+    elasticsearch { index =&gt; "debug" }
+<span class="attention">  } else {</span>
+    elasticsearch { }
+
+    # Save non-debug logs to monthly logs
+    file { 
+      path =&gt; "/var/log/app.%{+YYYY-MM}.log"
+    }
+  }
+}</code></pre>
+        </section>
+
+        <section><h2>conditionals</h2>
+        <pre class="big"><code>output {
+  # Spam ops if an event is tagged 'oops'
+<span class="attention">  if "oops" in [tags] {</span>
+    email { to =&gt; "ops_loves_email@example.com" }
+
+    # Notify the ops room in hipchat, perhaps?
+    hipchat { ... }
+
+    # Or maybe page somebody?
+    pagerduty { description =&gt; "Stuff is busted!" }
+  }
+}</code></pre>
+        </section><!--}}}-->
+
+        <section><h2>new json schema</h2>
+            <li> Smaller in size
+            <li> Easier to use
+          </ul>
+        </section>
+
+        <section><h2>ships with kibana 3</h2></section>
+        <section data-background="images/logstash-web.png">
+          <h2 class="shaded-background bold nowrap" style="margin-top: 5em;"> do you recognize this? </h2>
+        </section>
+        <section data-background="images/kibana3-1.png" class="full">
+          <img class="shaded-background float-right" src="images/kibana.png" style="height: 93px; width: 260px;">
+        </section><!--}}}-->
+
+        <section><h2>ecosystem news</h2></section>
+
+        <section><!--{{{ elasticsearch-->
+          <img src="images/bonsai1.png" class="float-right">
+          <h2 style="color: rgb(116, 183, 63); font-weight: 600; font-family: sans-serif" class="outline-white-soft">elasticsearch</h2>
+          <ul>
+            <li> version 0.90.x is awesome </li>
+            <li> much improved memory usage </li>
+            <li> compression by default (55% savings)</li>
+          </ul>
+        </section><!--}}}-->
+
+        <!-- kibana {{{ -->
+        <section><img src="images/kibana.png">
+        <hr>
+          <h3>visualize. share. awesome.</h3>
+        </section>
+        <section data-background="images/kibana3-2.png"></section>
+        <section data-background="images/kibana3-1.png"></section>
+        <section data-background="images/kibana3-3.png"></section>
+        <section data-background="images/kibana3-4map.png"></section>
+
+        <section>
+          <h2>visualize all</h2>
+          <img src="images/kibana3-many-visuals.png">
+          <div style="width: 100%">
+            <span class="float-left" style="width: 33%">pie</span>
+            <span class="float-left" style="width: 33%">table</span>
+            <span class="float-left" style="width: 33%">bar</span>
+          </div>
+        </section>
+
+        <!-- kibana }}} -->
+
+        <section><!-- puppet module --><!--{{{-->
+          <div class="lightbg">
+            <img src="images/logstash.png">
+            <i class="icon-plus outline-black" style="font-size: 4em; position:absolute; top:50%;"></i><i class="icon-plus" style="font-size:4.5em; color: rgba(0,0,0,0);"></i>
+            <img src="images/puppet.svg" style="height: 352px;">
+          </div>
+        </section>
+
+        <section><h2>logstash puppet module</h2>
+          <ul class="checks green">
+            <li class="fragment"> has tests </li>
+            <li class="fragment"> versioned releases </li>
+            <li class="fragment"> officially maintained </li>
+          </ul>
+        </section>
+
+        <section><h2>logstash puppet module</h2>
+          <div class="columns-2">
+            <pre><code># logstash config
+input {
+  file {
+    type =&gt; "syslog"
+    path =&gt; "/var/log/messages"
+  }
+}
+output {
+  elasticsearch { }
+}
+...</code></pre>
+        <pre><code># the same in puppet
+logstash::input::file {
+  "allyourmessages":
+    type =&gt; "syslog",
+    path =&gt; "/var/log/messages";
+}
+
+logstash::output::elasticsearch {
+  "index all the things": ;
+}</code></pre>
+          </div>
+        </section><!--}}}-->
+
+        <section><h3>grokdebug.herokuapp.com</h3><!--{{{-->
+          interactively write and debug grok patterns
+        </section>
+        <section>
+          <img src="images/grokdebug.png" style="opacity: 0;">
+          <img src="images/grokdebug.png" style="position: absolute; top: 1em; left: 1em;">
+          <img src="images/grokdebug2.jpg" style="position: absolute; top: 1em; left: 1em;" class="fragment">
+        </section>
+        <section>
+          <img src="images/grokdebug-discover.jpg" style="opacity: 0;">
+          <img src="images/grokdebug-discover.jpg" style="position: absolute; top: 1em; left: 1em">
+          <img src="images/grokdebug-discover2.jpg" style="position: absolute; top: 1em; left: 1em;" class="fragment">
+        </section>
+        <!--}}}-->
+
+        <section><h2>expiring old logs</h2>
+        <pre class="big"><code># Quickly delete logs older than 90 days
+% python logstash_index_cleaner.py -d 90
+</code></pre>
+        https://github.com/logstash/expire-logs
+        </section>
+
+        <section>
+          <img src="images/logstash.png" class="float-right">
+          <h2 class="align-right">logstash.net</h2>
+          <div class="align-right">#logstash on freenode irc</div>
+          <div class="align-right">logstash-users@googlegroups.com</div>
+        </section>
+
+      </div>
+      <div class="border-bottom"></div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script src="js/config.js"></script>
+  </body>
+</html>

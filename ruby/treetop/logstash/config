@@ -1,0 +1,15 @@
+input {
+  zeromq {
+    codec => lumberjack {
+      secret_key => "..."
+      public_key => "..."
+    }
+    thing => bareword
+    somehash => {
+      key1 => "value1"
+      "key2" => "value2"
+      "key3" => [ 1, 2, 3, 4 ]
+    }
+    endpoint => [ "tcp://1.2.3.4:4444", "tcp://1.2.3.4:4445" ]
+  }
+}

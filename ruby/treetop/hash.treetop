@@ -1,0 +1,21 @@
+grammar EventField
+  rule selection
+    ("[" expression "]")+ {
+      def to_lambda
+        return eval(%Q{lambda { |obj| return obj#{compile}} })
+      end
+      
+      def compile
+        elements.collect { |e| e.expression.compile }.join("")
+      end
+    }
+  end
+
+  rule expression
+    [^\]]+ {
+      def compile
+        return %Q(["#{text_value}"])
+      end
+    }
+  end
+end

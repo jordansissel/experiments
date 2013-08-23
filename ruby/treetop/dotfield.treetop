@@ -1,0 +1,35 @@
+grammar DotField
+  rule selection
+    field (field)* {
+      # TODO(sissel): Put this crap in a class.
+      def to_lambda
+        code = %Q{lambda do |obj| 
+          #{compile} 
+          return obj
+        end}
+        puts code
+        return eval(code)
+      end
+      
+      def compile
+        return elements.collect do |e|
+          if e.respond_to?(:compile)
+            next e.compile
+          else
+            next e.elements.collect(&:compile)
+          end
+        end.join("\n")
+      end # def compile
+    }
+  end
+
+  rule field
+    "[" field:[^\]]+ "]" {
+      def compile
+        return %Q(obj = obj["#{field.text_value}"] || return)
+      end
+    }
+  end
+end
+
+    
