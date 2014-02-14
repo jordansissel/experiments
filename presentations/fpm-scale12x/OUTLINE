@@ -1,0 +1,8 @@
+Lots of live demos
+- build a deb on a mac
+- mac: packer: .zip -> .pkg
+- build an rpm on debian
+- build deb, upload to bintray, apt-get install
+
+Strategies:
+- include git/hg/svn build info in the description or URL
