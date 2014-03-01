@@ -6,6 +6,8 @@ count = 40
 str = "a" * count # aaaa...
 re = Regexp.new("a?" * count + "a" * count) # a?a?a?a?aaaa ...
 
+puts "Regexp: #{re}"
+
 # Perform the match in a separate thread.
 t = Thread.new { re.match(str) }
 
