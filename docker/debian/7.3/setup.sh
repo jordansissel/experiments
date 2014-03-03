@@ -38,6 +38,8 @@ echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4
 chmod 711 /home/vagrant/.ssh
 chown -R vagrant /home/vagrant 
 
+apt-get install -y sudo
+
 # Make sudo passwordless
 echo "vagrant ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
