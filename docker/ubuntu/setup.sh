@@ -1,4 +1,4 @@
-sed -i -e 's@archive.ubuntu.com@ubuntu.mirrors.tds.net@g' /etc/apt/sources.list
+#sed -i -e 's@archive.ubuntu.com@ubuntu.mirrors.tds.net@g' /etc/apt/sources.list
 
 apt-get update 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq ssh
@@ -42,8 +42,3 @@ chown -R vagrant /home/vagrant
 
 # Make sudo passwordless
 echo "vagrant ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-apt-get install -y gcc curl
-curl -sSL https://get.rvm.io | bash -s stable
-. /etc/profile
-rvm install 1.9.3

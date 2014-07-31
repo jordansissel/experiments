@@ -1,4 +1,4 @@
-FROM stackbrew/ubuntu:12.04
+FROM ubuntu:12.04
 MAINTAINER Jordan Sissel <jls@semicomplete.com>
 # Originally taken from https://github.com/tianon/dockerfiles
 
