@@ -57,10 +57,8 @@ class PullRequestClassifier < Clamp::Command
     doc.keys.grep(/_at$/).each do |key|
       # Some keys like 'created_at' are Time objects
       # Let's convert them to ISO8601 strings for Elasticsearch
-      value = doc[key]
-      next if value.nil?
-      if value.is_a?(Time)
-        doc[key] = value.strftime("%Y-%m-%dT%H:%M:%S%z")
+      doc[key].tap do |value|
+        doc[key] = value.strftime("%Y-%m-%dT%H:%M:%S%z") if value.is_a?(Time)
       end
     end
 
