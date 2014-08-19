@@ -1,8 +1,11 @@
 require "clamp"
+require "faraday"
 
 class PullRequestClassifier < Clamp::Command
 
-  option "--dry", :flag, "Do a dry run", :default => true
+  option "--[no-]dry", :flag, "Do a dry run", :default => true
+  option "--debug", :flag, "Enable debugging", :default => false
+  parameter "USER/PROJECT", "The user/project repo name on github.", :attribute_name => "repo"
 
   def execute
     require "octokit"
@@ -10,8 +13,17 @@ class PullRequestClassifier < Clamp::Command
     client = Octokit::Client.new(:netrc => true)
     client.login
 
+    if debug?
+      stack = Faraday::RackBuilder.new do |builder|
+        builder.response :logger
+        builder.use Octokit::Response::RaiseError
+        builder.adapter Faraday.default_adapter
+      end
+      client.middleware = stack
+    end
+
     client.auto_paginate = true
-    pulls = client.pull_requests("elasticsearch/logstash")
+    pulls = client.pull_requests(repo)
 
     # TODO(sissel): Skip any pull requests that have been labeled already
     # Fetch diff of each PR, allocate labels accordingly
@@ -41,7 +53,6 @@ class PullRequestClassifier < Clamp::Command
         value = doc[key]
         next if value.nil?
         if value.is_a?(Time)
-          p value => value.class
           doc[key] = value.strftime("%Y-%m-%dT%H:%M:%S%z")
         end
       end
@@ -73,6 +84,12 @@ class PullRequestClassifier < Clamp::Command
         doc["comments"] << cdoc
       end
       es.index(:index => "logstash-pull-requests", :type => "pr", :id => pr.number.to_s, :body => doc)
+
+      label = "O(#{weight.to_i})"
+
+      puts "Setting label on ##{pr.number} to #{label}"
+      client.add_labels_to_an_issue(repo, pr.number, [ label ]) unless dry?
+
     end
     out.close
   end
