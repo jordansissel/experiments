@@ -4,7 +4,8 @@ require "insist"
 
 class PullRequestClassifier < Clamp::Command
 
-  option "--[no-]dry", :flag, "Do a dry run", :default => true
+  option "--[no-]index", :flag, "Index into local Elasticsearch", :default => true
+  option "--[no-]label", :flag, "Label issues on GitHub", :default => false
   option "--debug", :flag, "Enable debugging", :default => false
   parameter "USER/PROJECT", "The user/project repo name on github.", :attribute_name => "repo"
 
@@ -33,21 +34,26 @@ class PullRequestClassifier < Clamp::Command
     weight = Math.log([additions,deletions].max * sections + 1, 10)
     age = Time.now - pr.created_at
 
-    # Ship to Elasticsearch
-    index(es, pr, {
-      "age" => age,
-      "diff" => diff,
-      "files" => files,
-      "additions" => additions,
-      "deletions" => deletions,
-      "sections" => sections,
-      "weight" => weight
-    })
+    if index?
+      # Ship to Elasticsearch
+      index(es, pr, {
+        "repo" => repo,
+        "age" => age,
+        "diff" => diff,
+        "files" => files,
+        "additions" => additions,
+        "deletions" => deletions,
+        "sections" => sections,
+        "weight" => weight
+      })
+    end
 
-    # Update the label in Github
-    label = "O(#{weight.to_i})"
-    puts "Setting label on ##{pr.number} to #{label}"
-    client.add_labels_to_an_issue(repo, pr.number, [ label ]) unless dry?
+    if label?
+      # Update the label in Github
+      label = "O(#{weight.to_i})"
+      puts "Setting label on ##{pr.number} to #{label}"
+      client.add_labels_to_an_issue(repo, pr.number, [ label ])
+    end
   end # def process_pr
 
   def index(es, pr, extra)

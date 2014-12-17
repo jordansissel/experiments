@@ -18,6 +18,7 @@ def generate_patterns(files)
     cu = parser.createAST(nil)
     #cu.accept(LogScanner.new)
     
+    patterns = []
     visit(cu) do |node|
       # Find all method invocations that look like logger.whatever(
       if node.is_a?(org.eclipse.jdt.core.dom.MethodInvocation) && node.to_s =~ /^logger\.[A-Za-z0-9_]+\(/
@@ -48,10 +49,12 @@ def generate_patterns(files)
         pattern = Regexp.escape(format.to_s).gsub("\\ ", " ").gsub("\\{\\}") do |x|
           "%{DATA:#{fields.shift}}"
         end
-        puts "#{pattern},"
+        #puts "\[%{TIMESTAMP_ISO8601}\]\[%{WORD:loglevel}\]\[%{NOTSPACE:component} *\] \[(?<node_name>[^\]]+)]
         #binding.pry if node.to_s =~ /timeout notification from cluster/
       end
     end
+
+    puts patterns.sort_by { |s| s.bytesize }.join(",\n")
   end
 end # def generate_patterns
 
