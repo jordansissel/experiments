@@ -1,4 +1,5 @@
 require "clamp"
+require "json"
 require "faraday"
 require "insist"
 
@@ -6,6 +7,8 @@ class PullRequestClassifier < Clamp::Command
 
   option "--[no-]index", :flag, "Index into local Elasticsearch", :default => true
   option "--[no-]label", :flag, "Label issues on GitHub", :default => false
+  option "--[no-]cla", :flag, "Do a CLA check and set commit status accordingly", :default => false
+  option "--cla-uri", "CLA_URI", "The http rest url for the cla check api"
   option "--debug", :flag, "Enable debugging", :default => false
   parameter "USER/PROJECT", "The user/project repo name on github.", :attribute_name => "repo"
 
@@ -53,6 +56,15 @@ class PullRequestClassifier < Clamp::Command
       label = "O(#{weight.to_i})"
       puts "Setting label on ##{pr.number} to #{label}"
       client.add_labels_to_an_issue(repo, pr.number, [ label ])
+    end
+
+    if cla?
+      if cla_uri.nil?
+        raise "Missing --cla-uri"
+      end
+      result = check_cla(repo, pr, cla_uri)
+      status = result["status"] == "error" ? "failure" : "success"
+      client.create_status(pr.base.repo.full_name, pr.head.sha, "status", :description => result[message], :context => "cla_check")
     end
   end # def process_pr
 
@@ -115,6 +127,15 @@ class PullRequestClassifier < Clamp::Command
   def es
     @es ||= Elasticsearch::Client.new
   end # def es
+
+  # This method requires @cla_uri being set before it'll work.
+  def check_cla(repository, pr, cla_uri)
+    uri = URI.parse(cla_uri)
+    conn = Faraday.new(:url => "#{uri.scheme}://#{uri.host}")
+    conn.basic_auth(uri.user, uri.password)
+    response = conn.get(uri.path, :repository => repository, :number => pr.number)
+    JSON.parse(response.body)
+  end
 end # class PullRequestClassifier
 
 PullRequestClassifier.run
