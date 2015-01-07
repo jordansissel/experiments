@@ -51,21 +51,48 @@ class PullRequestClassifier < Clamp::Command
       })
     end
 
-    if label?
-      # Update the label in Github
-      label = "O(#{weight.to_i})"
-      puts "Setting label on ##{pr.number} to #{label}"
-      client.add_labels_to_an_issue(repo, pr.number, [ label ])
+    cla_signed = false
+    if cla_uri.nil?
+      raise "Missing --cla-uri"
     end
 
+    cla_result = check_cla(repo, pr, cla_uri)
     if cla?
-      if cla_uri.nil?
-        raise "Missing --cla-uri"
-      end
-      result = check_cla(repo, pr, cla_uri)
-      status = result["status"] == "error" ? "failure" : "success"
-      client.create_status(pr.base.repo.full_name, pr.head.sha, "status", :description => result[message], :context => "cla_check")
+      status = cla_result["status"] == "error" ? "failure" : "success"
+      client.create_status(pr.base.repo.full_name, pr.head.sha, status,
+                           :description => cla_result["message"],
+                           :context => "cla_check",
+                           :target_url => "https://github.com/#{repo}/blob/master/CONTRIBUTING.md#contribution-steps")
     end
+
+    if label?
+      # Update the label in Github
+
+      current_labels = client.issue(repo, pr.number).labels.map { |x| x.name }.select { |x| x =~ /^O\(\d+\)$/ }
+      if cla_result["status"] == "error"
+        # CLA check failed; remove all the O(c) labels
+        puts "CLA check failed; Removing O(c) labels on ##{pr.number}: #{current_labels.join(",")}"
+        current_labels.each do |label|
+          client.remove_label(repo, pr.number, label)
+        end
+      else
+        label = "O(#{weight.to_i})"
+
+        # Remove any existing O(c) labels except for the desired one.
+        current_labels.delete(label)
+
+        if current_labels.any?
+          p current_labels
+          puts "Removing old labels on ##{pr.number}: #{current_labels.join(",")}"
+          current_labels.each do |label|
+            client.remove_label(repo, pr.number, label)
+          end
+        end
+        puts "Setting label on ##{pr.number} to #{label}"
+        client.add_labels_to_an_issue(repo, pr.number, [ label ])
+      end
+    end
+
   end # def process_pr
 
   def index(es, pr, extra)
