@@ -1,6 +1,11 @@
+# All RAVEn XML protocol learnings can be found here:
+#   http://rainforestautomation.com/wp-content/uploads/2014/02/raven_xml_api_r127.pdf
 require "rexml/parsers/streamparser"
 require "rexml/document"
 require "open3"
+
+require "time" # for Time#iso8601
+require "elasticsearch"
 require "clamp"
 
 module RAVEn; end
@@ -13,10 +18,17 @@ class RAVEn::StreamCLI < Clamp::Command
   end
 
   def stream
+    es = Elasticsearch::Client.new
     Open3.popen3(*[*ssh_command, "cu", "-l", "/dev/ttyUSB0", "-s", "115200"]) do |stdin, stdout, stderr|
+      listener = RAVEn::XML.new do |event|
+        p event
+        index = Time.now.utc.strftime("logstash-whack-%Y-%m-%d")
+        es.index(:index => index, :type => "power", :body => event)
+      end
+
       begin
         Thread.new { IO::copy_stream(stderr, $stderr) }
-        parser = REXML::Parsers::StreamParser.new(stdout, RAVEn::XML.new)
+        parser = REXML::Parsers::StreamParser.new(stdout, listener)
         parser.parse
       rescue => e
         stdin.close rescue nil
@@ -29,8 +41,9 @@ class RAVEn::StreamCLI < Clamp::Command
 end
 
 class RAVEn::XML
-  def initialize
+  def initialize(&callback)
     newdoc
+    @callback = callback
   end
 
   def newdoc
@@ -62,24 +75,45 @@ class RAVEn::XML
     end
   end
 
-  def method_missing(m, *args)
-    p :unknown => { m => args }
-  end
+  #def method_missing(m, *args)
+    #p :unknown => { m => args }
+  #end
 
   def process_document(element)
+    #now = Time.now
+    #now_str = n.strftime("%Y-%m-%dT%H:%M:%S.%%03s%z") % (n.tv_usec / 1000)
+    now_str = Time.now.utc.iso8601(3)
+    event = { "@timestamp" => now_str }
+    # Turn <foo>bar</foo> into { "foo" => "bar" }
+    element.children.select { |e| e.is_a?(REXML::Element) }.each do |child|
+      # Take the first-level children and text values and make them fields
+      value = child.text
+
+      # Convert hex values
+      if value =~ /^0x[0-9A-Fa-f]+$/
+        value = value.to_i(16)
+      end
+
+      event[child.name.downcase] = value
+    end
+
     case element.name
     when "InstantaneousDemand"
+      # Do special math to compute current demand
       demand = REXML::XPath.first(element, "/InstantaneousDemand/Demand/text()").value.to_i(16)
       multiplier = REXML::XPath.first(element, "/InstantaneousDemand/Multiplier/text()").value.to_i(16)
       divisor = REXML::XPath.first(element, "/InstantaneousDemand/Divisor/text()").value.to_i(16)
 
       watts = (((demand + 0.0) * multiplier) / divisor) * 1000.0
-      n = Time.now; n.strftime("%Y-%m-%dT%H:%M:%S.%%03s%z") % (n.tv_usec / 1000)
-
-      event = { "@timestamp" => n, "watts" => watts }
-    else
-      puts element
+      event["watts"] = watts
     end
+
+    # Obscure unnecessary info
+    event["devicemacid"] = 1
+    event["metermacid"] = 1
+
+    # Ship it.
+    @callback.call(event)
 
     newdoc
   end
