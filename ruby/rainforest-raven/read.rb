@@ -74,7 +74,9 @@ class RAVEn::XML
       divisor = REXML::XPath.first(element, "/InstantaneousDemand/Divisor/text()").value.to_i(16)
 
       watts = (((demand + 0.0) * multiplier) / divisor) * 1000.0
-      puts "Power: #{watts}"
+      n = Time.now; n.strftime("%Y-%m-%dT%H:%M:%S.%%03s%z") % (n.tv_usec / 1000)
+
+      event = { "@timestamp" => n, "watts" => watts }
     else
       puts element
     end
