@@ -33,14 +33,14 @@ end
 
 class SSLTrainToFunkyTown
   def context
-    return @context if @context
-    @context = javax.net.ssl.SSLContext.getInstance("SSL");
-    @context.init(nil, [ TrustAllTheNiceCertificates.new ], java.security.SecureRandom.new)
-    @context
+    #return @context if @context
+    context = javax.net.ssl.SSLContext.getInstance("SSL");
+    context.init(nil, [ TrustAllTheNiceCertificates.new ], java.security.SecureRandom.new)
+    context
   end
 
   def sslfactory
-    @sslfactory ||= context.getSocketFactory
+    sslfactory ||= context.getSocketFactory
   end
 
   def try_handshake(host, port)
@@ -108,6 +108,3 @@ class SSLTrainToFunkyTown
 end
 
 SSLTrainToFunkyTown.new.run(ARGV)
-
-
-
