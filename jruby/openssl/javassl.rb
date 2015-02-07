@@ -57,9 +57,9 @@ class SSLTrainToFunkyTown
     handshake_listener = HandshakeListener.new(mutex, cv)
     ssl.addHandshakeCompletedListener(handshake_listener)
     handshake_listener.wait { ssl.startHandshake }
-    return { "result" => "success" }
+    return true, nil, { :address => address }
   rescue => e
-    return { "result" => "failure", :exception => e.to_s }
+    return false, e, { :address => address }
   ensure
     ssl.close if ssl
   end
@@ -81,16 +81,20 @@ class SSLTrainToFunkyTown
     while true
       services.each do |target|
         name = "#{target[:host]}:#{target[:port]}"
-        result = try_handshake(target[:host], target[:port])
+        success, exception, info = try_handshake(target[:host], target[:port])
 
-        if result["result"] == "success"
+        now = Time.now.utc
+        event = {"@timestamp" => now.iso8601(3), "pid" => $$}.merge(info)
+        if success
           results[name][:success] += 1
+          event["result"] = "success"
         else
           results[name][:failures] += 1
-          results[name][:exceptions] << result["exception"]
+          results[name][:exceptions] << exception
+          event["result"] = "failure"
+          event["exception"] = exception.to_s
         end
-
-        log.puts({ "@timestamp" => Time.now.iso8601(3) }.merge(result))
+        log.puts(event.to_json)
 
         results.each do |name, result|
           puts "#{"%20s" % name}: #{"%5d" % result[:success]}✅  #{"% 5d" % result[:failures]}❌    #{result[:exceptions].collect(&:to_s).reduce(Hash.new { |h,v| h[v] = 0 }) { |m,v| m[v] += 1; m }}"
