@@ -1,0 +1,18 @@
+---
+driver:
+  name: digital_ocean
+  digitalocean_api_token: <%= ENV["DIGITALOCEAN_API_TOKEN"] %>
+  ssh_keys: '<%= ENV["SSH_KEYS"] %>'
+  region: sfo1
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: centos-7.0
+    driver_config: 
+      size: 2gb
+      image: centos-7-0-x64
+
+suites:
+  - name: default

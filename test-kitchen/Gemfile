@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+group :development do
+  gem "test-kitchen"
+  gem "kitchen-digital_ocean"
+end
