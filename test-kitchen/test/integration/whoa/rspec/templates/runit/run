@@ -1,0 +1,17 @@
+#! /bin/sh
+
+# Send stderr to stdout so svlogd catches all output.
+exec 2>&1
+
+PROGRAM={{#quoted}}{{{PROGRAM}}}{{/quoted}}
+# Set up the arguments  (for $@)
+set -- {{{shell_args}}}
+
+{{#shell_continuation}}
+exec chpst
+  -u {{#quoted}}{{{user}}}:{{{group}}}{{/quoted}}
+  {{#chroot}} -/ {{#quoted}}{{{chroot}}}{{/quoted}} {{/chroot}}
+  {{#nice}} -n {{#quoted}}{{{nice}}}{{/quoted}} {{/nice}}
+  "$PROGRAM" "$@"
+{{/shell_continuation}}
+

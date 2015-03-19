@@ -1,3 +1,4 @@
+#<% require "kitchen-sync" %>
 ---
 driver:
   name: digital_ocean
@@ -6,7 +7,10 @@ driver:
   region: sfo1
 
 provisioner:
-  name: chef_solo
+  name: puppet_apply
+  manifests_path: manifests
+  modules_path: modules
+  require_chef_for_busser: true
 
 platforms:
   - name: centos-7.0
@@ -15,4 +19,8 @@ platforms:
       image: centos-7-0-x64
 
 suites:
-  - name: default
+  - name: whoa
+    provisioner:
+      manifest: whoa.pp
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+

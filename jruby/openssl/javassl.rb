@@ -99,6 +99,7 @@ class SSLTrainToFunkyTown
         results.each do |name, result|
           puts "#{"%20s" % name}: #{"%5d" % result[:success]}✅  #{"% 5d" % result[:failures]}❌    #{result[:exceptions].collect(&:to_s).reduce(Hash.new { |h,v| h[v] = 0 }) { |m,v| m[v] += 1; m }}"
         end
+        return unless success
       end
 
       # Be kind-ish to our downstream servers.

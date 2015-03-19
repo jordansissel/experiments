@@ -1,0 +1,3 @@
+[submodule "test-kitchen/test/integration/default/fpm"]
+	path = test-kitchen/test/integration/default/fpm
+	url = /Users/jls/projects/experiments/test-kitchen/test/integration/default/../../../../../fpm

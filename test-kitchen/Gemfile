@@ -2,5 +2,7 @@ source "https://rubygems.org"
 
 group :development do
   gem "test-kitchen"
+  gem "kitchen-sync"
+  gem "kitchen-puppet"
   gem "kitchen-digital_ocean"
 end
