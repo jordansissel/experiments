@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+gem "clamp"
+gem "octokit"
+gem "diff_parser"
+gem "netrc"
+gem "rubocop"
+gem "cabin"
+gem "stud"
