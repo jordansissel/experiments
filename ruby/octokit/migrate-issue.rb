@@ -49,7 +49,7 @@ class GithubIssueMigrator < Clamp::Command
     end
 
     comment = <<-COMMENT
-For Logstash 1.5.0, we've moved all plugins (and grok patterns) to individual repositories. Can you move this pull request to #{destination_project}?
+For Logstash 1.5.0, we've moved all plugins (and grok patterns) to individual repositories. Can you move this pull request to https://github.com/#{destination_project}?
 
 This sequence of steps _may_ help you do this migration:
 
@@ -96,6 +96,7 @@ This sequence of steps _may_ help you do this migration:
 
     github.add_comment(source_project, source_issue, comment)
     github.close_issue(source_project, source_issue)
+    puts "Added note to contributor for migration to #{destination_project}"
   end
 
   def source_project
