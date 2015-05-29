@@ -2,18 +2,18 @@
 # encoding: utf-8
 
 require "clamp"
-require_relative "github_client"
+require_relative "mixins/github"
+require_relative "mixins/logger"
 
 class GithubIssueMigrator < Clamp::Command
-  include GithubClient
-  include LoggerMixin
+  include Mixin::GitHub
+  include Mixin::Logger
 
-  option "--debug", :flag, "Enable debugging", :default => false
   parameter "SOURCE", "The github issue to migrate."
   parameter "DESTINATION", "The destination to migrate to"
 
   def execute
-    issue = client.issue(source_project, source_issue)
+    issue = github.issue(source_project, source_issue)
     annotated_body = "(This issue was originally filed by @#{issue.user.login} at #{source})\n\n---\n\n" + issue.body
 
     if issue.state == "closed"
@@ -22,11 +22,11 @@ class GithubIssueMigrator < Clamp::Command
     end
 
     # Create the new issue
-    new_issue = client.create_issue(destination_project, issue.title, annotated_body)
+    new_issue = github.create_issue(destination_project, issue.title, annotated_body)
 
     # Comment on the old issue about the migration, and close it.
-    client.add_comment(source_project, source_issue, "For Logstash 1.5.0, we've moved all plugins to individual repositories, so I have moved this issue to #{new_issue.html_url}. Let's continue the discussion there! :)")
-    client.close_issue(source_project, source_issue)
+    github.add_comment(source_project, source_issue, "For Logstash 1.5.0, we've moved all plugins to individual repositories, so I have moved this issue to #{new_issue.html_url}. Let's continue the discussion there! :)")
+    github.close_issue(source_project, source_issue)
 
     puts "Successfully migrated to: #{new_issue.html_url}"
     nil
