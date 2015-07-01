@@ -33,6 +33,11 @@ class Hunk
 
   def initialize(old_line, old_height, new_line, new_height, description=nil)
     @actions = []
+    @old_line = old_line
+    @old_height = old_height
+    @new_line = new_line
+    @new_height = new_height
+    @description = description
   end
 
   def stay(line)
@@ -48,7 +53,21 @@ class Hunk
   end
 
   def each(&block)
-    @actions.each(&block)
+    old_line = @old_line
+    new_line = @new_line
+    # The math here may not be correct. I was tired when I wrote it.
+    @actions.each do |action|
+      case action
+      when Action::Stay
+        old_line += 1
+        new_line += 1
+      when Action::Add
+        new_line += 1
+      when Action::Remove
+        old_line += 1
+      end
+      block.call(action, old_line, new_line)
+    end
   end
 end
 
@@ -64,11 +83,17 @@ module Action
 end
 
 class DiffParser
+  include Enumerable
+
   def initialize
     @buftok = BufferedTokenizer.new
     @state = :description
     @description = ""
     @files = []
+  end
+
+  def each(&block)
+    @files.each(&block)
   end
 
   def current_file
@@ -143,7 +168,7 @@ class DiffParser
       current_hunk.stay(line[1..-1])
     when /^-/ # line in old file but not new file
       current_hunk.remove(line[1..-1])
-    when /^+/ # line in new file but not old file
+    when /^\+/ # line in new file but not old file
       current_hunk.add(line[1..-1])
     when /^@@ / # new hunk section
       transition(:hunk_header)

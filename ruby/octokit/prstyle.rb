@@ -1,10 +1,10 @@
 require "clamp"
 require "json"
+require_relative "diff"
 require "faraday"
 require "octokit"
 require "fileutils"
 require "cabin"
-require "diff_parser"
 require "stud/temporary"
 
 CodeReviewer = Class.new(Clamp::Command) do
@@ -16,11 +16,11 @@ CodeReviewer = Class.new(Clamp::Command) do
   end
 
   def project_url
-    @project_url ||= pr_url.sub(/\/pull\/\d+$/, "")
+    @project_url ||= pr_url.sub(%r{/pull/\d+$}, "")
   end
 
   def project
-    @project ||= project_url.sub(%r(^https?://[^/]+/), "")
+    @project ||= project_url.sub(%r{^https?://[^/]+/}, "")
   end
 
   def git_dir
@@ -40,11 +40,11 @@ CodeReviewer = Class.new(Clamp::Command) do
   end
 
   def diff_file
-    @diff_File ||= Stud::Temporary.pathname
+    @diff_file ||= Stud::Temporary.pathname
   end
 
   def system(*args)
-    p :sh => args
+    #p :sh => args
     Kernel.system(*args)
   end
 
@@ -57,10 +57,11 @@ CodeReviewer = Class.new(Clamp::Command) do
     system("git -C #{git_dir} checkout -b pull-request origin/pull/#{pr}")
   end
 
-  def complaints
+  def complaints(files)
     # Is there a rubocop config?
     raise "No .rubocop.yml found in #{project_url}. Skipping review." if !File.file?(rubocop_yml)
-    system("cd #{git_dir}; rubocop -c #{rubocop_yml} --format json -o #{offenses_file} .")
+    puts "=> Running rubocop"
+    system("cd #{git_dir}; rubocop -c #{rubocop_yml} --format json -o #{offenses_file} #{files.join(" ")}")
     JSON.parse(File.read(offenses_file))
   ensure
     File.unlink(offenses_file)
@@ -70,9 +71,7 @@ CodeReviewer = Class.new(Clamp::Command) do
     logger.subscribe(STDOUT)
     logger.level = debug? ? :debug : :info
     
-    #checkout
-    #complaints = rubocop
-
+    checkout
     # rubocop_result["files"] is an Array of 
     # { "path" => "the file path",
     #   "offenses" => [ <offense>, ... ]
@@ -81,17 +80,30 @@ CodeReviewer = Class.new(Clamp::Command) do
     # An offense is Hash w/ keys severity, message, cop_name, corrected, location
     # location is Hash w/ keys line, column, length
 
-    pr_info = Octokit.pull_request("jordansissel/fpm", 906)
-    require "pry"
-    binding.pry
+    pr_info = Octokit.pull_request(project, pr)
+    system("git -C #{git_dir} diff #{pr_info.base.sha} > #{diff_file}")
 
-    system("git diff 9866c6d940a238ee8293829d2281225351131506..HEAD > #{diff_file} ")
-    # Diff against the target branch
-    # Comment on any added lines in the diff
+    diff = DiffParser.new
+    diff.feed(File.read(diff_file))
+
+    rubocop = complaints(diff.collect { |d| d.new_name.sub(/^b\//, "") })
+
+    puts "Showing rubocop complaints about new code in this PR:"
+    bad_files = rubocop["files"].collect { |x| x["path"] }
+    diff.select { |d|  bad_files.include?(d.new_name.sub(%r{^[ab]/}, "")) }.each do |file|
+      offenses = rubocop["files"].find { |x| "b/" + x["path"] == file.new_name }["offenses"]
+      file.each do |hunk|
+        hunk.select { |a, _, _| a.is_a?(Action::Add) }.each do |_, _, new_line|
+          offenses.select { |o| o["location"]["line"] == new_line }.each do |o|
+            puts "Offense at #{file.new_name}:#{new_line}"
+            puts "#{o["cop_name"]}: #{o["message"]}"
+          end
+        end
+      end
+    end
     nil
   ensure
     FileUtils.rm_r(git_dir) if File.directory?(git_dir)
-    File.unlink(offenses_file)
   end # def execute
 
   def client
