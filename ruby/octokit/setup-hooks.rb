@@ -30,10 +30,10 @@ cli = Class.new(Clamp::Command) do
     end
 
     repositories.each do |r|
-      #setup_hipchat(organization, r,
-        #"room" => hipchat_room,
-        #"auth_token" => hipchat_token
-      #)
+      setup_hipchat(organization, r,
+        "room" => hipchat_room,
+        "auth_token" => hipchat_token
+      )
       setup_clacheck(organization, r)
     end
   end

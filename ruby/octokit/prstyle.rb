@@ -1,6 +1,7 @@
 require "clamp"
 require "json"
 require "faraday"
+require "octokit"
 require "fileutils"
 require "cabin"
 require "diff_parser"
@@ -15,7 +16,11 @@ CodeReviewer = Class.new(Clamp::Command) do
   end
 
   def project_url
-    @project_url ||= pr_url.gsub(/\/pull\/\d+$/, "")
+    @project_url ||= pr_url.sub(/\/pull\/\d+$/, "")
+  end
+
+  def project
+    @project ||= project_url.sub(%r(^https?://[^/]+/), "")
   end
 
   def git_dir
@@ -34,35 +39,59 @@ CodeReviewer = Class.new(Clamp::Command) do
     @offenses_file ||= Stud::Temporary.pathname
   end
 
+  def diff_file
+    @diff_File ||= Stud::Temporary.pathname
+  end
+
   def system(*args)
     p :sh => args
     Kernel.system(*args)
+  end
+
+  def checkout
+    # Check it out from git
+    system("git clone #{project_url} #{git_dir}")
+
+    # Fetch the PR
+    system("git -C #{git_dir} fetch origin refs/pull/#{pr}/head:refs/remotes/origin/pull/#{pr}")
+    system("git -C #{git_dir} checkout -b pull-request origin/pull/#{pr}")
+  end
+
+  def complaints
+    # Is there a rubocop config?
+    raise "No .rubocop.yml found in #{project_url}. Skipping review." if !File.file?(rubocop_yml)
+    system("cd #{git_dir}; rubocop -c #{rubocop_yml} --format json -o #{offenses_file} .")
+    JSON.parse(File.read(offenses_file))
+  ensure
+    File.unlink(offenses_file)
   end
 
   def execute
     logger.subscribe(STDOUT)
     logger.level = debug? ? :debug : :info
     
-    # Check it out from git
-    system("git clone #{project_url} #{git_dir}")
-    # Fetch the PR
-    system("git -C #{git_dir} fetch origin refs/pull/#{pr}/head:refs/remotes/origin/pull/#{pr}")
-    # Run rubocop
-    if !File.file?(rubocop_yml)
-      puts "No .rubocop.yml found in #{project_url}. Skipping review."
-      return
-    end
+    #checkout
+    #complaints = rubocop
 
-    system("rubocop -c #{rubocop_yml} --format json -o #{offenses_file} #{git_dir}")
-    puts $?
+    # rubocop_result["files"] is an Array of 
+    # { "path" => "the file path",
+    #   "offenses" => [ <offense>, ... ]
+    # }
+    #
+    # An offense is Hash w/ keys severity, message, cop_name, corrected, location
+    # location is Hash w/ keys line, column, length
 
-    puts "Wrote result to #{offenses_file}"
+    pr_info = Octokit.pull_request("jordansissel/fpm", 906)
+    require "pry"
+    binding.pry
 
+    system("git diff 9866c6d940a238ee8293829d2281225351131506..HEAD > #{diff_file} ")
     # Diff against the target branch
     # Comment on any added lines in the diff
     nil
   ensure
     FileUtils.rm_r(git_dir) if File.directory?(git_dir)
+    File.unlink(offenses_file)
   end # def execute
 
   def client

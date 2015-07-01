@@ -1,4 +1,6 @@
 source "https://rubygems.org"
+
+gem "buftok"
 gem "clamp"
 gem "octokit"
 gem "diff_parser"
@@ -6,3 +8,5 @@ gem "netrc"
 gem "rubocop"
 gem "cabin"
 gem "stud"
+gem "pry"
+
