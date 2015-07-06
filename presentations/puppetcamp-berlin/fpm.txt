@@ -1,0 +1,111 @@
+POSERO>> let b:posero_fake_type = "^[\\$.]"
+POSERO>> let b:posero_push_on_non_fake = 1
+POSERO>> set hlsearch
+POSERO>> call matchadd("Search", "^\$.*")
+POSERO>> hi Search        cterm=BOLD ctermfg=yellow ctermbg=black
+POSERO>> hi NonText       ctermfg=black ctermbg=black
+
+$ wget -q http://download.redis.io/releases/redis-2.8.tar.gz
+.....................................
+$ tar -zxf redis-2.8.8.tar.gz
+$ cd redis-2.8.8
+$ make
+.....................................
+
+$ # Install it somewhere temporary, so we can package it!
+$ make install PREFIX=/tmp/redis
+.....................................
+
+$ find /tmp/redis
+/tmp/redis
+/tmp/redis/bin
+/tmp/redis/bin/redis-check-aof
+/tmp/redis/bin/redis-check-dump
+/tmp/redis/bin/redis-cli
+/tmp/redis/bin/redis-benchmark
+/tmp/redis/bin/redis-server
+
+$ # Package /tmp/redis/ and put it in /usr/local/
+$ fpm -s dir -t rpm -n redis -v 2.8.8 /tmp/redis/=/usr/local/
+Created rpm {:path=>"redis-2.8.8-1.x86_64.rpm"}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+POSERO>> let b:posero_auto_next_line = 1
+POSERO>> let b:posero_push_all = 1
+# redis.pp
+
+package { "redis":
+  ensure => latest; 
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+POSERO>> let b:posero_fake_type = "^\\$"
+POSERO>> let b:posero_push_on_non_fake = 1
+$ sudo puppet apply redis.pp
+Notice: /Stage[main]//Package[redis]/ensure: created
+Notice: Finished catalog run in 2.37 seconds
+
+$ rpm -q redis
+redis-2.8.8-1.x86_64
+
+$ rpm -ql redis
+/usr/local/bin/redis-benchmark
+/usr/local/bin/redis-check-aof
+/usr/local/bin/redis-check-dump
+/usr/local/bin/redis-cli
+/usr/local/bin/redis-server
+
+$ # HURRAY! :)
+
+$ # What's next?
+
+$ sudo service redis start
+Redirecting to /bin/systemctl start  redis.service
+Failed to issue method call: Unit redis.service failed to load: No such file or directory. See system logs and 'systemctl status redis.service' for details.
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+POSERO>> let b:posero_auto_next_line = 1
+POSERO>> let b:posero_push_all = 1
+# redis.pp
+
+package { "redis":
+  ensure => latest; 
+}
+
+pleaserun { "redis":
+  program => "/usr/local/bin/redis-server",
+  ensure => present;
+}
+
+service { "redis":
+  ensure => running;
+}
+
+Package["redis"] -> Pleaserun["redis"] -> Service["redis"]
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+POSERO>> let b:posero_fake_type = "^[\\$.]"
+POSERO>> let b:posero_push_on_non_fake = 1
+POSERO>> set hlsearch
+POSERO>> call matchadd("Search", "^\$.*")
+POSERO>> hi Search        cterm=BOLD ctermfg=yellow ctermbg=black
+
+$ sudo puppet apply --modulepath ~/puppet/ redis.pp
+Notice: /Stage[main]//Pleaserun[redis]/ensure: created
+Notice: /Stage[main]//Service[redis]/ensure: ensure changed 'stopped' to 'running'
+Notice: Finished catalog run in 8.95 seconds
+
+$ sudo service redis status
+Redirecting to /bin/systemctl status  redis.service
+redis.service - no description given
+          Loaded: loaded (/usr/lib/systemd/system/redis.service; disabled)
+          Active: active (running) since Fri 2014-04-11 07:58:48 EDT; 42s ago
+        Main PID: 17967 (redis-server)
+          CGroup: name=systemd:/system/redis.service
+                  └─17967 /usr/local/bin/redis-server *:6379
