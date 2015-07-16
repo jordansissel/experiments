@@ -1,10 +1,3 @@
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
 .joystick-chassis { 
   border: 2px solid green;
   width: 100%;
@@ -19,22 +12,4 @@ html, body {
   width: 5em;
   display: block;
   position: relative;
-}
-
-.one, .two, .three { padding: 2em; }
-
-#vertical-hair {
-  top: 0px;
-  width: 1px;
-  background-color: lightgrey;
-  height: 100%;
-  position: fixed;
-}
-
-#horizontal-hair {
-  left: 0px;
-  height: 1px;
-  background-color: lightgrey;
-  width: 100%;
-  position: fixed;
 }
