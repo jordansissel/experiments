@@ -132,10 +132,10 @@ var Slider = React.createClass({
     }
   },
 
-  setPosition: function(value) {
+  setPosition: function(position) {
     this.setState({ 
-      ratio: 1 / (this.bounds.upper / value),
-      style: { left: value }
+      value: 1 / (this.bounds.upper / position),
+      style: { left: position }
     });
   },
 
