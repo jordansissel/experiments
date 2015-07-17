@@ -1,6 +1,7 @@
 var React = require("react/addons");
 var mui = require("material-ui");
 var ThemeManager = mui.Styles.ThemeManager();
+ThemeManager.setTheme(ThemeManager.types.DARK);
 var Card = mui.Card,
     CardHeader = mui.CardHeader,
     Avatar = mui.Avatar,
@@ -8,6 +9,7 @@ var Card = mui.Card,
     CardTitle = mui.CardTitle,
     CardActions = mui.CardActions,
     CardText = mui.CardText,
+    FontIcon = mui.FontIcon,
     FlatButton = mui.FlatButton;
 
 var FancyCard = React.createClass({
@@ -24,18 +26,20 @@ var FancyCard = React.createClass({
   click: function(e) {
     e.preventDefault();
     console.log(e);
+    alert("OK");
   },
 
   render: function() {
+    console.log(this);
     return (
       <Card className="card">
-        <CardMedia overlay={<CardTitle title="Title" />}>
-          <img src="background.jpg"/>
+        <CardMedia overlay={
+            <CardTitle className="centered" title={this.props.primaryText || "<primaryText>"} subtitle={this.props.secondaryText}/>
+          }>
+          <img src={this.props.background}/>
         </CardMedia>
         <CardActions>
-          <FlatButton label="Action1" onClick={this.click}/>
-          <FlatButton label="Action2" onClick={this.click}/>
-          <FlatButton label="Action3" onClick={this.click}/>
+          <center> {this.props.children} </center>
         </CardActions>
       </Card>
     );

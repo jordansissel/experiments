@@ -1,18 +1,47 @@
 html, body {
   margin: 0;
   padding: 0;
+  background-color: black;
 }
 
-@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
-  .inset {
-    width: 375px !important;
+.material-icons {
+  vertical-align: middle;
+}
+
+@media all {
+  .card {
+    width: 355px;
+    float: left;
+  }
+  .card img {
+    width: 320px;
+    height: 240px;
   }
 }
 
-.inset {
+/* iPhone 6 */
+@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait) {
+  .card { 
+    width: 355px;
+  }
+  .card img {
+    height: 250px;
+  }
+}
+
+@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape) {
+  .card { 
+    width: 313px;
+  }
+  .card img {
+    padding: 10px;
+    height: 250px;
+  }
+}
+
+.card {
   margin: 10px;
   padding: 10px;
-  width: 500px;
 }
 
 .fixed-bottom {
@@ -21,10 +50,7 @@ html, body {
 }
 
 .centered {
-  //padding: 30px;
-  margin: auto;
   text-align: center;
-  margin-top: 50px;
 }
 
 .card {
