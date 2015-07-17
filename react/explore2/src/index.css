@@ -1,0 +1,33 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
+  .inset {
+    width: 375px !important;
+  }
+}
+
+.inset {
+  margin: 10px;
+  padding: 10px;
+  width: 500px;
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+}
+
+.centered {
+  //padding: 30px;
+  margin: auto;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.card {
+  margin-bottom: 1em;
+
+}
