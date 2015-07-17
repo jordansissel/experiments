@@ -2,14 +2,10 @@ var React = require("react/addons");
 var mui = require("material-ui");
 var ThemeManager = mui.Styles.ThemeManager();
 ThemeManager.setTheme(ThemeManager.types.DARK);
-var Paper = mui.Paper,
-    AppBar = mui.AppBar,
-    IconButton = mui.IconButton,
+var IconButton = mui.IconButton,
     FontIcon = mui.FontIcon;
 
-var BackButton = require("components/back_button");
-
-var Energy = React.createClass({
+var BackButton = React.createClass({
   childContextTypes: {
     muiTheme: React.PropTypes.object
   },
@@ -22,15 +18,11 @@ var Energy = React.createClass({
 
   render: function() {
     return (
-      <div>
-        <AppBar title="fingerpoken" iconElementLeft={<BackButton/>} />
-        <div className="page">
-          <Paper> Hello </Paper>
-        </div>
-      </div>
+      <IconButton tooltip="Go Back" touch={true} onClick={function() { window.history.back(); }}>
+        <FontIcon className="material-icons">keyboard_arrow_left</FontIcon>
+      </IconButton>
     );
   }
-
 });
 
-module.exports = Energy;
+module.exports = BackButton;

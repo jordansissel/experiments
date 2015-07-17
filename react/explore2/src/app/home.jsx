@@ -13,6 +13,9 @@ var Card = mui.Card,
     FlatButton = mui.FlatButton,
     AppBar = mui.AppBar;
 
+function visit(path) {
+  document.location.hash = "#" + path;
+}
 
 
 var FancyCard = require("fancycard");
@@ -42,9 +45,9 @@ var Home = React.createClass({
             <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={this.click}/>
             <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
           </FancyCard>
-          <FancyCard primaryText="Energy" background="power.jpg" onHomeClick={ function() { this.location.hash = "#/energy" }}>
+          <FancyCard className="fancy-card" primaryText="Energy" background="power.jpg" onClick={function() { visit("/energy");}}>
             <FlatButton label={<FontIcon className="material-icons">power_settings_new</FontIcon>} onClick={this.click}/>
-            <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={this.click}/>
+            <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={function() { visit("/energy"); }} />
             <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
           </FancyCard>
         </div>

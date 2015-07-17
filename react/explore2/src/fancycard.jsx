@@ -32,8 +32,8 @@ var FancyCard = React.createClass({
   render: function() {
     console.log(this);
     return (
-      <Card className="card">
-        <CardMedia overlay={
+      <Card className={ "card" + (this.props.onClick ? " mouse-pointer" : "") }>
+        <CardMedia onClick={this.props.onClick} overlay={
             <CardTitle className="centered" title={this.props.primaryText || "<primaryText>"} subtitle={this.props.secondaryText}/>
           }>
           <img src={this.props.background}/>

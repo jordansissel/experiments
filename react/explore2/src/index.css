@@ -44,6 +44,10 @@ html, body {
   padding: 10px;
 }
 
+.mouse-pointer {
+  cursor: pointer;
+}
+
 .fixed-bottom {
   position: fixed;
   bottom: 0;
@@ -53,7 +57,10 @@ html, body {
   text-align: center;
 }
 
-.card {
-  margin-bottom: 1em;
+.page {
+  margin: 10px;
+}
 
+.page > * {
+  padding: 10px;
 }
