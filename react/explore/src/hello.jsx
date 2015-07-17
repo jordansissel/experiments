@@ -1,4 +1,3 @@
-var React = require("react");
 var mui = require("material-ui");
 var ThemeManager = new mui.Styles.ThemeManager();
 
@@ -12,12 +11,6 @@ var Hello = React.createClass({
     return {
       muiTheme: ThemeManager.getCurrentTheme()
     };
-  },
-
-  componentWillMount: function() {
-    //ThemeManager.setPalette({
-      //primary1Color: mui.Styles.Colors.deepOrange500,
-    //});
   },
 
   render: function() {
