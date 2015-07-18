@@ -18,11 +18,13 @@ var Route = Router.Route;
 var DefaultRoute = Router.DefaultRoute;
 var Home = require("app/home");
 var Energy = require("app/energy");
+var Notifications = require("app/notifications");
 var routes = (
   <Route handler={App}>
     <DefaultRoute handler={Home}/>
 
     <Route name="energy" handler={Energy}/>
+    <Route name="notifications" handler={Notifications}/>
   </Route>
 );
 

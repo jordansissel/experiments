@@ -18,6 +18,11 @@ function visit(path) {
 }
 
 
+function link(path) {
+  return function() {
+    visit(path);
+  }
+}
 var FancyCard = require("fancycard");
 var Home = React.createClass({
   childContextTypes: {
@@ -48,6 +53,11 @@ var Home = React.createClass({
           <FancyCard className="fancy-card" primaryText="Energy" background="power.jpg" onClick={function() { visit("/energy");}}>
             <FlatButton label={<FontIcon className="material-icons">power_settings_new</FontIcon>} onClick={this.click}/>
             <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={function() { visit("/energy"); }} />
+            <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
+          </FancyCard>
+          <FancyCard className="fancy-card" primaryText="Notifications" background="mail.jpg" onClick={link("/notifications")}>
+            <FlatButton label={<FontIcon className="material-icons">power_settings_new</FontIcon>} onClick={this.click}/>
+            <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={link("/notifications")} />
             <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
           </FancyCard>
         </div>

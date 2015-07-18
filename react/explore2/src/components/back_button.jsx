@@ -16,9 +16,14 @@ var BackButton = React.createClass({
     };
   },
 
+  goBack: function() {
+    document.location.hash = "#/";
+    //window.history.back();
+  },
+
   render: function() {
     return (
-      <IconButton tooltip="Go Back" touch={true} onClick={function() { window.history.back(); }}>
+      <IconButton tooltip="Go Back" touch={true} onClick={this.goBack}>
         <FontIcon className="material-icons">keyboard_arrow_left</FontIcon>
       </IconButton>
     );
