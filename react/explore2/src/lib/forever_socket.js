@@ -15,13 +15,26 @@ function ForeverSocket(websocket_url, protocols) {
   this.connect();
 }
 
+ForeverSocket.prototype.send = function(message, callback) {
+  if (this.websocket === undefined || this.websocket.readyState != 1) {
+    // Queue it up
+    this.pending = [message, callback]
+  } else {
+    // Ready, send now.
+    this.onmessage = callback
+    this.websocket.send(message)
+  }
+}
+
 ForeverSocket.prototype.connect = function() {
   this.websocket = new WebSocket(this.url, this.protocols);
   this.registerHandlers(this.websocket)
 }
 
 ForeverSocket.prototype.close = function() {
-  this.websocket.close()
+  this.websocket.onclose = undefined; // stop autoreconnecting
+  this.websocket.onerror = undefined; // stop autoreconnecting
+  //this.websocket.close()
 }
 
 ForeverSocket.prototype.registerHandlers = function(socket) {
@@ -35,16 +48,25 @@ ForeverSocket.prototype.registerHandlers = function(socket) {
 
 ForeverSocket.prototype.handleOpen = function(e) { 
   console.log("Websocket connected: " + this.url);
+  if (this.pending !== undefined) {
+    this.send(this.pending[0], this.pending[1])
+    this.pending = undefined;
+  }
 }
 
 ForeverSocket.prototype.handleClose = function(e) { 
+  this.websocket = undefined;
+
   var self = this;
   setTimeout(function() { self.connect(); }, 200);
 }
 
 ForeverSocket.prototype.handleError = function(e) { 
   console.log("Websocket error", e);
+  //this.websocket.close();
+  this.websocket = undefined;
 }
+
 ForeverSocket.prototype.handleMessage = function(e) { 
   //console.log("Received: " + e.data);
   if (this.onmessage === null || this.onmessage === undefined) {
