@@ -2,6 +2,8 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: black;
+  height: 100%;
+  width: 100%
 }
 
 .material-icons {
@@ -63,4 +65,16 @@ html, body {
 
 .page > * {
   padding: 10px;
+}
+
+#touchpad {
+  height: 100%;
+  width: 100%;
+  background: green;
+  display: block;
+}
+
+#content, #content > div {
+  height: 100%;
+  width: 100%;
 }

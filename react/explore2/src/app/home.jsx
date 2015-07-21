@@ -60,6 +60,11 @@ var Home = React.createClass({
             <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={link("/notifications")} />
             <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
           </FancyCard>
+          <FancyCard className="fancy-card" primaryText="Touchpad" background="mail.jpg" onClick={link("/touchpad")}>
+            <FlatButton label={<FontIcon className="material-icons">power_settings_new</FontIcon>} onClick={this.click}/>
+            <FlatButton label={<FontIcon className="material-icons">home</FontIcon>} onClick={link("/notifications")} />
+            <FlatButton label={<FontIcon className="material-icons">settings</FontIcon>} onClick={this.click}/>
+          </FancyCard>
         </div>
       </div>
     );
