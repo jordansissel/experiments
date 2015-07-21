@@ -13,16 +13,23 @@ function ForeverSocket(websocket_url, protocols) {
   this.url = websocket_url;
   this.protocols = protocols || "";
   this.connect();
+  this.pending = [];
 }
 
 ForeverSocket.prototype.send = function(message, callback) {
   if (this.websocket === undefined || this.websocket.readyState != 1) {
     // Queue it up
-    this.pending = [message, callback]
+    this.pending.push([message, callback])
   } else {
     // Ready, send now.
     this.onmessage = callback
-    this.websocket.send(message)
+    if (message instanceof Array) {
+      for (i in message) {
+        this.websocket.send(message[i]);
+      }
+    } else {
+      this.websocket.send(message);
+    }
   }
 }
 
@@ -48,9 +55,9 @@ ForeverSocket.prototype.registerHandlers = function(socket) {
 
 ForeverSocket.prototype.handleOpen = function(e) { 
   console.log("Websocket connected: " + this.url);
-  if (this.pending !== undefined) {
-    this.send(this.pending[0], this.pending[1])
-    this.pending = undefined;
+  if (this.pending.length > 0) {
+    next = this.pending.pop()
+    this.send(next[0], next[1])
   }
 }
 
