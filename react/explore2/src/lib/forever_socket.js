@@ -22,7 +22,7 @@ ForeverSocket.prototype.send = function(message, callback) {
     this.pending.push([message, callback])
   } else {
     // Ready, send now.
-    this.onmessage = callback
+    this.setMessageHandler(callback);
     if (message instanceof Array) {
       for (i in message) {
         this.websocket.send(message[i]);
@@ -69,17 +69,19 @@ ForeverSocket.prototype.handleClose = function(e) {
 }
 
 ForeverSocket.prototype.handleError = function(e) { 
-  console.log("Websocket error", e);
   //this.websocket.close();
   this.websocket = undefined;
 }
 
 ForeverSocket.prototype.handleMessage = function(e) { 
-  //console.log("Received: " + e.data);
-  if (this.onmessage === null || this.onmessage === undefined) {
+  if (this.messageHandler === null || this.messageHandler === undefined) {
     return;
   }
-  this.onmessage(e);
+  this.messageHandler(e);
 }
+
+ForeverSocket.prototype.setMessageHandler = function(callback) {
+  this.messageHandler = callback;
+};
 
 module.exports = ForeverSocket;
