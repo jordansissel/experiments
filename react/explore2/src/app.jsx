@@ -20,6 +20,7 @@ var Home = require("app/home");
 var Energy = require("app/energy");
 var Notifications = require("app/notifications");
 var Touchpad = require("app/touchpad");
+var Scratch = require("app/scratch");
 var routes = (
   <Route handler={App}>
     <DefaultRoute handler={Home}/>
@@ -27,6 +28,7 @@ var routes = (
     <Route name="energy" handler={Energy}/>
     <Route name="notifications" handler={Notifications}/>
     <Route name="touchpad" handler={Touchpad}/>
+    <Route name="scratch" handler={Scratch}/>
   </Route>
 );
 
