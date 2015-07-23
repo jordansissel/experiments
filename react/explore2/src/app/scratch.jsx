@@ -4,14 +4,17 @@ var ThemeManager = mui.Styles.ThemeManager();
 ThemeManager.setTheme(ThemeManager.types.DARK);
 var AppBar = mui.AppBar,
     IconButton = mui.IconButton,
+    Slider = mui.Slider,
+    Paper = mui.Paper,
     FontIcon = mui.FontIcon;
 var BackButton = require("components/back_button");
-var zws = require("lib/zws");
 
 var Scratch = React.createClass({
   getInitialState: function() {
-    return {
-      sub: new zws.Sub("ws://" + document.location.hostname + ":8111/zws/1.0")
+    return { 
+      x: 0,
+      y: 0,
+      z: 0
     };
   },
   childContextTypes: {
@@ -25,19 +28,42 @@ var Scratch = React.createClass({
   },
 
   componentWillMount: function() { 
-    this.state.sub.setMessageHandler(function(message) {
-      console.log(message)
-    });
-    this.state.sub.connect();
+    var self = this;
+    var ACCELERATION_DUE_TO_GRAVITY = 9.8067; // this varies by location on the earth, but whatever.
+    window.ondevicemotion = function(event) {
+      self.setState({
+        x: event.accelerationIncludingGravity.x / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
+        y: event.accelerationIncludingGravity.y / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
+        z: event.accelerationIncludingGravity.z / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
+        xa: event.acceleration.x / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
+        ya: event.acceleration.y / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
+        za: event.acceleration.z / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5
+      })
+    }
   },
 
   componentWillUnmount: function() { 
+    window.ondevicemotion = undefined;
   },
 
   render: function() {
     return (
       <div>
-        <AppBar title="fingerpoken" iconElementLeft={<BackButton/>} />
+        <AppBar title="Accelerometer"  iconElementLeft={<BackButton/>} />
+        
+        <Paper>
+          With gravity:
+          <Slider name="x" value={this.state.x} />
+          <Slider name="y" value={this.state.y}  />
+          <Slider name="z" value={this.state.z} />
+        </Paper>
+
+        <Paper>
+          With out gravity:
+          <Slider name="xa" value={this.state.xa} />
+          <Slider name="ya" value={this.state.ya} />
+          <Slider name="za" value={this.state.za} />
+        </Paper>
       </div>
     );
   }
