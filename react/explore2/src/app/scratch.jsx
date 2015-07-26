@@ -8,13 +8,12 @@ var AppBar = mui.AppBar,
     Paper = mui.Paper,
     FontIcon = mui.FontIcon;
 var BackButton = require("components/back_button");
+var zws = require("lib/zws");
 
 var Scratch = React.createClass({
   getInitialState: function() {
     return { 
-      x: 0,
-      y: 0,
-      z: 0
+      mdc: new zws.MajordomoClient("ws://" + document.location.hostname + ":8111/zws/1.0")
     };
   },
   childContextTypes: {
@@ -28,42 +27,32 @@ var Scratch = React.createClass({
   },
 
   componentWillMount: function() { 
-    var self = this;
-    var ACCELERATION_DUE_TO_GRAVITY = 9.8067; // this varies by location on the earth, but whatever.
-    window.ondevicemotion = function(event) {
-      self.setState({
-        x: event.accelerationIncludingGravity.x / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
-        y: event.accelerationIncludingGravity.y / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
-        z: event.accelerationIncludingGravity.z / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
-        xa: event.acceleration.x / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
-        ya: event.acceleration.y / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5,
-        za: event.acceleration.z / (ACCELERATION_DUE_TO_GRAVITY*2) + 0.5
-      })
-    }
   },
 
   componentWillUnmount: function() { 
-    window.ondevicemotion = undefined;
+  },
+
+  setBrightness: function(e, value) {
+    console.log(value);
+    var rpc = {
+      method: "Screen.SetBrightness",
+      params: [ { percent: value } ],
+      id: { id: 1 /* generate rpc id */, ts: Date.now() },
+    }
+    var start = Date.now();
+    console.log(rpc);
+    this.state.mdc.send("screen", JSON.stringify(rpc), function(service, response) { 
+      console.log("RPC latency: " + (Date.now() - start) + "ms");
+      console.log(response) 
+    });
   },
 
   render: function() {
     return (
       <div>
-        <AppBar title="Accelerometer"  iconElementLeft={<BackButton/>} />
+        <AppBar title="Screen Brightness"  iconElementLeft={<BackButton/>} />
         
-        <Paper>
-          With gravity:
-          <Slider name="x" value={this.state.x} />
-          <Slider name="y" value={this.state.y}  />
-          <Slider name="z" value={this.state.z} />
-        </Paper>
-
-        <Paper>
-          With out gravity:
-          <Slider name="xa" value={this.state.xa} />
-          <Slider name="ya" value={this.state.ya} />
-          <Slider name="za" value={this.state.za} />
-        </Paper>
+        <Slider name="x" onChange={this.setBrightness}/>
       </div>
     );
   }
