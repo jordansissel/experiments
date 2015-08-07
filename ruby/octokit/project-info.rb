@@ -1,32 +1,81 @@
 require 'octokit'
 require "clamp"
+require "time"
+require "json"
+require "elasticsearch"
+
+class Time
+  def to_json(*args)
+    iso8601(3).to_json
+  end
+end
+
+START_TIME = Time.now
+
+def sawyer_hash(s)
+  hash = {}
+  s.to_hash.collect do |key, value|
+    next if key =~ /_url$/
+    next if key =~ /href$/
+    next if value.nil?
+    next if value.respond_to?(:empty?) && value.empty?
+    if value.is_a?(Sawyer::Resource)
+      hash[key] = sawyer_hash(value.to_hash)
+    elsif value.is_a?(Time)
+      hash["#{key}_age"] = START_TIME - value
+      hash[key] = value
+    else
+      hash[key] = value
+    end
+  end
+  hash
+end
 
 class ProjectInfoCLI < Clamp::Command
   option "--github-token", "GITHUB_TOKEN", "Your github auth token", :required => true
-  parameters "ORGANIZATION[/REPO]", "The project(s) for which to gather information"
+  option "--elasticsearch-host", "ELASTICSEARCH_HOST", "", :required => true
+  parameter "ORGANIZATION[/REPO] ...", "The project(s) for which to gather information", :attribute_name => :repository_list
 
   def execute
     Octokit.auto_paginate = true
-    #client.organization_repositories("logstash-plugins")
-    if repository_list.empty?
-      puts "No repository given. Using all repositories in #{organization}"
-      repositories = list_repositories(organization)
-    elsif repository_list.size == 1 && repository_list.first =~ /^\/.*\/$/
-      puts "Using all repositories in #{organization} matching #{repository_list.first}"
-      re = Regexp.new(repository_list.first[1..-2])
-      repositories = list_repositories(organization).grep(re)
-    else
-      repositories = repository_list
+
+    repositories = []
+    repository_list.each do |r|
+      if r.include?("/")
+        repositories << r
+      else
+        repositories += list_repositories(r).map { |proj| "#{r}/#{proj}" }
+      end
     end
 
-    repositories.each do |r|
-      setup_hipchat(organization, r,
-        "room" => hipchat_room,
-        "auth_token" => hipchat_token
-      )
-      setup_clacheck(organization, r)
+    puts "Reviewing #{repositories.count} repositories"
+    repositories.each do |repo|
+      client.pull_requests(repo).tap { |pr| puts "Reviewing #{pr.count} PRs for #{repo}" }.each do |pr|
+        process_pr(repo, pr)
+      end
+      client.issues(repo).tap { |pr| puts "Reviewing #{pr.count} issues for #{repo}" }.each do |issue|
+        process_issue(repo, issue)
+      end
     end
   end
+
+  def process_pr(repo, pr)
+    index("pr", sawyer_hash(pr).tap { |h| h["repository"] = repo })
+  end
+
+  def process_issue(repo, issue)
+    index("issue", sawyer_hash(issue).tap { |h| h["repository"] = repo })
+  end
+
+  def index(name, object)
+    es.index :index => "github-#{name}", :type => name, :id => object["url"], :body => object
+  end
+
+  def es
+    return @es if @es 
+    @es = Elasticsearch::Client.new :host => elasticsearch_host
+  end
+
 
   def client
     return @client if @client
@@ -40,63 +89,5 @@ class ProjectInfoCLI < Clamp::Command
     client.organization_repositories(org).collect { |r| r[:name] }
   end
 
-  def setup_hipchat(org, repo, config, options={})
-    hook_name = "hipchat"
-    full_repo_name = "#{org}/#{repo}"
-    puts "Configuring hipchat hook on #{full_repo_name}."
-    hook_config = {
-      "notify" => 1,
-      "quiet_labels" => 1,
-      "quiet_assigning" => 1,
-    }.merge(config)
-    hook_options = {
-      "events" => HOOK_EVENTS 
-    }.merge(options)
-    raise ArgumentError, "Missing 'auth_token' setting for hipchat" unless hook_config.include?("auth_token")
-    raise ArgumentError, "Missing 'room' setting for hipchat" unless hook_config.include?("room")
-    client.create_hook(full_repo_name, hook_name, hook_config, hook_options)
-
-    # Verify correct events listing
-    hooks = client.hooks(full_repo_name)
-    hipchat_hook = hooks.find { |h| h[:name] == hook_name }
-    if hipchat_hook.nil?
-      raise "No '#{hook_name}' hook found in #{full_repo_name} after creating it? Something is weird."
-    end
-    if hipchat_hook[:events].sort != hook_options["events"].sort
-      puts "Something went wrong with hook event configuration"
-      p "Requested" => hook_options["events"].sort
-      p "Actual" => hipchat_hook[:events].sort
-      p "Difference" => (hook_options["events"].sort - hipchat_hook[:events].sort)
-      raise "Some notification events are missing from the #{hook_name} hook on #{full_repo_name}: "
-    end
-  end
-
-  def setup_clacheck(org, repo)
-    full_repo_name = "#{org}/#{repo}"
-    puts "Configuring clacheck hook on #{full_repo_name}."
-
-    hooks = client.hooks(full_repo_name)
-    existing_hook = hooks.find { |h| h[:name] == "web" && h[:config][:url] == clacheck_url }
-    if existing_hook
-      # Validate it
-      if existing_hook[:config][:content_type] == "json"
-        puts "Skipping: The clacheck hook for #{full_repo_name} is already correctly configured."
-        return
-      end
-
-      # Otherwise, delete it so we can recreate it.
-      puts "Deleting incorrectly configured clacheck hook for #{full_repo_name}"
-      client.remove_hook(full_repo_name, existing_hook.id)
-    end
-
-    hook_config = {
-      "url" => clacheck_url,
-      "content_type" => "json"
-    }
-    hook_options = {
-      "events" => [ "pull_request" ]
-    }
-    puts "Creating clacheck hook for #{full_repo_name}"
-    client.create_hook(full_repo_name, "web", hook_config, hook_options)
-  end
-end.run
+end
+ProjectInfoCLI.run
