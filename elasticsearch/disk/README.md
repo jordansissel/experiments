@@ -1,5 +1,10 @@
 # logstash+elasticsearch storage experiments
 
+----
+
+These results are from an experiment done in 2012 and are irrelevant today.
+
+----
 Problem: Many users observe a 5x inflation of storage data from "raw logs" vs
 logstash data stored in elasticsearch.
 
