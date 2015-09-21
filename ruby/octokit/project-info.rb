@@ -3,6 +3,7 @@ require "clamp"
 require "time"
 require "json"
 require "elasticsearch"
+require "stud/try"
 
 class Time
   def to_json(*args)
@@ -50,11 +51,15 @@ class ProjectInfoCLI < Clamp::Command
 
     puts "Reviewing #{repositories.count} repositories"
     repositories.each do |repo|
-      client.pull_requests(repo).tap { |pr| puts "Reviewing #{pr.count} PRs for #{repo}" }.each do |pr|
-        process_pr(repo, pr)
+      Stud::try(5.times) do
+        client.pull_requests(repo).tap { |pr| puts "Reviewing #{pr.count} PRs for #{repo}" }.each do |pr|
+          process_pr(repo, pr)
+        end
       end
-      client.issues(repo).tap { |pr| puts "Reviewing #{pr.count} issues for #{repo}" }.each do |issue|
-        process_issue(repo, issue)
+      Stud::try(5.times) do
+        client.issues(repo).tap { |pr| puts "Reviewing #{pr.count} issues for #{repo}" }.each do |issue|
+          process_issue(repo, issue)
+        end
       end
     end
   end
