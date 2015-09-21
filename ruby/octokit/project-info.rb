@@ -60,7 +60,26 @@ class ProjectInfoCLI < Clamp::Command
   end
 
   def process_pr(repo, pr)
+    #require "pry"
+    #binding.pry
+
+    if pr.statuses_url
+      pr[:latest_status] ||= {}
+      puts "Checking commit status for #{repo}: #{pr.statuses_url}"
+      statuses = client.get(pr.statuses_url).group_by { |o| o[:context] }
+      latest = statuses.collect { |key, values| [ key, values.sort_by(&:created_at).first ] }
+      latest.each do |key, value|
+        #require "pry"
+        #binding.pry
+        puts "Got commit status #{key}=#{value.state}"
+        pr[:latest_status][key] = value.to_hash
+      end
+    end
     index("pr", sawyer_hash(pr).tap { |h| h["repository"] = repo })
+  rescue => e
+    p :Error => e
+    sleep 1
+    retry
   end
 
   def process_issue(repo, issue)
