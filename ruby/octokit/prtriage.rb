@@ -80,30 +80,21 @@ class PullRequestClassifier < Clamp::Command
     if label?
       # Update the label in Github
 
-      current_labels = client.issue(repo, pr.number).labels.map { |x| x.name }.select { |x| x =~ /^O\(\d+\)$/ }
+      current_labels = client.issue(repo, pr.number).labels.map { |x| x.name }
+      label = "missing cla"
       if cla_result["status"] == "error"
         # CLA check failed; remove all the O(c) labels
-        logger.info("CLA check failed; Removing O(c) labels", :pr => pr.number, :current_labels => current_labels)
-        current_labels.each do |label|
-          client.remove_label(repo, pr.number, label)
+        if !current_labels.include?(label)
+          logger.info("Setting label", :label => label, :pr => pr.number)
+          client.add_labels_to_an_issue(repo, pr.number, [ label ])
         end
       else
-        label = "O(#{weight.to_i})"
-
-        # Remove any existing O(c) labels except for the desired one.
-        current_labels.delete(label)
-
-        if current_labels.any?
-          logger.info("Removing old labels", :pr => pr.number, :current_labels => current_labels)
-          current_labels.each do |label|
-            client.remove_label(repo, pr.number, label)
-          end
+        if current_labels.include?(label)
+          logger.info("Removing label", :label => label, :pr => pr.number)
+          client.remove_label(repo, pr.number, label)
         end
-        logger.info("Setting label", :label => label, :pr => pr.number)
-        client.add_labels_to_an_issue(repo, pr.number, [ label ])
       end
     end
-
   end # def process_pr
 
   def index(es, pr, extra)
