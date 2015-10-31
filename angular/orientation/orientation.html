@@ -1,0 +1,20 @@
+<ul>
+  <li> Alpha: {{ orientation.alpha }} </li>
+  <li> beta: {{ orientation.beta }} </li>
+  <li> Gamma: {{ orientation.gamma }} </li>
+  <li> Last: {{ orientation.lastEvent | date:'yyyy-MM-dd HH:mm:ss.sss Z' }} </li>
+  <li ng-hide="orientation.supported"> Supported: {{ orientation.supported }} </li>
+</ul>
+
+<hr>
+
+  {{ orientation.color() }}
+<div ng-show="orientation.alpha" style="background-color: {{ orientation.color() }}; height:100%;">
+  <pre>
+  hello world 
+  hello world 
+  hello world 
+  hello world 
+  hello world 
+  </pre>
+</div>
