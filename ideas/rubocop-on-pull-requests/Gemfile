@@ -1,0 +1,15 @@
+source "https://rubygems.org"
+gem "clamp"
+gem "octokit"
+gem "git_diff_parser"
+gem "netrc"
+gem "rubocop"
+gem "cabin"
+gem "stud"
+gem "git"
+
+group :development do
+  gem "rspec"
+  gem "pry"
+end
+
