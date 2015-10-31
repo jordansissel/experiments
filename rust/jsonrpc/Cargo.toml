@@ -1,0 +1,7 @@
+[package]
+name = "jsonrpc"
+version = "0.1.0"
+authors = ["Jordan Sissel <jls@semicomplete.com>"]
+
+[dependencies]
+rustc-serialize = "0.3"

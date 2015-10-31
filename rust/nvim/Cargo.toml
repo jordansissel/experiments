@@ -1,0 +1,7 @@
+[package]
+name = "nvim-fiddle"
+version = "0.1.0"
+authors = ["Jordan Sissel <jls@semicomplete.com>"]
+
+[dependencies.msgpack]
+git = "https://github.com/mneumann/rust-msgpack.git"

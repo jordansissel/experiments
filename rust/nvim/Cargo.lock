@@ -1,0 +1,26 @@
+[root]
+name = "nvim-fiddle"
+version = "0.1.0"
+dependencies = [
+ "msgpack 0.1.0 (git+https://github.com/mneumann/rust-msgpack.git)",
+]
+
+[[package]]
+name = "byteorder"
+version = "0.3.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "msgpack"
+version = "0.1.0"
+source = "git+https://github.com/mneumann/rust-msgpack.git#03d7c62191a0aa5fde19a57ceca5925ee0ab4f03"
+dependencies = [
+ "byteorder 0.3.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rustc-serialize"
+version = "0.3.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+

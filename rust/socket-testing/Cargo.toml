@@ -1,0 +1,4 @@
+[package]
+name = "socket-testing"
+version = "0.1.0"
+authors = ["Jordan Sissel <jls@semicomplete.com>"]
