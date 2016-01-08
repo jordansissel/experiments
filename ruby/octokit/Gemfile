@@ -10,3 +10,4 @@ gem "cabin"
 gem "stud"
 gem "pry"
 
+gem "elasticsearch"
