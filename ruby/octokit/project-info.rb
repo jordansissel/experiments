@@ -34,7 +34,7 @@ end
 
 class ProjectInfoCLI < Clamp::Command
   option "--github-token", "GITHUB_TOKEN", "Your github auth token", :required => true
-  option "--elasticsearch-host", "ELASTICSEARCH_HOST", "", :required => true
+  option "--elasticsearch-host", "ELASTICSEARCH_HOST", "The elasticsearch host. This can be a full url like `https://user:pass@host:port/` if you need to use SSL and authentication such as with Elastic Shield.", :required => true
   parameter "ORGANIZATION[/REPO] ...", "The project(s) for which to gather information", :attribute_name => :repository_list
 
   def execute
