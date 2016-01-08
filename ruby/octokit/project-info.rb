@@ -52,12 +52,12 @@ class ProjectInfoCLI < Clamp::Command
     puts "Reviewing #{repositories.count} repositories"
     repositories.each do |repo|
       Stud::try(5.times) do
-        client.pull_requests(repo).tap { |pr| puts "Reviewing #{pr.count} PRs for #{repo}" }.each do |pr|
+        client.pull_requests(repo, state: "all").tap { |pr| puts "Reviewing #{pr.count} PRs for #{repo}" }.each do |pr|
           process_pr(repo, pr)
         end
       end
       Stud::try(5.times) do
-        client.issues(repo).tap { |pr| puts "Reviewing #{pr.count} issues for #{repo}" }.each do |issue|
+        client.issues(repo, state: "all").tap { |pr| puts "Reviewing #{pr.count} issues for #{repo}" }.each do |issue|
           process_issue(repo, issue)
         end
       end
@@ -92,12 +92,12 @@ class ProjectInfoCLI < Clamp::Command
   end
 
   def index(name, object)
-    es.index :index => "github-#{name}", :type => name, :id => object[:url], :body => object
+    es.index(index: "github-#{name}", type: name, id: object[:url], body: object)
   end
 
   def es
     return @es if @es 
-    @es = Elasticsearch::Client.new :host => elasticsearch_host
+    @es = Elasticsearch::Client.new(host: elasticsearch_host)
   end
 
 
