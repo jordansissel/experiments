@@ -92,7 +92,7 @@ class ProjectInfoCLI < Clamp::Command
   end
 
   def index(name, object)
-    es.index :index => "github-#{name}", :type => name, :id => object["url"], :body => object
+    es.index :index => "github-#{name}", :type => name, :id => object[:url], :body => object
   end
 
   def es
