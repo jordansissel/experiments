@@ -9,9 +9,11 @@ cli = Class.new(Clamp::Command) do
                    team_add watch)
 
   option "--github-token", "GITHUB_TOKEN", "Your github auth token", :required => true
-  option "--hipchat-token", "HIPCHAT_TOKEN", "Your hipchat admin auth token", :required => true
-  option "--hipchat-room", "HIPCHAT_ROOM", "The room to send notifications to", :required => true
+  #option "--hipchat-token", "HIPCHAT_TOKEN", "Your hipchat admin auth token", :required => true
+  #option "--hipchat-room", "HIPCHAT_ROOM", "The room to send notifications to", :required => true
   option "--clacheck-url", "CLACHECK_URL", "The url (w/ user+pass) to set for cla checking", :required => true
+  option "--slack-hook-url", "SLACK_HOOK_URL", "The url to send hooks for Slack.", :required => true
+
   parameter "ORGANIZATION", "The github organization"
   parameter "[REPOSITORY] ...", "The repository name"
 
@@ -30,10 +32,11 @@ cli = Class.new(Clamp::Command) do
     end
 
     repositories.each do |r|
-      setup_hipchat(organization, r,
-        "room" => hipchat_room,
-        "auth_token" => hipchat_token
-      )
+      #setup_hipchat(organization, r,
+        #"room" => hipchat_room,
+        #"auth_token" => hipchat_token
+      #)
+      setup_slack(organization, r, slack_hook_url)
       setup_clacheck(organization, r)
     end
   end
@@ -107,6 +110,35 @@ cli = Class.new(Clamp::Command) do
       "events" => [ "pull_request" ]
     }
     puts "Creating clacheck hook for #{full_repo_name}"
+    client.create_hook(full_repo_name, "web", hook_config, hook_options)
+  end
+
+  def setup_slack(org, repo, webhook)
+    full_repo_name = "#{org}/#{repo}"
+    puts "Configuring slack hook on #{full_repo_name}."
+
+    hooks = client.hooks(full_repo_name)
+    existing_hook = hooks.find { |h| h[:name] == "web" && h[:config][:url] == webhook }
+    if existing_hook
+      # Validate it
+      if existing_hook[:config][:content_type] == "json" && existing_hook[:events].sort == HOOK_EVENTS
+        puts "Skipping: The webhook hook for #{full_repo_name} is already correctly configured."
+        return
+      end
+
+      # Otherwise, delete it so we can recreate it.
+      puts "Deleting incorrectly configured webhook hook for #{full_repo_name}"
+      client.remove_hook(full_repo_name, existing_hook.id)
+    end
+
+    hook_config = {
+      "url" => webhook,
+      "content_type" => "json"
+    }
+    hook_options = {
+      "events" => HOOK_EVENTS 
+    }
+    puts "Creating webhook hook for #{full_repo_name}"
     client.create_hook(full_repo_name, "web", hook_config, hook_options)
   end
 end.run
