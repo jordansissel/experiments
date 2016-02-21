@@ -56,11 +56,11 @@ class Stats < Clamp::Command
           team: team,
           games: games.to_i,
           goals: goals.to_i,
-          assists: assists,
-          penalty_time: penalty_time,
+          assists: assists.to_i,
+          penalty_time: penalty_time.to_i,
           level: level,
-          level_num: level_num,
-          season: season,
+          level_num: level_num.to_i,
+          season: season.to_i,
           points: goals.to_i + assists.to_i,
           position: "skater"
         }
