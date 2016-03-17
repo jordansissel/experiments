@@ -28,6 +28,18 @@ class Def < B
   end
 end
 
+class DefCaller < B
+  def debug?
+    LEVELS[@level] >= DEBUG
+  end
+
+  def debug(message)
+    return unless debug?
+    caller[0] # just tell the ruby compiler we're gonna ask for the call stack.
+    @buffer << message
+  end
+end
+
 class DefineMethod < B
   m = :debug
   predicate = "#{m}?".to_sym
@@ -51,9 +63,9 @@ debug_channel = Cabin::Channel.new
 debug_channel.level = :debug
 info_channel = Cabin::Channel.new
 info_channel.level = :info
-objects = [debug_channel, info_channel, Def.new, DefineMethod.new]
+#objects = [debug_channel, info_channel, Def.new, DefineMethod.new]
 #objects = [debug_channel, info_channel]
-#objects = [Def.new, DefineMethod.new]
+objects = [Def.new, DefineMethod.new, DefCaller.new]
 
 msg = "ok"
 Benchmark.bmbm(30) do |x|
