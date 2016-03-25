@@ -11,6 +11,7 @@ require "clamp"
 module RAVEn; end
 class RAVEn::StreamCLI < Clamp::Command
   option "--device", "DEVICE", "Path to the serial port", :default => "/dev/ttyUSB0"
+  option "--elasticsearch-url", "URL", "URL to elasticsearch", :default => "http://localhost:9200/"
   parameter "[SSH_COMMAND] ...", "A command, if any, to ssh to a remote host before running 'cu'", :attribute_name => :ssh_command
 
   def execute
@@ -18,7 +19,7 @@ class RAVEn::StreamCLI < Clamp::Command
   end
 
   def stream
-    es = Elasticsearch::Client.new
+    es = Elasticsearch::Client.new :hosts => elasticsearch_url
     Open3.popen3(*[*ssh_command, "cu", "-l", "/dev/ttyUSB0", "-s", "115200"]) do |stdin, stdout, stderr|
       listener = RAVEn::XML.new do |event|
         p event
