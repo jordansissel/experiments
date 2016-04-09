@@ -32,3 +32,17 @@ function Connect-VM {
         }
     }
 }
+
+function Freeze-VM {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject
+    ) 
+ 
+    Process {
+        foreach ($vm in $InputObject) {
+            Get-VMHardDiskDrive $vm | % { Set-ItemProperty $_.Path -name IsReadOnly -value $true }
+        }
+    }
+}
