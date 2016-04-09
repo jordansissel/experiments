@@ -23,24 +23,54 @@ function Connect-VM {
     [CmdletBinding()]
     Param(
         [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
-        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$inputObject,
+
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name,
+
+        [switch]$ssh
     ) 
  
     Process {
-        foreach ($vm in $InputObject) {
-           & vmconnect.exe  localhost $vm.Name -G $vm.Id.Guid
+        if ($Name) {
+          $inputObject = Get-VM -Name $Name -ErrorAction Stop
+        }
+
+        foreach ($vm in $inputObject) {
+            if ($ssh) {
+                $mac = (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
+                $ipv6 = Compute-EUI64($mac)
+                echo $ipv6
+                & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
+            } else {
+                & vmconnect.exe  localhost $vm.Name -G $vm.Id.Guid
+            }
         }
     }
+}
+
+function Compute-EUI64([string]$mac) {
+  # To compute EUI-64, we have to invert the 2nd bit.
+  $highbytemunged = (("0x{0}" -f $mac.Substring(0,2)) -as [int]) -bxor 0x2
+  $highbytehex = "{0:x2}" -f $highbytemunged
+  
+  return [string]::Format("FE80::{0}{1}:{2}ff:fe{3}:{4}", $highbytehex, $mac.Substring(2,2), $mac.Substring(4,2), $mac.Substring(6,2), $mac.Substring(8)) 
 }
 
 function Freeze-VM {
     [CmdletBinding()]
     Param(
         [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
-        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject,
+        
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name
     ) 
  
     Process {
+        if ($Name) {
+          $inputObject = Get-VM -Name $Name
+        }
         foreach ($vm in $InputObject) {
             Get-VMHardDiskDrive $vm | % { Set-ItemProperty $_.Path -name IsReadOnly -value $true }
         }
