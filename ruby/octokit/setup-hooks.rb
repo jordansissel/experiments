@@ -38,6 +38,7 @@ cli = Class.new(Clamp::Command) do
       #)
       setup_slack(organization, r, slack_hook_url)
       setup_clacheck(organization, r)
+      remove_old_hooks(organization, r)
     end
   end
 
@@ -140,5 +141,17 @@ cli = Class.new(Clamp::Command) do
     }
     puts "Creating webhook hook for #{full_repo_name}"
     client.create_hook(full_repo_name, "web", hook_config, hook_options)
+  end
+
+
+  def remove_old_hooks(org, repo)
+    full_repo_name = "#{org}/#{repo}"
+    hooks = client.hooks(full_repo_name)
+
+    jenkins = hooks.find { |h| h[:name] == "jenkins" }
+    if jenkins
+      puts "Deleting old jenkins hook from #{full_repo_name}"
+      client.remove_hook(full_repo_name, jenkins.id)
+    end
   end
 end.run
