@@ -40,10 +40,9 @@ function Connect-VM {
             if ($ssh) {
                 $mac = (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
                 $ipv6 = Compute-EUI64($mac)
-                echo $ipv6
                 & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
             } else {
-                & vmconnect.exe  localhost $vm.Name -G $vm.Id.Guid
+                & vmconnect.exe localhost $vm.Name -G $vm.Id.Guid
             }
         }
     }
@@ -73,6 +72,26 @@ function Freeze-VM {
         }
         foreach ($vm in $InputObject) {
             Get-VMHardDiskDrive $vm | % { Set-ItemProperty $_.Path -name IsReadOnly -value $true }
+        }
+    }
+}
+
+function Thaw-VM {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject,
+        
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name
+    ) 
+ 
+    Process {
+        if ($Name) {
+          $inputObject = Get-VM -Name $Name
+        }
+        foreach ($vm in $InputObject) {
+            Get-VMHardDiskDrive $vm | % { Set-ItemProperty $_.Path -name IsReadOnly -value $false }
         }
     }
 }
