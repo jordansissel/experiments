@@ -148,10 +148,12 @@ cli = Class.new(Clamp::Command) do
     full_repo_name = "#{org}/#{repo}"
     hooks = client.hooks(full_repo_name)
 
-    jenkins = hooks.find { |h| h[:name] == "jenkins" }
-    if jenkins
-      puts "Deleting old jenkins hook from #{full_repo_name}"
-      client.remove_hook(full_repo_name, jenkins.id)
+    [ "jenkins", "hipchat" ].each do |name| 
+      hook = hooks.find { |h| h[:name] == name }
+      if hook
+        puts "Removing old #{name} hook from #{full_repo_name}"
+        client.remove_hook(full_repo_name, hook.id)
+      end
     end
   end
 end.run
