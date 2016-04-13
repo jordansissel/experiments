@@ -43,7 +43,7 @@ function Connect-VM {
                 $ipv6 = Compute-EUI64($mac)
                 & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
             } else {
-                & vmconnect.exe localhost $vm.Name -G $vm.Id.Guid
+                & vmconnect.exe $vm.ComputerName $vm.Name -G $vm.Id.Guid
             }
         }
     }
