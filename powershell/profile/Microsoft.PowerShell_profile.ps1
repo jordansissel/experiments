@@ -1,3 +1,4 @@
+Import-Module Hyper-V
 function Clone-VM($parent, $suffix) {
         $diskpath='C:\users\public\documents\hyper-v\Virtual hard disks'
 
