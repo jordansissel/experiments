@@ -96,3 +96,13 @@ function Thaw-VM {
         }
     }
 }
+
+function Remove-VMClone($parent, $suffix) {
+    $vm = "$parent - $suffix"
+    Get-VM $vm | Stop-VM -Passthru | Get-VMHardDiskDrive | Remove-Item
+    Get-VM $vm | Remove-VM
+}
+
+function Suspend-Computer {
+    [System.Windows.Forms.Application]::SetSuspendState([System.Windows.Forms.PowerState]::Suspend, $false, $false)
+}
