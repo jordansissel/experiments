@@ -28,7 +28,8 @@ function Connect-VM {
         [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
         [string]$Name,
 
-        [switch]$ssh
+        [switch]$ssh,
+        [string]$user
     ) 
  
     Process {
@@ -40,7 +41,11 @@ function Connect-VM {
             if ($ssh) {
                 $mac = (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
                 $ipv6 = Compute-EUI64($mac)
-                & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
+                if ($user) {
+                    & 'C:\Program Files (x86)\PuTTY\putty.exe' $user@$ipv6
+                } else {
+                    & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
+                }
             } else {
                 & vmconnect.exe $vm.ComputerName $vm.Name -G $vm.Id.Guid
             }
