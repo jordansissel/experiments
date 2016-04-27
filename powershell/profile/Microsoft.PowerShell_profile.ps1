@@ -6,8 +6,7 @@ function Clone-VM($parent, $suffix) {
         $disk="$diskpath\$vm.vhdx"
 
         # Stop/purge the vm if it exists already
-        Get-VM $vm | Stop-VM -Passthru | Remove-VM
-        Remove-Item $disk
+        Remove-VMClone $parent $suffix
 
         # Create a new differencing drive against the parent vm's drive.
         $parentdisk=(Get-VMHardDiskDrive $parent).Path
