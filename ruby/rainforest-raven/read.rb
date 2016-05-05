@@ -3,6 +3,7 @@
 require "rexml/parsers/streamparser"
 require "rexml/document"
 require "open3"
+require "cabin"
 
 require "time" # for Time#iso8601
 require "elasticsearch"
@@ -15,27 +16,49 @@ class RAVEn::StreamCLI < Clamp::Command
   parameter "[SSH_COMMAND] ...", "A command, if any, to ssh to a remote host before running 'cu'", :attribute_name => :ssh_command
 
   def execute
+    logger.subscribe(STDOUT)
+    logger.level = :info
     stream while true
   end
 
+  def logger
+    @logger ||= Cabin::Channel.get
+  end
+
   def stream
+    queue = Queue.new
+    r = Thread.new { receive(queue) while true } 
+    s = Thread.new { ship(queue) while true } 
+    s.join
+    r.join
+  end
+
+  def ship(queue)
     es = Elasticsearch::Client.new :hosts => elasticsearch_url
+
+    while true
+      event = queue.pop
+      index = Time.now.utc.strftime("logstash-whack-%Y-%m-%d")
+      @logger.info("Shipping to Elasticsearch", :index => index, :body => event)
+      es.index(:index => index, :type => "power", :body => event)
+    end
+  end
+
+  def receive(queue)
     Open3.popen3(*[*ssh_command, "cu", "-l", "/dev/ttyUSB0", "-s", "115200"]) do |stdin, stdout, stderr|
       listener = RAVEn::XML.new do |event|
-        p event
-        index = Time.now.utc.strftime("logstash-whack-%Y-%m-%d")
-        es.index(:index => index, :type => "power", :body => event)
+        logger.info("Got RAVEn event", :event => event)
+        queue << event
       end
 
       begin
-        Thread.new { IO::copy_stream(stderr, $stderr) }
         parser = REXML::Parsers::StreamParser.new(stdout, listener)
         parser.parse
       rescue => e
+        logger.error("An error occurred while streaming", :exception => e.class.name, :message => e.message)
         stdin.close rescue nil
         stdout.close rescue nil
         stderr.close rescue nil
-        raise
       end
     end
   end
@@ -81,6 +104,7 @@ class RAVEn::XML
   #end
 
   def process_document(element)
+    #puts element.to_s
     #now = Time.now
     #now_str = n.strftime("%Y-%m-%dT%H:%M:%S.%%03s%z") % (n.tv_usec / 1000)
     now_str = Time.now.utc.iso8601(3)
@@ -107,6 +131,13 @@ class RAVEn::XML
 
       watts = (((demand + 0.0) * multiplier) / divisor) * 1000.0
       event["watts"] = watts
+    when "PriceCluster"
+      price = REXML::XPath.first(element, "/PriceCluster/Price/text()").value.to_i(16)
+      trailingdigits = REXML::XPath.first(element, "/PriceCluster/TrailingDigits/text()").value.to_i(16)
+
+      event["price_dollars"] = price.to_f / (10 ** trailingdigits)
+      event["tier_number"] = REXML::XPath.first(element, "/PriceCluster/Tier/text()").value.to_i(16)
+      event["currency_number"] = REXML::XPath.first(element, "/PriceCluster/Currency/text()").value.to_i(16)
     end
 
     # Obscure unnecessary info
