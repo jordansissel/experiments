@@ -2,11 +2,11 @@ Import-Module Hyper-V
 function Clone-VM($parent, $suffix) {
         $diskpath='C:\users\public\documents\hyper-v\Virtual hard disks'
 
-        $vm = "$parent - $suffix"
-        $disk="$diskpath\$vm.vhdx"
+        $name = "$parent - $suffix"
+        $disk="$diskpath\$name.vhdx"
 
         # Stop/purge the vm if it exists already
-        Remove-VMClone $parent $suffix
+        Remove-VMClone $name
 
         # Create a new differencing drive against the parent vm's drive.
         $parentdisk=(Get-VMHardDiskDrive $parent).Path
@@ -16,7 +16,10 @@ function Clone-VM($parent, $suffix) {
         $parentswitch=(Get-VMNetworkAdapter $parent).SwitchName
 
         # Create a new VM and start it.
-        New-VM $vm -MemoryStartupBytes 1GB -ProcessorCount 2 -MemoryMaximumBytes 1GB -VHDPath $disk -SwitchName $parentswitch | Start-VM -Passthru | Connect-VM
+        New-VM $name -VHDPath $disk -SwitchName $parentswitch | 
+          Set-VM -Passthru -MemoryStartupBytes 1GB -ProcessorCount 2 -MemoryMaximumBytes 1GB |
+          Set-VM -Passthru -Notes "clone" |
+          Start-VM -Passthru | Connect-VM
 }
 
 function Connect-VM {
@@ -39,8 +42,7 @@ function Connect-VM {
 
         foreach ($vm in $inputObject) {
             if ($ssh) {
-                $mac = (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
-                $ipv6 = Compute-EUI64($mac)
+                $ipv6 = Get-VMIPv6Address $vm
                 if ($user) {
                     & 'C:\Program Files (x86)\PuTTY\putty.exe' $user@$ipv6
                 } else {
@@ -51,6 +53,10 @@ function Connect-VM {
             }
         }
     }
+}
+
+function Get-VMIPv6Address($vm) {
+  Compute-EUI64 (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
 }
 
 function Compute-EUI64([string]$mac) {
@@ -101,10 +107,30 @@ function Thaw-VM {
     }
 }
 
-function Remove-VMClone($parent, $suffix) {
-    $vm = "$parent - $suffix"
-    Get-VM $vm | Stop-VM -TurnOff -Passthru | Get-VMHardDiskDrive | Remove-Item
-    Get-VM $vm | Remove-VM
+function Remove-VMClone {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$InputObject,
+        
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name
+    ) 
+ 
+    Process {
+        if ($Name) {
+          $inputObject = Get-VM -Name $Name
+        }
+        foreach ($vm in $InputObject) {
+            if ($vm.Notes -eq "clone") {
+                Stop-VM -TurnOff -Passthru $vm | Get-VMHardDiskDrive | Remove-Item
+                Remove-VM $vm
+            } else {
+                Write-Warning ("VM '{0}' is not a clone. I will not delete it." -f $vm.Name)
+            }
+        }
+    }
+
 }
 
 function Suspend-Computer {
