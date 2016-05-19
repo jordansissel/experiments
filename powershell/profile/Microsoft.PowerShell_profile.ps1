@@ -16,7 +16,7 @@ function Clone-VM($parent, $suffix) {
         $parentswitch=(Get-VMNetworkAdapter $parent).SwitchName
 
         # Create a new VM and start it.
-        New-VM $vm -MemoryStartupBytes 1GB -VHDPath $disk -SwitchName $parentswitch | Start-VM -Passthru | Connect-VM
+        New-VM $vm -MemoryStartupBytes 1GB -ProcessorCount 2 -MemoryMaximumBytes 1GB -VHDPath $disk -SwitchName $parentswitch | Start-VM -Passthru | Connect-VM
 }
 
 function Connect-VM {
@@ -103,7 +103,7 @@ function Thaw-VM {
 
 function Remove-VMClone($parent, $suffix) {
     $vm = "$parent - $suffix"
-    Get-VM $vm | Stop-VM -Passthru | Get-VMHardDiskDrive | Remove-Item
+    Get-VM $vm | Stop-VM -TurnOff -Passthru | Get-VMHardDiskDrive | Remove-Item
     Get-VM $vm | Remove-VM
 }
 
