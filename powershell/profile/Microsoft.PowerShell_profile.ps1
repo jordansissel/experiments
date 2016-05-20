@@ -19,7 +19,7 @@ function Clone-VM($parent, $suffix) {
         New-VM $name -VHDPath $disk -SwitchName $parentswitch | 
           Set-VM -Passthru -MemoryStartupBytes 1GB -ProcessorCount 2 -MemoryMaximumBytes 1GB |
           Set-VM -Passthru -Notes "clone" |
-          Start-VM -Passthru | Connect-VM
+          Start-VM
 }
 
 function Connect-VM {
