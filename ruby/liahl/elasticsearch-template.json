@@ -1,5 +1,5 @@
 {
-  "template" : "hockey",
+  "template" : "hockey-events",
   "settings" : {
     "index.refresh_interval" : "5s"
   },
@@ -25,25 +25,7 @@
                }
            }
          }
-       } ],
-       "properties" : {
-         "@version": { "type": "string", "index": "not_analyzed" },
-         "geoip"  : {
-           "type" : "object",
-             "dynamic": true,
-             "properties" : {
-               "location" : { "type" : "geo_point" }
-             }
-         },
-         "games": { "type": "long" },
-         "level_num": { "type": "long" },
-         "goals": { "type": "long" },
-         "assists": { "type": "long" },
-         "goals_against": { "type": "long" },
-         "shots": { "type": "long" },
-         "points": { "type": "long" },
-         "penalty_time": { "type": "long" }
-       }
+       } ]
     }
   }
 }
