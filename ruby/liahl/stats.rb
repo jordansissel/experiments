@@ -213,6 +213,8 @@ class Stats < Clamp::Command
     end
   rescue => e
     logger.error("Failure fetching docs", error: e, stack: e.backtrace)
+    require "pry"
+    binding.pry
     sleep 1
     retry
   end

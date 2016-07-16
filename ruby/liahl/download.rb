@@ -44,6 +44,7 @@ class LIAHLDownload < Clamp::Command
         expire_time = Time.now - 60*60*24
 
         missing += result["docs"].select do |doc| 
+          next unless doc["found"]
           next unless doc["_source"]["url"] =~ /display-schedule/
           time = Time.parse(doc["_source"]["fetched_at"])
           puts "Expired: #{time < expire_time} / #{expire_time} / #{time} / #{doc["_source"]["url"] }"
