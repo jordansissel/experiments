@@ -244,7 +244,7 @@ class Stats < Clamp::Command
     end.flatten.uniq
   end
 
-  def process_game(es, game, game_id, type)
+  def process_game(es, game, game_id, type, season)
     level = game.xpath("//td[contains(text(),'Level:')]").first.text.sub(/^Level:\s*/, "")
     date = game.xpath("//td[contains(text(),'Date:')]").first.text.sub(/^Date:\s*/, "")
     location = game.xpath("//td[contains(text(),'Location:')]").first.text.sub(/^Location:\s*/, "")
@@ -287,7 +287,8 @@ class Stats < Clamp::Command
       referees: refs,
       location: location,
       game: game_id,
-      game_type: type
+      game_type: type,
+      season: season
     }
 
 
@@ -403,7 +404,7 @@ class Stats < Clamp::Command
     logger.level = :info
 
     seasons = (35..35)
-    seasons.each do |s| 
+    seasons.to_a.reverse.each do |s| 
       matches = find_games_in_season(s)
       next if matches.nil?
       game_urls = matches.collect(&:url)
@@ -413,7 +414,7 @@ class Stats < Clamp::Command
       events = games.zip(matches).pmap(WORKERS) do |html, match|
         game = Nokogiri::HTML(html)
         game_id = CGI.parse(URI.parse(match.url).query)["game_id"].first.to_i
-        process_game(es, game, game_id, match.type)
+        process_game(es, game, game_id, match.type, s)
       end.flatten.reject(&:empty?)
 
       bulk = events.each_with_index.collect do |event, i|
