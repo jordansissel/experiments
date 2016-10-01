@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
+import java.security.cert.Certificate;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
@@ -22,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.io.FileNotFoundException;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -36,7 +38,7 @@ import javax.net.ssl.X509ExtendedTrustManager;
 import javax.security.auth.x500.X500Principal;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.CertificateException;
-
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.logging.log4j.Logger;
 
 public class SSL {
@@ -106,19 +108,19 @@ public class SSL {
     return (SSLSocket)socket_factory.createSocket(socket, hostname, port, true);
   } // createSSLSocket
 
-  static void verifyHostname(SSLSession session, String hostname) {
-    //System.out.printf("Let's do hostname verification, now.\n");
-    HostnameVerifier hv = HttpsURLConnection.getDefaultHostnameVerifier();
+  static void verifyHostname(SSLSession session, String hostname) throws SSLException {
+    DefaultHostnameVerifier hv = new DefaultHostnameVerifier();
 
-    for (String n : session.getValueNames()) {
-      System.out.printf("session[%s] = %s\n", n, session.getValue(n));
-    }
-
-    if (hv.verify(hostname, session)) {
+    try {
+      Certificate[] certs = session.getPeerCertificates();
+      hv.verify(hostname, (X509Certificate)certs[0]);
       System.out.printf("Hostname verification OK\n");
-    } else {
-      System.out.printf("Hostname verification failed\n");
+    } catch (SSLPeerUnverifiedException e) {
+      System.out.printf("Couldn't verify the connection: %s\n", e);
+    } catch (SSLException e) {
+      System.out.printf("Hostname verification failed: %s\n", e);
       diagnoseHostnameVerification(session, hostname);
+      throw e;
     }
   } // verifyHostname
 
@@ -172,7 +174,7 @@ public class SSL {
         }
       }
     }
-  }
+  } // diagnoseHostnameVerification
 
   static void checkIfURLWillWork(String hostname, int port, SSLContext ctx) {
     HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
@@ -212,7 +214,7 @@ public class SSL {
       return;
     }
 
-    checkIfURLWillWork(hostname, port, ctx);
+    //checkIfURLWillWork(hostname, port, ctx);
 
     InetAddress[] addresses;
     try {
@@ -223,15 +225,13 @@ public class SSL {
     }
 
     for (InetAddress a : addresses) {
-      checkAddress(ctx, a, port);
+      checkAddress(ctx, hostname, a, port);
     }
   } // check
 
-  static void checkAddress(SSLContext ctx, InetAddress address, int port) {
-    System.out.printf("Checking address: %s\n", address);
-
+  static void checkAddress(SSLContext ctx, String hostname, InetAddress address, int port) {
     Socket socket;
-    String hostname = address.getHostName();
+    System.out.printf("Checking address: %s [%s]\n", address, hostname);
     try {
       socket = new Socket();
       socket.connect(new InetSocketAddress(address, port), 1000);
@@ -248,6 +248,7 @@ public class SSL {
       ssl_socket.close();
     } catch (Throwable e){
       System.out.printf("O_o: %s\n", e);
+      e.printStackTrace(System.out);
       // Something went wrong with the SSL handshake or a connection problem.
     } 
   }
