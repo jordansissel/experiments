@@ -1,0 +1,11 @@
+apply plugin: "java"
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  runtime 'org.apache.logging.log4j:log4j-api:2.6.2'
+  compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+  compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+}
