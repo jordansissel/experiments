@@ -1,4 +1,7 @@
 apply plugin: "java"
+apply plugin: "application"
+
+mainClassName = "com.semicomplete.ssl.Main"
 
 repositories {
   mavenCentral()
@@ -11,5 +14,12 @@ dependencies {
   runtime group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
   testCompile 'junit:junit:4.12'
-
 }
+
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/libs"
+    from configurations.runtime
+}
+
+build.dependsOn(copyToLib)
