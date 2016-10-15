@@ -16,12 +16,16 @@ import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class SSLContextBuilder {
   private KeyStore trustStore;
   private KeyStore keyStore;
   private SecureRandom random = new SecureRandom();
   private String keyManagerAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
   private String trustManagerAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+  private final Logger logger = LogManager.getLogger();
 
   public SSLContextBuilder setKeyStore(KeyStore keyStore) {
     this.keyStore = keyStore;
@@ -35,17 +39,29 @@ public class SSLContextBuilder {
 
   public SSLContext build() throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
     SSLContext ctx = SSLContext.getInstance("TLS");
-    KeyManagerFactory kmf = KeyManagerFactory.getInstance(keyManagerAlgorithm);
-    TrustManagerFactory tmf = TrustManagerFactory.getInstance(trustManagerAlgorithm);
+    KeyManager[] kms = null;
+    TrustManager[] tms = null;
 
-    //System.out.printf("build(): ks: %s; ts: %s\n", keyStore, trustStore);
-    //for (Enumeration<String> e = trustStore.aliases(); e.hasMoreElements();) {
-      //X509Certificate cert = (X509Certificate) trustStore.getCertificate(e.nextElement());
-      //System.out.printf("trust: %s\n", cert);
-    //}
-    kmf.init(keyStore, null);
-    tmf.init(trustStore);
-    ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), random);
+    if (keyStore != null) {
+      KeyManagerFactory kmf = null;
+      kmf = KeyManagerFactory.getInstance(keyManagerAlgorithm);
+      kmf.init(keyStore, null);
+      kms = kmf.getKeyManagers();
+    }
+
+    if (trustStore != null) {
+      TrustManagerFactory tmf = null;
+      tmf = TrustManagerFactory.getInstance(trustManagerAlgorithm);
+      tmf.init(trustStore);
+      tms = tmf.getTrustManagers();
+      // TODO(sissel): Wrap `tms` entries with a custom trust manager so we can log the certificate chain.
+      // Seems like basically we can just do delegation + logging
+      // https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/X509TrustManager.html
+    }
+
+    logger.trace("Building SSLContext with trust: key:{}, trust:{}", kms, tms);
+
+    ctx.init(kms, tms, random);
     return ctx;
   }
 } // SSLContextBuilder

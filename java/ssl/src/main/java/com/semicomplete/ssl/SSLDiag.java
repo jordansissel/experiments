@@ -39,6 +39,11 @@ public class SSLDiag {
 
   private SSLContext ctx;
 
+  public SSLDiag(SSLContext ctx) {
+    this.ctx = ctx;
+  }
+
+
   public SSLDiag(KeyStore keyStore, KeyStore trustStore) throws UnknownHostException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
     this.trustStore = trustStore;
     this.keyStore = keyStore;
@@ -56,11 +61,16 @@ public class SSLDiag {
     }
   }
 
-  public void tryssl(InetSocketAddress address, String name) throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
-    tryssl(address, name, 1000); // 1-second connect timeout
+  public SSLReportBuilder tryssl(InetSocketAddress address, String name) {
+    return tryssl(address, name, 1000); // 1-second connect timeout
   } 
   
-  public void tryssl(InetSocketAddress address, String name, int timeout) throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
+  public SSLReportBuilder tryssl(InetSocketAddress address, String name, int timeout) {
+    SSLReportBuilder srb = new SSLReportBuilder();
+    srb.setSSLContext(ctx);
+    srb.setHostname(name);
+    srb.setAddress(address);
+
     logger.debug("Trying {} (expected hostname {})", address, name);
     Socket socket = new Socket();
     try {
@@ -69,30 +79,42 @@ public class SSLDiag {
       logger.debug("Connection successful to {}", address);
     } catch (ConnectException e) {
       logger.debug("Connection failed to {}: {}", address, e);
-      throw new ConnectException(String.format("Failed connecting to %s. %s", address, e));
+      srb.setFailed(e);
+      return srb;
     } catch (IOException e) {
       logger.error("Failed connecting to {}: {}", address, e);
-      throw e;
+      srb.setFailed(e);
+      return srb;
     }
 
-    tryssl(socket, name);
+    tryssl(srb, socket, name);
+    return srb;
   }
 
-  public void tryssl(Socket socket, String name) throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
+  public void tryssl(SSLReportBuilder srb, Socket socket, String name) {
     SSLSocketFactory socket_factory = ctx.getSocketFactory();
     
     SSLSocket ssl_socket;
     InetSocketAddress address = (InetSocketAddress)socket.getRemoteSocketAddress();
-    ssl_socket = (SSLSocket)socket_factory.createSocket(socket, name, address.getPort(), true);
+
+    try {
+      ssl_socket = (SSLSocket)socket_factory.createSocket(socket, name, address.getPort(), true);
+    } catch (IOException e) {
+      srb.setFailed(e);
+      return;
+    }
     try {
       ssl_socket.startHandshake();
       logger.info("SSL Handshake successful to {}", address);
     } catch (SSLHandshakeException e) {
+      srb.setFailed(new HandshakeProblem("Problem during SSL/TLS handshake", ssl_socket.getHandshakeSession()));
       Throwable cause = Blame.get(e);
-      logger.error("SSL Handshake failed: [{}] {}", cause.getClass(), cause.getMessage());
+      logger.warn("SSL Handshake failed: [{}] {}", cause.getClass(), cause.getMessage());
     } catch (IOException e) {
-      logger.error("Failed in SSL handshake to {}: {}", address, e);
-      throw e;
+      logger.warn("Failed in SSL handshake to {}: {}", address, e);
+      srb.setFailed(e);
     }
+
+    return;
   }
 }

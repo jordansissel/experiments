@@ -1,25 +1,31 @@
 apply plugin: "java"
-apply plugin: "application"
-
-mainClassName = "com.semicomplete.ssl.Main"
+apply plugin: 'distribution'
 
 repositories {
   mavenCentral()
 }
 
+
 dependencies {
   runtime 'org.apache.logging.log4j:log4j-api:2.6.2'
   compile 'org.apache.logging.log4j:log4j-api:2.6.2'
   compile 'org.apache.logging.log4j:log4j-core:2.6.2'
-  runtime group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+  //runtime group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+  //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
   testCompile 'junit:junit:4.12'
 }
 
-
 task copyToLib(type: Copy) {
-    into "$buildDir/output/libs"
+    into "$buildDir/libs"
     from configurations.runtime
 }
+
+task run(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = "com.semicomplete.ssl.Main"
+  args = [ "--keystore", "ks", "www.semicomplete.com", "443" ]
+  standardInput = System.in
+}
+
 
 build.dependsOn(copyToLib)
