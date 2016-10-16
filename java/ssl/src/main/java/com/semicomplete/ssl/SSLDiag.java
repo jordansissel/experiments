@@ -1,6 +1,8 @@
 package com.semicomplete.ssl;
 
 import com.semicomplete.Resolver;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateException;
 import com.semicomplete.Blame;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -39,8 +41,11 @@ public class SSLDiag {
 
   private SSLContext ctx;
 
-  public SSLDiag(SSLContext ctx) {
-    this.ctx = ctx;
+  private PeerCertificateDetails peerCertificateResult;
+
+  public SSLDiag(SSLContextBuilder cb) throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    cb.setTracker(this::setPeerCertificateResult);
+    ctx = cb.build();
   }
 
 
@@ -51,8 +56,13 @@ public class SSLDiag {
     SSLContextBuilder ctxbuilder = new SSLContextBuilder();
     ctxbuilder.setTrustStore(trustStore);
     ctxbuilder.setKeyStore(keyStore);
+    ctxbuilder.setTracker(this::setPeerCertificateResult);
 
     ctx = ctxbuilder.build();
+  }
+
+  public void setPeerCertificateResult(X509Certificate[] chain, String authType, Throwable exception) {
+    peerCertificateResult = new PeerCertificateDetails(chain, authType, exception);
   }
 
   public void tryssl(String hostname, int port) throws UnknownHostException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
@@ -107,7 +117,7 @@ public class SSLDiag {
       ssl_socket.startHandshake();
       logger.info("SSL Handshake successful to {}", address);
     } catch (SSLHandshakeException e) {
-      srb.setFailed(new HandshakeProblem("Problem during SSL/TLS handshake", ssl_socket.getHandshakeSession()));
+      srb.setFailed(new HandshakeProblem(e.getMessage(), ssl_socket.getHandshakeSession(), peerCertificateResult));
       Throwable cause = Blame.get(e);
       logger.warn("SSL Handshake failed: [{}] {}", cause.getClass(), cause.getMessage());
     } catch (IOException e) {
