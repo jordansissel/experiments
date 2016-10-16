@@ -98,6 +98,10 @@ public class Main {
     Iterator<String> i = Arrays.asList(args).iterator();
     List<String> remainder = parseFlags(cb, i);
 
+    if (keystore == null) {
+      loadDefaultKeyStore(cb);
+    }
+
     logger.info("Trusting {} certificates", keystoreTrustedCertificates(keystore).size());
     cb.setTrustStore(keystore);
     //cb.setKeyStore(keystore);
@@ -111,13 +115,9 @@ public class Main {
     final int port;
 
     if (remainder.size() == 2) {
-      port = Integer.parseInt(args[1]);
+      port = Integer.parseInt(remainder.get(1));
     } else {
       port = 443;
-    }
-
-    if (keystore == null) {
-      loadDefaultKeyStore(cb);
     }
 
     SSLDiag diag;
