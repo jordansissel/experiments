@@ -2,6 +2,8 @@ package com.semicomplete.ssl;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.util.Collections;
 import java.security.UnrecoverableKeyException;
+import java.security.InvalidKeyException;
+import java.security.SignatureException;
 import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.cert.CertificateFactory;
@@ -10,6 +12,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateParsingException;
 import javax.net.ssl.SSLSession;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 
@@ -169,7 +172,22 @@ public class Main {
     System.out.printf("  Certificate Diagnostic\n");
     System.out.printf("  Summary: My keystore has %d trusted certificates, but none of them allow this server to be trusted.\n", trusted.size());
     System.out.printf("\n");
-    System.out.printf("  Server presented me with a chain of %d certs.\n", chain.length);
+
+    if (chain.length == 1) { // Self-signed
+      //System.out.println(chain[0].getSubjectX500Principal());
+      //System.out.println(chain[0].getIssuerX500Principal());
+      //try {
+        //chain[0].verify(chain[0].getPublicKey());
+      //} catch (CertificateException|NoSuchAlgorithmException|InvalidKeyException|NoSuchProviderException|SignatureException e) {
+        //System.out.printf("  Certificate signature failed?\n");
+      //}
+
+      if (chain[0].getSubjectX500Principal().equals(chain[0].getIssuerX500Principal())) {
+        System.out.printf("  Server identified itself with a self-signed certificate\n");
+      }
+    } else {
+      System.out.printf("  Server identified itself with a chain of %d certs.\n", chain.length);
+    }
 
     for (X509Certificate cert : chain) {
       System.out.printf("  subject: %s\n", cert.getSubjectX500Principal());
