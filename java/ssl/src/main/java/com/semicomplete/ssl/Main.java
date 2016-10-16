@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.security.UnrecoverableKeyException;
 import java.nio.file.Paths;
 import java.security.KeyManagementException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateParsingException;
@@ -181,6 +182,7 @@ public class Main {
           for (String name : ipAddresses) {
             logger.info("iPAddress: {}", name);
           }
+          subjectAlts.stream().forEach(san -> logger.info("{}: {}", san.get(0), san.get(1)));
         }
       } catch (CertificateParsingException e) {
 
@@ -202,15 +204,20 @@ public class Main {
 flagIteration:
     while (i.hasNext()) {
       String entry = i.next();
+      String arg;
       switch (entry) {
+        case "--capath":
+          arg = i.next();
+          parseCAPath(cb, arg);
+          break;
         case "--keystore":
-          String path = i.next();
-          parseKeyStore(cb, path);
+          arg = i.next();
+          parseKeyStore(cb, arg);
           break;
         case "--log-level":
-          String level = i.next();
+          arg = i.next();
           LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-          ctx.getConfiguration().getLoggerConfig("com.semicomplete").setLevel(Level.valueOf(level));
+          ctx.getConfiguration().getLoggerConfig("com.semicomplete").setLevel(Level.valueOf(arg));
           ctx.updateLoggers();
           break;
         case "--":
@@ -235,6 +242,41 @@ flagIteration:
     loadKeyStore(cb, defaultKeyStorePath, defaultKeyStorePassphrase);
   }
 
+  public void parseCAPath(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
+    logger.info("Loading CA certs: {}", path);
+    CertificateFactory cf;
+
+    if (keystore == null) {
+      initKeystore();
+    }
+    
+    try {
+      cf = CertificateFactory.getInstance("X.509");
+    } catch (CertificateException e) {
+      throw new Bug("CertificateFactory.getInstance failed", e);
+    }
+    FileInputStream in;
+
+    try {
+      in = new FileInputStream(path);
+    } catch (FileNotFoundException e) {
+      throw new ConfigurationProblem("Cannot load CA certs from " + path, e);
+    }
+
+    try {
+      for (Certificate cert : cf.generateCertificates(in)) {
+        String alias = ((X509Certificate)cert).getSubjectX500Principal().toString();
+        try {
+          keystore.setCertificateEntry(alias, cert);
+        } catch (KeyStoreException e) {
+          logger.fatal("Failed adding certificate to truststore: " + alias, e);
+        }
+      }
+    } catch (CertificateException e) {
+      throw new ConfigurationProblem("Failure while reading certs from " + path + ": " + e.getMessage(), e);
+    }
+  }
+
   public void parseKeyStore(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
     System.out.printf("Enter passphrase for keystore %s: ", path);
     char[] passphrase = System.console().readPassword();
@@ -244,12 +286,25 @@ flagIteration:
     // live long in memory.
     Arrays.fill(passphrase, (char)0);
   }
-
-  public void loadKeyStore(SSLContextBuilder cb, String path, char[] passphrase) throws Bug, ConfigurationProblem {
+  
+  private void initKeystore() throws Bug{
     try {
       keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+
+      // Per javadocs, "To create an empty keystore" pass null
+      try {
+        keystore.load(null, null);
+      } catch (NoSuchAlgorithmException|IOException|CertificateException e) {
+        throw new Bug("Something went wrong initializing the keystore", e);
+      }
     } catch (KeyStoreException e) {
       throw new Bug("Something went wrong getting a KeyStore instance", e);
+    }
+  }
+
+  public void loadKeyStore(SSLContextBuilder cb, String path, char[] passphrase) throws Bug, ConfigurationProblem {
+    if (keystore == null) {
+      initKeystore();
     }
 
     FileInputStream fs;
