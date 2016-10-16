@@ -98,6 +98,11 @@ public class Main {
     Iterator<String> i = Arrays.asList(args).iterator();
     List<String> remainder = parseFlags(cb, i);
 
+    logger.info("Trusting {} certificates", keystoreTrustedCertificates(keystore).size());
+    cb.setTrustStore(keystore);
+    //cb.setKeyStore(keystore);
+
+
     if (remainder.size() == 0) {
       throw new ConfigurationProblem("Usage: ssl [flags] <address> [port]");
     }
@@ -174,15 +179,15 @@ public class Main {
         Collection<List<?>> subjectAlts = cert.getSubjectAlternativeNames();
         if (subjectAlts != null) {
           String[] dnsNames = subjectAlts.stream().filter(san -> (Integer)san.get(0) == SubjectAlternative.DNS).map(san -> san.get(1)).sorted().toArray(size -> new String[size]);
-          String[] ipAddresses = subjectAlts.stream().filter(san -> (Integer)san.get(0) == SubjectAlternative.IPAddress).map(san -> san.get(1)).sorted().toArray(size -> new String[size]);
 
           for (String name : dnsNames) {
             logger.info("dNSName: {}", name);
           }
+
+          String[] ipAddresses = subjectAlts.stream().filter(san -> (Integer)san.get(0) == SubjectAlternative.IPAddress).map(san -> san.get(1)).sorted().toArray(size -> new String[size]);
           for (String name : ipAddresses) {
             logger.info("iPAddress: {}", name);
           }
-          subjectAlts.stream().forEach(san -> logger.info("{}: {}", san.get(0), san.get(1)));
         }
       } catch (CertificateParsingException e) {
 
@@ -239,11 +244,12 @@ flagIteration:
   }
 
   public void loadDefaultKeyStore(SSLContextBuilder cb) throws ConfigurationProblem, Bug {
+    System.out.println("Loading default keystore: " + defaultKeyStorePath);
     loadKeyStore(cb, defaultKeyStorePath, defaultKeyStorePassphrase);
   }
 
   public void parseCAPath(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
-    logger.info("Loading CA certs: {}", path);
+    logger.debug("Loading CA certs: {}", path);
     CertificateFactory cf;
 
     if (keystore == null) {
@@ -255,14 +261,15 @@ flagIteration:
     } catch (CertificateException e) {
       throw new Bug("CertificateFactory.getInstance failed", e);
     }
-    FileInputStream in;
 
+    FileInputStream in;
     try {
       in = new FileInputStream(path);
     } catch (FileNotFoundException e) {
       throw new ConfigurationProblem("Cannot load CA certs from " + path, e);
     }
 
+    int count = 0;
     try {
       for (Certificate cert : cf.generateCertificates(in)) {
         String alias = ((X509Certificate)cert).getSubjectX500Principal().toString();
@@ -271,10 +278,12 @@ flagIteration:
         } catch (KeyStoreException e) {
           logger.fatal("Failed adding certificate to truststore: " + alias, e);
         }
+        count++;
       }
     } catch (CertificateException e) {
       throw new ConfigurationProblem("Failure while reading certs from " + path + ": " + e.getMessage(), e);
     }
+    logger.info("Loaded capath with {} certificates: {}", count, path);
   }
 
   public void parseKeyStore(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
@@ -290,10 +299,8 @@ flagIteration:
   private void initKeystore() throws Bug{
     try {
       keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-
-      // Per javadocs, "To create an empty keystore" pass null
       try {
-        keystore.load(null, null);
+        keystore.load(null, "hurray".toCharArray());
       } catch (NoSuchAlgorithmException|IOException|CertificateException e) {
         throw new Bug("Something went wrong initializing the keystore", e);
       }
@@ -322,9 +329,6 @@ flagIteration:
     } catch (NoSuchAlgorithmException e) {
       throw new Bug("Loading keystore failed", e);
     }
-
-    cb.setTrustStore(keystore);
-    //cb.setKeyStore(keystore);
 
     logger.info("Loaded keystore with {} certificates: {}", keystoreTrustedCertificates(keystore).size(), path);
   }
