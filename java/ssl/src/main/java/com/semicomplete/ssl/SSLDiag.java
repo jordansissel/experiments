@@ -41,13 +41,12 @@ public class SSLDiag {
 
   private SSLContext ctx;
 
-  private PeerCertificateDetails peerCertificateResult;
+  private PeerCertificateDetails peerCertificateDetails;
 
   public SSLDiag(SSLContextBuilder cb) throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-    cb.setTracker(this::setPeerCertificateResult);
+    cb.setTracker(this::setPeerCertificateDetails);
     ctx = cb.build();
   }
-
 
   public SSLDiag(KeyStore keyStore, KeyStore trustStore) throws UnknownHostException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
     this.trustStore = trustStore;
@@ -56,73 +55,85 @@ public class SSLDiag {
     SSLContextBuilder ctxbuilder = new SSLContextBuilder();
     ctxbuilder.setTrustStore(trustStore);
     ctxbuilder.setKeyStore(keyStore);
-    ctxbuilder.setTracker(this::setPeerCertificateResult);
+    ctxbuilder.setTracker(this::setPeerCertificateDetails);
 
     ctx = ctxbuilder.build();
   }
 
-  public void setPeerCertificateResult(X509Certificate[] chain, String authType, Throwable exception) {
-    peerCertificateResult = new PeerCertificateDetails(chain, authType, exception);
+  public void setPeerCertificateDetails(X509Certificate[] chain, String authType, Throwable exception) {
+    peerCertificateDetails = new PeerCertificateDetails(chain, authType, exception);
   }
 
-  public void tryssl(String hostname, int port) throws UnknownHostException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
+  public void check(String hostname, int port) throws UnknownHostException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException {
     for (InetAddress address : this.resolver.resolve(hostname)) {
-      tryssl(new InetSocketAddress(address, port), hostname);
+      check(new InetSocketAddress(address, port), hostname);
     }
   }
 
-  public SSLReportBuilder tryssl(InetSocketAddress address, String name) {
-    return tryssl(address, name, 1000); // 1-second connect timeout
+  public SSLReport check(InetSocketAddress address, String name) {
+    return check(address, name, 1000); // 1-second connect timeout
   } 
   
-  public SSLReportBuilder tryssl(InetSocketAddress address, String name, int timeout) {
-    SSLReportBuilder srb = new SSLReportBuilder();
-    srb.setSSLContext(ctx);
-    srb.setHostname(name);
-    srb.setAddress(address);
+  public SSLReport check(InetSocketAddress address, String name, int timeout) {
+    SSLReport sslReport = new SSLReport();
+    sslReport.setSSLContext(ctx);
+    sslReport.setHostname(name);
+    sslReport.setAddress(address);
 
     logger.debug("Trying {} (expected hostname {})", address, name);
     Socket socket = new Socket();
+    checkConnect(sslReport, socket, timeout);
+    if (sslReport.getException() != null) {
+      return sslReport;
+    }
+
+    checkHandshake(sslReport, socket);
+    return sslReport;
+  }
+
+  private void checkConnect(SSLReport sslReport, Socket socket, int timeout) {
+    final InetSocketAddress address = sslReport.getAddress();
     try {
       logger.trace("Connecting to {}", address);
       socket.connect(address, timeout);
-      logger.debug("Connection successful to {}", address);
     } catch (ConnectException e) {
       logger.debug("Connection failed to {}: {}", address, e);
-      srb.setFailed(e);
-      return srb;
+      sslReport.setFailed(e);
+      return;
     } catch (IOException e) {
       logger.error("Failed connecting to {}: {}", address, e);
-      srb.setFailed(e);
-      return srb;
+      sslReport.setFailed(e);
+      return;
     }
 
-    tryssl(srb, socket, name);
-    return srb;
+    logger.debug("Connection successful to {}", address);
   }
 
-  public void tryssl(SSLReportBuilder srb, Socket socket, String name) {
+  private void checkHandshake(SSLReport sslReport, Socket socket) {
+    final InetSocketAddress address = sslReport.getAddress();
+    final String name = sslReport.getHostname();
     SSLSocketFactory socket_factory = ctx.getSocketFactory();
     
     SSLSocket ssl_socket;
-    InetSocketAddress address = (InetSocketAddress)socket.getRemoteSocketAddress();
 
     try {
       ssl_socket = (SSLSocket)socket_factory.createSocket(socket, name, address.getPort(), true);
     } catch (IOException e) {
-      srb.setFailed(e);
+      sslReport.setFailed(e);
       return;
     }
     try {
       ssl_socket.startHandshake();
       logger.info("SSL Handshake successful to {}", address);
     } catch (SSLHandshakeException e) {
-      srb.setFailed(new HandshakeProblem(e.getMessage(), ssl_socket.getHandshakeSession(), peerCertificateResult));
+      sslReport.setFailed(e);
+      sslReport.setSSLSession(ssl_socket.getHandshakeSession());
+      sslReport.setPeerCertificateDetails(peerCertificateDetails);
       Throwable cause = Blame.get(e);
       logger.warn("SSL Handshake failed: [{}] {}", cause.getClass(), cause.getMessage());
     } catch (IOException e) {
       logger.warn("Failed in SSL handshake to {}: {}", address, e);
-      srb.setFailed(e);
+      sslReport.setFailed(e);
     }
 
     return;

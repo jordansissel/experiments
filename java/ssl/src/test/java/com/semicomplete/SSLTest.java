@@ -25,7 +25,7 @@ public class SSLTest {
 
     for (InetAddress address : Resolver.SystemResolver.resolve(hostname)) {
       try {
-        diag.tryssl(new InetSocketAddress(address, 443), hostname);
+        diag.check(new InetSocketAddress(address, 443), hostname);
       } catch (Exception e) {
         System.err.printf("Failed: {}\n", e);
       }

@@ -54,6 +54,7 @@ public class SSLContextBuilder {
     KeyManager[] kms = null;
     TrustManager[] tms = null;
 
+    //logger.info("Trusting {} certificates", keystoreTrustedCertificates(keystore).size());
     if (keyStore != null) {
       KeyManagerFactory kmf = null;
       kmf = KeyManagerFactory.getInstance(keyManagerAlgorithm);

@@ -3,12 +3,12 @@ import javax.net.ssl.SSLSession;
 
 public class HandshakeProblem extends Exception {
   public final SSLSession session;
-  public final PeerCertificateDetails peerCertificateResult;
+  public final PeerCertificateDetails peerCertificateDetails;
 
-  public HandshakeProblem(String message, SSLSession session, PeerCertificateDetails peerCertificateResult) {
+  public HandshakeProblem(String message, SSLSession session, PeerCertificateDetails peerCertificateDetails) {
     super(message);
     this.session = session;
-    this.peerCertificateResult = peerCertificateResult;
+    this.peerCertificateDetails = peerCertificateDetails;
   }
 
 }

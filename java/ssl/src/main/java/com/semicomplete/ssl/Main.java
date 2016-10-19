@@ -1,45 +1,49 @@
 package com.semicomplete.ssl;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import java.util.Collections;
-import java.security.UnrecoverableKeyException;
-import java.security.InvalidKeyException;
-import java.security.SignatureException;
-import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateParsingException;
-import javax.net.ssl.SSLSession;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.cert.X509Certificate;
-import java.security.cert.Certificate;
 
-import java.security.cert.CertificateException;
-import java.util.List;
-import java.util.LinkedList;
-import java.net.UnknownHostException;
-import java.io.IOException;
-import java.util.Collection;
-import java.io.FileNotFoundException;
-import com.semicomplete.Resolver;
 import com.semicomplete.Blame;
+import java.util.Map;
+import java.util.stream.Stream;
+import com.semicomplete.Bug;
+import com.semicomplete.Resolver;
 import com.semicomplete.ssl.SSLDiag;
-import java.net.ConnectException;
-import java.io.FileInputStream;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import java.security.KeyStoreException;
 import java.io.Console;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Paths;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Main {
   static class SubjectAlternative {
@@ -47,13 +51,7 @@ public class Main {
     public static final int IPAddress = 7;
   }
 
-  public class Bug extends Exception {
-    public Bug(String message, Throwable cause) {
-      super(message, cause);
-    }
-  }
-
-  public class ConfigurationProblem extends Exception {
+  public static class ConfigurationProblem extends Exception {
     public ConfigurationProblem(String message) {
       super(message);
     }
@@ -87,11 +85,6 @@ public class Main {
   private static final Logger logger = LogManager.getLogger();
   private KeyStore keystore;
 
-  private static final String defaultKeyStorePath = Paths.get(System.getProperty("java.home"), "lib", "security", "cacerts").toString();
-
-  // Yeah, 'changeit' appears to be the default passphrase. I suppose it's ok. Or is it?!!!
-  private static final char[] defaultKeyStorePassphrase = "changeit".toCharArray();
-
   public Main(String[] args) {
     this.args = args;
   }
@@ -99,16 +92,23 @@ public class Main {
   public void run() throws ConfigurationProblem, Bug {
     SSLContextBuilder cb = new SSLContextBuilder();
     Iterator<String> i = Arrays.asList(args).iterator();
-    List<String> remainder = parseFlags(cb, i);
 
-    if (keystore == null) {
-      loadDefaultKeyStore(cb);
+    KeyStoreBuilder keys, trust;
+    try {
+      keys = new KeyStoreBuilder();
+      trust = new KeyStoreBuilder();
+    } catch (IOException|CertificateException|KeyStoreException|NoSuchAlgorithmException e) {
+      throw new Bug("Failed to new KeyStoreBuilder failed", e);
     }
 
-    logger.info("Trusting {} certificates", keystoreTrustedCertificates(keystore).size());
-    cb.setTrustStore(keystore);
-    //cb.setKeyStore(keystore);
+    List<String> remainder = parseFlags(cb, keys, trust, i);
 
+    try {
+      cb.setTrustStore(trust.build());
+      cb.setKeyStore(keys.build());
+    } catch (IOException|CertificateException|NoSuchAlgorithmException e) {
+      throw new Bug("Failed building keystores", e);
+    }
 
     if (remainder.size() == 0) {
       throw new ConfigurationProblem("Usage: ssl [flags] <address> [port]");
@@ -139,35 +139,61 @@ public class Main {
     }
 
     System.out.printf("%s resolved to %d addresses\n", hostname, addresses.size());
-    addresses.stream()
-      .map(address -> diag.tryssl(new InetSocketAddress(address, port), hostname))
-      .forEach(this::report);
-  }
+    List<SSLReport> reports = addresses.stream()
+      .map(address -> diag.check(new InetSocketAddress(address, port), hostname))
+      .collect(Collectors.toList());
 
-  public void report(SSLReportBuilder srb) {
-    System.out.printf("%s %s:%d[%s]\n", srb.success() ? "GOOD" : "FAIL", srb.getHostname(), srb.getAddress().getPort(), srb.getAddress().getAddress().getHostAddress());
+    List<SSLReport> successful = reports.stream().filter(r -> r.success()).collect(Collectors.toList());
 
-    if (!srb.success()) {
-      reportFailure(srb);
+    if (successful.size() > 0) {
+      successful.stream().forEach(r -> System.out.printf("SUCCESS %s\n", r.getAddress()));
+    } else {
+      System.out.println("All SSL/TLS connections failed.");
+    }
+
+    Map<Throwable, List<SSLReport>> failureGroups = reports.stream().filter(r -> !r.success()).collect(Collectors.groupingBy(SSLReport::getException));
+    for (Map.Entry<Throwable, List<SSLReport>> entry : failureGroups.entrySet()) {
+      List<SSLReport> failures = (List<SSLReport>)entry.getValue();
+      Throwable error = entry.getKey();
+      System.out.printf("Failure: %s\n", error);
+      for (SSLReport r : failures) {
+        System.out.printf("  %s\n", r.getAddress()); 
+      }
+
+      if (Blame.on(error, sun.security.provider.certpath.SunCertPathBuilderException.class)) {
+        System.out.printf("  Analysis: Certificate problem\n");
+      } 
     }
   }
 
-  public void reportFailure(SSLReportBuilder srb) {
-    Throwable e = srb.getException();
+  public void report(SSLReport sslReport) {
+    System.out.printf("%s %s:%d[%s]\n", sslReport.success() ? "GOOD" : "FAIL", sslReport.getHostname(), sslReport.getAddress().getPort(), sslReport.getAddress().getAddress().getHostAddress());
+
+    if (!sslReport.success()) {
+      try {
+        reportFailure(sslReport);
+      } catch (Bug e) {
+        logger.fatal("Encountered a bug somehow during failure reporting.", e);
+      }
+    }
+  }
+
+  public void reportFailure(SSLReport sslReport) throws Bug {
+    Throwable e = sslReport.getException();
     if (e instanceof HandshakeProblem) {
-      reportFailure(srb, (HandshakeProblem)e);
+      reportFailure(sslReport, (HandshakeProblem)e);
     } else {
       System.out.printf("  Error: [%s] %s\n", e.getClass(), e.getMessage());
       System.out.printf("  No other diagnostic information available.\n");
     }
   }
 
-  public void reportFailure(SSLReportBuilder srb, HandshakeProblem problem) {
+  public void reportFailure(SSLReport sslReport, HandshakeProblem problem) throws Bug {
     System.out.printf(" * Failure during SSL/TLS handshake\n");
     logger.debug("TLS handshake failure", problem);
 
-    List<Certificate> trusted = keystoreTrustedCertificates(keystore);
-    X509Certificate[] chain = problem.peerCertificateResult.getChain();
+    List<Certificate> trusted = KeyStoreUtils.getTrustedCertificates(keystore);
+    X509Certificate[] chain = problem.peerCertificateDetails.getChain();
 
     System.out.printf("  Certificate Diagnostic\n");
     System.out.printf("  Summary: My keystore has %d trusted certificates, but none of them allow this server to be trusted.\n", trusted.size());
@@ -221,7 +247,7 @@ public class Main {
     }
   }
 
-  public List<String> parseFlags(SSLContextBuilder cb, Iterator<String> i) throws ConfigurationProblem, Bug {
+  public static List<String> parseFlags(SSLContextBuilder cb, KeyStoreBuilder keys, KeyStoreBuilder trust, Iterator<String> i) throws ConfigurationProblem, Bug {
     List<String> parameters = new LinkedList();
 
 flagIteration:
@@ -231,11 +257,27 @@ flagIteration:
       switch (entry) {
         case "--capath":
           arg = i.next();
-          parseCAPath(cb, arg);
+          try {
+            trust.addCAPath(arg);
+          } catch (CertificateException|FileNotFoundException|KeyStoreException e) {
+            throw new Bug("Failed adding certificate authorities from file " + arg, e);
+          }
+          break;
+        case "--truststore":
+          arg = i.next();
+          try {
+            trust.useKeyStore(arg);
+          } catch (CertificateException|IOException|NoSuchAlgorithmException e) {
+            throw new Bug("Failed trying to trust keystore " + arg, e);
+          }
           break;
         case "--keystore":
           arg = i.next();
-          parseKeyStore(cb, arg);
+          try {
+            keys.useKeyStore(arg);
+          } catch (CertificateException|IOException|NoSuchAlgorithmException e) {
+            throw new Bug("Failed trying to use keystore " + arg, e);
+          }
           break;
         case "--log-level":
           arg = i.next();
@@ -259,107 +301,5 @@ flagIteration:
     }
 
     return parameters;
-  }
-
-  public void loadDefaultKeyStore(SSLContextBuilder cb) throws ConfigurationProblem, Bug {
-    System.out.println("Loading default keystore: " + defaultKeyStorePath);
-    loadKeyStore(cb, defaultKeyStorePath, defaultKeyStorePassphrase);
-  }
-
-  public void parseCAPath(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
-    logger.debug("Loading CA certs: {}", path);
-    CertificateFactory cf;
-
-    if (keystore == null) {
-      initKeystore();
-    }
-    
-    try {
-      cf = CertificateFactory.getInstance("X.509");
-    } catch (CertificateException e) {
-      throw new Bug("CertificateFactory.getInstance failed", e);
-    }
-
-    FileInputStream in;
-    try {
-      in = new FileInputStream(path);
-    } catch (FileNotFoundException e) {
-      throw new ConfigurationProblem("Cannot load CA certs from " + path, e);
-    }
-
-    int count = 0;
-    try {
-      for (Certificate cert : cf.generateCertificates(in)) {
-        String alias = ((X509Certificate)cert).getSubjectX500Principal().toString();
-        try {
-          keystore.setCertificateEntry(alias, cert);
-        } catch (KeyStoreException e) {
-          logger.fatal("Failed adding certificate to truststore: " + alias, e);
-        }
-        count++;
-      }
-    } catch (CertificateException e) {
-      throw new ConfigurationProblem("Failure while reading certs from " + path + ": " + e.getMessage(), e);
-    }
-    logger.info("Loaded capath with {} certificates: {}", count, path);
-  }
-
-  public void parseKeyStore(SSLContextBuilder cb, String path) throws ConfigurationProblem, Bug {
-    System.out.printf("Enter passphrase for keystore %s: ", path);
-    char[] passphrase = System.console().readPassword();
-    loadKeyStore(cb, path, passphrase);
-
-    // Blank the passphrase for a little bit of extra safety; hoping it won't
-    // live long in memory.
-    Arrays.fill(passphrase, (char)0);
-  }
-  
-  private void initKeystore() throws Bug{
-    try {
-      keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-      try {
-        keystore.load(null, "hurray".toCharArray());
-      } catch (NoSuchAlgorithmException|IOException|CertificateException e) {
-        throw new Bug("Something went wrong initializing the keystore", e);
-      }
-    } catch (KeyStoreException e) {
-      throw new Bug("Something went wrong getting a KeyStore instance", e);
-    }
-  }
-
-  public void loadKeyStore(SSLContextBuilder cb, String path, char[] passphrase) throws Bug, ConfigurationProblem {
-    if (keystore == null) {
-      initKeystore();
-    }
-
-    FileInputStream fs;
-    try {
-      fs = new FileInputStream(path);
-    } catch (FileNotFoundException e) {
-      throw new ConfigurationProblem("Keystore file not found", e);
-    }
-
-
-    try {
-      keystore.load(fs, passphrase);
-    } catch (IOException|CertificateException e) {
-      throw new ConfigurationProblem("Loading keystore failed", e);
-    } catch (NoSuchAlgorithmException e) {
-      throw new Bug("Loading keystore failed", e);
-    }
-
-    logger.info("Loaded keystore with {} certificates: {}", keystoreTrustedCertificates(keystore).size(), path);
-  }
-
-  private static List<Certificate> keystoreTrustedCertificates(KeyStore keystore) {
-    List<Certificate> trusted = new LinkedList<Certificate>();
-    try {
-      for (String alias : Collections.list(keystore.aliases())) {
-        trusted.add(keystore.getCertificate(alias));
-      }
-    } catch (KeyStoreException e) {
-      logger.fatal("Failure to use keystore");
-    }
-    return trusted;
   }
 }
