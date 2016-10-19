@@ -1,62 +1,36 @@
 package com.semicomplete.ssl;
 
 import com.semicomplete.Blame;
-import java.util.Map;
-import java.util.stream.Stream;
 import com.semicomplete.Bug;
 import com.semicomplete.Resolver;
-import com.semicomplete.ssl.SSLDiag;
-import java.io.Console;
-import java.io.FileInputStream;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Paths;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
-import java.security.InvalidKeyException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.security.cert.*;
+import java.util.*;
 import java.util.stream.Collectors;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 public class Main {
   static class SubjectAlternative {
-    public static final int DNS = 2;
-    public static final int IPAddress = 7;
+    static final int DNS = 2;
+    static final int IPAddress = 7;
   }
 
-  public static class ConfigurationProblem extends Exception {
-    public ConfigurationProblem(String message) {
+  static class ConfigurationProblem extends Exception {
+    ConfigurationProblem(String message) {
       super(message);
     }
 
-    public ConfigurationProblem(String message, Throwable cause) {
+    ConfigurationProblem(String message, Throwable cause) {
       super(message, cause);
     }
   }
@@ -85,11 +59,11 @@ public class Main {
   private static final Logger logger = LogManager.getLogger();
   private KeyStore keystore;
 
-  public Main(String[] args) {
+  private Main(String[] args) {
     this.args = args;
   }
 
-  public void run() throws ConfigurationProblem, Bug {
+  private void run() throws ConfigurationProblem, Bug {
     SSLContextBuilder cb = new SSLContextBuilder();
     Iterator<String> i = Arrays.asList(args).iterator();
 
@@ -143,10 +117,10 @@ public class Main {
       .map(address -> diag.check(new InetSocketAddress(address, port), hostname))
       .collect(Collectors.toList());
 
-    List<SSLReport> successful = reports.stream().filter(r -> r.success()).collect(Collectors.toList());
+    List<SSLReport> successful = reports.stream().filter(SSLReport::success).collect(Collectors.toList());
 
     if (successful.size() > 0) {
-      successful.stream().forEach(r -> System.out.printf("SUCCESS %s\n", r.getAddress()));
+      successful.forEach(r -> System.out.printf("SUCCESS %s\n", r.getAddress()));
     } else {
       System.out.println("All SSL/TLS connections failed.");
     }
@@ -166,7 +140,7 @@ public class Main {
     }
   }
 
-  public void report(SSLReport sslReport) {
+  private void report(SSLReport sslReport) {
     System.out.printf("%s %s:%d[%s]\n", sslReport.success() ? "GOOD" : "FAIL", sslReport.getHostname(), sslReport.getAddress().getPort(), sslReport.getAddress().getAddress().getHostAddress());
 
     if (!sslReport.success()) {
@@ -178,7 +152,7 @@ public class Main {
     }
   }
 
-  public void reportFailure(SSLReport sslReport) throws Bug {
+  private void reportFailure(SSLReport sslReport) throws Bug {
     Throwable e = sslReport.getException();
     if (e instanceof HandshakeProblem) {
       reportFailure(sslReport, (HandshakeProblem)e);
@@ -188,7 +162,7 @@ public class Main {
     }
   }
 
-  public void reportFailure(SSLReport sslReport, HandshakeProblem problem) throws Bug {
+  private void reportFailure(SSLReport sslReport, HandshakeProblem problem) throws Bug {
     System.out.printf(" * Failure during SSL/TLS handshake\n");
     logger.debug("TLS handshake failure", problem);
 
@@ -247,7 +221,7 @@ public class Main {
     }
   }
 
-  public static List<String> parseFlags(SSLContextBuilder cb, KeyStoreBuilder keys, KeyStoreBuilder trust, Iterator<String> i) throws ConfigurationProblem, Bug {
+  private static List<String> parseFlags(SSLContextBuilder cb, KeyStoreBuilder keys, KeyStoreBuilder trust, Iterator<String> i) throws ConfigurationProblem, Bug {
     List<String> parameters = new LinkedList();
 
 flagIteration:
