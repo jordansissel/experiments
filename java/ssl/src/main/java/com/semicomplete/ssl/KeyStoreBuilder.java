@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import java.util.Arrays;
 import java.security.cert.CertificateFactory;
 import java.io.FileInputStream;
-import com.semicomplete.Bug;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.io.IOException;
@@ -41,7 +40,7 @@ public class KeyStoreBuilder {
     }
   }
 
-  public void useDefaultTrustStore() throws FileNotFoundException, IOException, CertificateException, NoSuchAlgorithmException {
+  public void useDefaultTrustStore() throws IOException, CertificateException, NoSuchAlgorithmException {
     useKeyStore(defaultTrustStorePath, defaultTrustStorePassphrase);
     modified = true;
   }
@@ -73,7 +72,7 @@ public class KeyStoreBuilder {
     modified = true;
   }
 
-  public void useKeyStore(String path) throws FileNotFoundException, IOException, CertificateException, NoSuchAlgorithmException {
+  public void useKeyStore(String path) throws IOException, CertificateException, NoSuchAlgorithmException {
     System.out.printf("Enter passphrase for keyStore %s: ", path);
     char[] passphrase = System.console().readPassword();
     useKeyStore(path, passphrase);
@@ -83,7 +82,7 @@ public class KeyStoreBuilder {
     Arrays.fill(passphrase, (char)0);
   }
   
-  public void useKeyStore(String path, char[] passphrase) throws FileNotFoundException, IOException, CertificateException, NoSuchAlgorithmException {
+  public void useKeyStore(String path, char[] passphrase) throws IOException, CertificateException, NoSuchAlgorithmException {
     FileInputStream fs;
 
     try {
@@ -102,7 +101,7 @@ public class KeyStoreBuilder {
     modified = true;
   }
 
-  public KeyStore build() throws FileNotFoundException, IOException, CertificateException, NoSuchAlgorithmException {
+  public KeyStore build() throws IOException, CertificateException, NoSuchAlgorithmException {
     if (!modified) {
       useDefaultTrustStore();
     }

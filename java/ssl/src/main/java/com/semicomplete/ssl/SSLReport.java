@@ -4,57 +4,63 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLContext;
 import java.net.InetSocketAddress;
 
-public class SSLReport {
+class SSLReport {
   private Throwable exception;
   private SSLContext sslContext;
   private SSLSession sslSession;
   private InetSocketAddress address;
   private PeerCertificateDetails peerCertificateDetails;
   private String hostname;
-  private boolean success;
 
-  public SSLReport() { 
+  SSLReport() {
     // Nothing
   }
 
-  public void setAddress(InetSocketAddress address) {
+  void setAddress(InetSocketAddress address) {
     this.address = address;
   }
 
-  public void setHostname(String hostname) {
+  void setHostname(String hostname) {
     this.hostname = hostname;
   }
 
-  public String getHostname() {
+  String getHostname() {
     return hostname;
   }
 
-  public InetSocketAddress getAddress() {
+  InetSocketAddress getAddress() {
     return address;
   }
 
-  public void setFailed(Throwable e) {
+  void setFailed(Throwable e) {
     exception = e;
-    success = false;
   }
 
-  public void setSSLContext(SSLContext ctx) {
+  void setSSLContext(SSLContext ctx) {
     sslContext = ctx;
   }
 
-  public void setSSLSession(SSLSession s) {
+  SSLContext getSSLContext() {
+    return sslContext;
+  }
+
+  void setSSLSession(SSLSession s) {
     sslSession = s;
   }
 
-  public void setPeerCertificateDetails(PeerCertificateDetails details) {
+  SSLSession getSSLSession() {
+    return sslSession;
+  }
+
+  void setPeerCertificateDetails(PeerCertificateDetails details) {
     peerCertificateDetails = details;
   }
 
-  public Throwable getException() {
+  Throwable getException() {
     return exception;
   }
 
-  public boolean success() {
+  boolean success() {
     return exception == null;
   }
 }

@@ -6,13 +6,12 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.Collections;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+
 import java.util.LinkedList;
 
 public class KeyStoreUtils {
   public static List<Certificate> getTrustedCertificates(KeyStore keyStore) throws Bug {
-    List<Certificate> trusted = new LinkedList<Certificate>();
+    List<Certificate> trusted = new LinkedList<>();
     try {
       for (String alias : Collections.list(keyStore.aliases())) {
         trusted.add(keyStore.getCertificate(alias));

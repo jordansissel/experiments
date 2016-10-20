@@ -8,24 +8,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
+import javax.net.ssl.SSLParameters;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
-  static class SubjectAlternative {
+  private static class SubjectAlternative {
     static final int DNS = 2;
     static final int IPAddress = 7;
   }
 
-  static class ConfigurationProblem extends Exception {
+  private static class ConfigurationProblem extends Exception {
     ConfigurationProblem(String message) {
       super(message);
     }
@@ -57,7 +57,6 @@ public class Main {
 
   private final String[] args;
   private static final Logger logger = LogManager.getLogger();
-  private KeyStore keystore;
 
   private Main(String[] args) {
     this.args = args;
@@ -75,7 +74,7 @@ public class Main {
       throw new Bug("Failed to new KeyStoreBuilder failed", e);
     }
 
-    List<String> remainder = parseFlags(cb, keys, trust, i);
+    List<String> remainder = parseFlags(keys, trust, i);
 
     try {
       cb.setTrustStore(trust.build());
@@ -97,9 +96,9 @@ public class Main {
       port = 443;
     }
 
-    SSLDiag diag;
+    SSLChecker diag;
     try {
-      diag = new SSLDiag(cb);
+      diag = new SSLChecker(cb);
     } catch (KeyManagementException|KeyStoreException|NoSuchAlgorithmException|UnrecoverableKeyException e) {
       throw new ConfigurationProblem("Failed to build ssl context.", e);
     }
@@ -125,104 +124,47 @@ public class Main {
       System.out.println("All SSL/TLS connections failed.");
     }
 
-    Map<Throwable, List<SSLReport>> failureGroups = reports.stream().filter(r -> !r.success()).collect(Collectors.groupingBy(SSLReport::getException));
-    for (Map.Entry<Throwable, List<SSLReport>> entry : failureGroups.entrySet()) {
-      List<SSLReport> failures = (List<SSLReport>)entry.getValue();
-      Throwable error = entry.getKey();
-      System.out.printf("Failure: %s\n", error);
+    Map<Class<? extends Throwable>, List<SSLReport>> failureGroups = reports.stream().filter(r -> !r.success()).collect(Collectors.groupingBy(r -> Blame.get(r.getException()).getClass()));
+    for (Map.Entry<Class<? extends Throwable>, List<SSLReport>> entry : failureGroups.entrySet()) {
+      Class<? extends Throwable> blame = entry.getKey();
+      List<SSLReport> failures = entry.getValue();
+      System.out.printf("Failure: %s\n", blame);
       for (SSLReport r : failures) {
-        System.out.printf("  %s\n", r.getAddress()); 
+        System.out.printf("  %s\n", r.getAddress());
       }
 
-      if (Blame.on(error, sun.security.provider.certpath.SunCertPathBuilderException.class)) {
-        System.out.printf("  Analysis: Certificate problem\n");
-      } 
-    }
-  }
+      if (blame == sun.security.provider.certpath.SunCertPathBuilderException.class) {
+        System.out.printf("  Analysis: Certificate problem: %s\n", failures.get(0).getException());
+      } else if (blame == java.security.cert.CertPathValidatorException.class) {
+        System.out.printf("  Analysis: Certificate problem2: %s\n", failures.get(0).getException());
+      } else if (blame == java.io.EOFException.class) {
+        System.out.println("  Analysis: This can occur for a few different reasons. ");
+        System.out.println("  * Maybe: The server rejected our SSL/TLS version.");
+        System.out.println("  * Maybe: The address targeted is not an SSL/TLS server and closed the connection when we said 'Hello'");
+        System.out.println("");
+        System.out.println("  I used the following TLS/SSL settings:");
+        SSLParameters parameters = failures.get(0).getSSLContext().getDefaultSSLParameters();
+        System.out.printf("  My protocols: %s\n", String.join(", ", Arrays.asList(parameters.getProtocols())));
 
-  private void report(SSLReport sslReport) {
-    System.out.printf("%s %s:%d[%s]\n", sslReport.success() ? "GOOD" : "FAIL", sslReport.getHostname(), sslReport.getAddress().getPort(), sslReport.getAddress().getAddress().getHostAddress());
+      } else if (blame == javax.net.ssl.SSLHandshakeException.class) {
+        System.out.println("  Analysis: SSL handshake was rejected by the server.");
+        System.out.printf("  Error message: %s\n", failures.get(0).getException().getMessage());
+        System.out.println("  * Maybe: Check the server's logs to see if it can tell you why it's rejected our handshake.");
+        System.out.println("  * Maybe: Check if the server can accept any of the ciphers listed below.");
+        System.out.println("  ");
 
-    if (!sslReport.success()) {
-      try {
-        reportFailure(sslReport);
-      } catch (Bug e) {
-        logger.fatal("Encountered a bug somehow during failure reporting.", e);
-      }
-    }
-  }
+        SSLParameters parameters = failures.get(0).getSSLContext().getDefaultSSLParameters();
+        System.out.println("  I used the following TLS/SSL settings:");
+        System.out.printf("  Protocols: %s\n", String.join(", ", Arrays.asList(parameters.getProtocols())));
+        System.out.printf("  Cipher suites: %s\n", String.join(",", Arrays.asList(parameters.getCipherSuites())));
 
-  private void reportFailure(SSLReport sslReport) throws Bug {
-    Throwable e = sslReport.getException();
-    if (e instanceof HandshakeProblem) {
-      reportFailure(sslReport, (HandshakeProblem)e);
-    } else {
-      System.out.printf("  Error: [%s] %s\n", e.getClass(), e.getMessage());
-      System.out.printf("  No other diagnostic information available.\n");
-    }
-  }
-
-  private void reportFailure(SSLReport sslReport, HandshakeProblem problem) throws Bug {
-    System.out.printf(" * Failure during SSL/TLS handshake\n");
-    logger.debug("TLS handshake failure", problem);
-
-    List<Certificate> trusted = KeyStoreUtils.getTrustedCertificates(keystore);
-    X509Certificate[] chain = problem.peerCertificateDetails.getChain();
-
-    System.out.printf("  Certificate Diagnostic\n");
-    System.out.printf("  Summary: My keystore has %d trusted certificates, but none of them allow this server to be trusted.\n", trusted.size());
-    System.out.printf("\n");
-
-    if (chain.length == 1) { // Self-signed
-      //System.out.println(chain[0].getSubjectX500Principal());
-      //System.out.println(chain[0].getIssuerX500Principal());
-      //try {
-        //chain[0].verify(chain[0].getPublicKey());
-      //} catch (CertificateException|NoSuchAlgorithmException|InvalidKeyException|NoSuchProviderException|SignatureException e) {
-        //System.out.printf("  Certificate signature failed?\n");
-      //}
-
-      if (chain[0].getSubjectX500Principal().equals(chain[0].getIssuerX500Principal())) {
-        System.out.printf("  Server identified itself with a self-signed certificate\n");
-      }
-    } else {
-      System.out.printf("  Server identified itself with a chain of %d certs.\n", chain.length);
-    }
-
-    for (X509Certificate cert : chain) {
-      System.out.printf("  subject: %s\n", cert.getSubjectX500Principal());
-
-      // Show subject alternatives
-      try {
-        Collection<List<?>> subjectAlts = cert.getSubjectAlternativeNames();
-        if (subjectAlts != null) {
-          String[] dnsNames = subjectAlts.stream().filter(san -> (Integer)san.get(0) == SubjectAlternative.DNS).map(san -> san.get(1)).sorted().toArray(size -> new String[size]);
-
-          for (String name : dnsNames) {
-            logger.info("dNSName: {}", name);
-          }
-
-          String[] ipAddresses = subjectAlts.stream().filter(san -> (Integer)san.get(0) == SubjectAlternative.IPAddress).map(san -> san.get(1)).sorted().toArray(size -> new String[size]);
-          for (String name : ipAddresses) {
-            logger.info("iPAddress: {}", name);
-          }
-        }
-      } catch (CertificateParsingException e) {
-
-      }
-
-      try {
-        cert.checkValidity();
-      } catch (CertificateExpiredException e) {
-        System.out.printf("    -> Certificate is expired (expired at %s)\n", cert.getNotAfter());
-      } catch (CertificateNotYetValidException e) {
-        System.out.printf("    -> Certificate is not yet valid (valid only after %s)\n", cert.getNotBefore());
+        //failures.get(0).getException().printStackTrace(System.out);
       }
     }
   }
 
-  private static List<String> parseFlags(SSLContextBuilder cb, KeyStoreBuilder keys, KeyStoreBuilder trust, Iterator<String> i) throws ConfigurationProblem, Bug {
-    List<String> parameters = new LinkedList();
+  private static List<String> parseFlags(KeyStoreBuilder keys, KeyStoreBuilder trust, Iterator<String> i) throws ConfigurationProblem, Bug {
+    List<String> parameters = new LinkedList<>();
 
 flagIteration:
     while (i.hasNext()) {

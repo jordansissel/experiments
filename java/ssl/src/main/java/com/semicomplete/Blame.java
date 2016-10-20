@@ -1,8 +1,5 @@
 package com.semicomplete;
 
-import java.util.List;
-import java.util.LinkedList;
-
 public class Blame {
   public static Throwable get(Throwable e) {
     Throwable i;

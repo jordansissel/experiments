@@ -1,11 +1,8 @@
 package com.semicomplete;
-import static org.junit.Assert.assertEquals;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import com.semicomplete.ssl.SSLDiag;
-import com.semicomplete.Resolver;
-import java.io.FileInputStream;
-import org.junit.Test;
+import com.semicomplete.ssl.SSLChecker;
+
 import java.security.KeyStore;
 
 public class SSLTest {
@@ -19,7 +16,7 @@ public class SSLTest {
     //FileInputStream fs = new FileInputStream(keystore_path);
     //ks.load(fs, passphrase);
 
-    SSLDiag diag = new SSLDiag(ks, ks);
+    SSLChecker diag = new SSLChecker(ks, ks);
 
     String hostname = "www.semicomplete.com";
 

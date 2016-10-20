@@ -1,9 +1,8 @@
 package com.semicomplete.ssl;
 
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 public class TrackingTrustManager implements X509TrustManager {
   private final X509TrustManager tm;
@@ -32,12 +31,20 @@ public class TrackingTrustManager implements X509TrustManager {
   }
 
   public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-    tm.checkClientTrusted(chain, authType);
+    try {
+      tm.checkClientTrusted(chain, authType);
+    } catch (CertificateException e) {
+      if (tracker != null) {
+        this.tracker.track(chain, authType, e);
+      }
+      throw e;
+    }
+    if (tracker != null) {
+      this.tracker.track(chain, authType, null);
+    }
   }
 
   public X509Certificate[] getAcceptedIssuers() {
     return tm.getAcceptedIssuers();
   }
-
-
 }
