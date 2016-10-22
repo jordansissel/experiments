@@ -40,7 +40,13 @@ class RAVEn::StreamCLI < Clamp::Command
       event = queue.pop
       index = Time.now.utc.strftime("logstash-whack-%Y-%m-%d")
       @logger.info("Shipping to Elasticsearch", :index => index, :body => event)
-      es.index(:index => index, :type => "power", :body => event)
+      begin
+        es.index(:index => index, :type => "power", :body => event)
+      rescue Faraday::ConnectionFailed => e
+        @logger.warn("Shipping to Elasticsearch failed. Will retry.", :exception => e.class.name, :message => e.message)
+        sleep 0.5
+        retry
+      end
     end
   end
 
