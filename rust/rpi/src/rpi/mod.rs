@@ -114,12 +114,12 @@ impl<'a> Pin<'a> {
   }
 
   pub fn set(&self) {
-    println!("set: {:x} {:b}", (self.set_address as usize) - (self.gpio.address as usize), self.pin_bit);
+    //println!("set: {:x} {:b}", (self.set_address as usize) - (self.gpio.address as usize), self.pin_bit);
     unsafe { *self.set_address = self.pin_bit }
   }
 
   pub fn clear(&self) {
-    println!("clear: {:x} {:b}", (self.clear_address as usize) - (self.gpio.address as usize), self.pin_bit);
+    //println!("clear: {:x} {:b}", (self.clear_address as usize) - (self.gpio.address as usize), self.pin_bit);
     unsafe { *self.clear_address = self.pin_bit }
   }
 }
