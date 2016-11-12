@@ -41,7 +41,7 @@ class GitCloneTask extends DefaultTask {
 		if (outputDir.exists()) {
 			// XXX: Make this an update task? Optional?
 			def git = Grgit.open(dir: outputDir)
-			git.fetch()
+			//git.fetch()
 		} else {
 			Grgit.clone(dir: outputDir, uri: uri)
 		}
@@ -62,8 +62,8 @@ class ChangeBranchTask extends DefaultTask {
 	def readyGit(branch, gits) {
 		gits.each { git ->
 			println "${git.repository.rootDir}: checking out ${branch}"
-			git.clean(directories: true)
 			git.reset(mode: org.ajoberstar.grgit.operation.ResetOp.Mode.HARD)
+			git.clean(directories: true)
 			try {
 				git.checkout(branch: branch)
 			} catch (GrgitException e) {
@@ -105,7 +105,7 @@ task cloneDocs(type: GitCloneTask) {
 	task "commit${name}"(dependsOn: [ "build${name}" ]) << {
 		def logstash = Grgit.open("${project.buildDir}/elastic/logstash")
 		def logstashDocs = Grgit.open("${project.buildDir}/elastic/logstash-docs")
-		def originCommit = logstash.resolve.toCommit("HEAD").id
+		def originCommit = logstash.resolve.toCommit(name).id
 		logstashDocs.commit(message: "Sync from elastic/logstash@${originCommit}", all: true)
 	}
 
