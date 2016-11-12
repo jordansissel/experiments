@@ -1,0 +1,119 @@
+/*
+ * Licensed to Elasticsearch under one or more contributor
+ * license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright
+ * ownership. Elasticsearch licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+
+plugins {
+	id 'org.ajoberstar.grgit' version '1.6.0'
+}
+
+apply plugin: "java"
+apply plugin: 'org.ajoberstar.grgit'
+
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.exception.GrgitException
+
+class GitCloneTask extends DefaultTask {
+	def String uri
+
+	@TaskAction
+	def work() {
+		def (org, repo) = uri.split("/")[-2..-1]
+		repo = repo.replaceAll(/\.git$/, "")
+		def outputDir = new File("${project.buildDir}/${org}/${repo}")
+
+		outputDir.getParentFile().mkdirs()
+		if (outputDir.exists()) {
+			// XXX: Make this an update task? Optional?
+			def git = Grgit.open(dir: outputDir)
+			git.fetch()
+		} else {
+			Grgit.clone(dir: outputDir, uri: uri)
+		}
+	}
+}
+
+class ChangeBranchTask extends DefaultTask {
+	def String branch
+
+	@TaskAction
+	def work() {
+		def logstash = Grgit.open("${project.buildDir}/elastic/logstash")
+		def logstashDocs = Grgit.open("${project.buildDir}/elastic/logstash-docs")
+		readyGit(branch, [logstash, logstashDocs])
+	}
+
+
+	def readyGit(branch, gits) {
+		gits.each { git ->
+			println "${git.repository.rootDir}: checking out ${branch}"
+			git.clean(directories: true)
+			git.reset(mode: org.ajoberstar.grgit.operation.ResetOp.Mode.HARD)
+			try {
+				git.checkout(branch: branch)
+			} catch (GrgitException e) {
+				git.branch.add(name: branch, startPoint: "origin/${branch}", mode: org.ajoberstar.grgit.operation.BranchAddOp.Mode.TRACK)
+				git.checkout(branch: branch)
+			}
+		}
+	}
+}
+
+task cloneLogstash(type: GitCloneTask) {
+	uri = "git@github.com:/elastic/logstash.git"
+}
+
+task cloneLogstashDocs(type: GitCloneTask) {
+	uri = "git@github.com:/elastic/logstash-docs.git"
+}
+
+task cloneDocs(type: GitCloneTask) {
+	uri = "git@github.com:/elastic/docs.git"
+}
+
+["master", "5.x", "5.0"].each { name ->
+	task "branch${name}"(type: ChangeBranchTask, dependsOn: [ cloneLogstashDocs, cloneLogstash ]) {
+		branch = name
+	}
+
+	task "copy${name}"(type: Sync, dependsOn: "branch${name}") {
+		from "${buildDir}/elastic/logstash/docs/static/"
+		into "${buildDir}/elastic/logstash-docs/docs/static/"
+	}
+
+	task "build${name}"(type: Exec, dependsOn: [ "copy${name}", cloneDocs ]) {
+		def build_docs_pl = "${buildDir}/elastic/docs/build_docs.pl"
+		workingDir "${buildDir}/elastic/logstash-docs/docs"
+		commandLine build_docs_pl, "--doc", "index.asciidoc", "--chunk=1"
+	}
+
+	task "commit${name}"(dependsOn: [ "build${name}" ]) << {
+		def logstash = Grgit.open("${project.buildDir}/elastic/logstash")
+		def logstashDocs = Grgit.open("${project.buildDir}/elastic/logstash-docs")
+		def originCommit = logstash.resolve.toCommit("HEAD").id
+		logstashDocs.commit(message: "Sync from elastic/logstash@${originCommit}", all: true)
+	}
+
+	task "push${name}"(dependsOn: [ "commit${name}" ]) << {
+		def logstashDocs = Grgit.open("${project.buildDir}/elastic/logstash-docs")
+		logstashDocs.push()
+	}
+}
+
+task buildAll(dependsOn: [ "buildmaster", "build5.0", "build5.x" ])
+task updateAll(dependsOn: [ "pushmaster", "push5.0", "push5.x" ])
