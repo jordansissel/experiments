@@ -1,0 +1,12 @@
+apply plugin: "java"
+apply plugin: "application"
+
+mainClassName = "Foo"
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+    compile 'com.maxmind.geoip2:geoip2:2.8.0'
+}
