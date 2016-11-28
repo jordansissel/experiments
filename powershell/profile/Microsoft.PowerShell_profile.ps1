@@ -55,8 +55,25 @@ function Connect-VM {
     }
 }
 
-function Get-VMIPv6Address($vm) {
-  Compute-EUI64 (Get-VMNetworkAdapter $vm | select -first 1).MacAddress
+function Get-VMIPv6Address() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$inputObject,
+
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name
+    )
+
+    Process {
+      if ($Name) {
+        $inputObject = Get-VM -Name $Name -ErrorAction Stop
+      }
+      
+      foreach ($vm in $inputObject) {
+        echo (Compute-EUI64 (Get-VMNetworkAdapter $vm | select -first 1).MacAddress)
+      }
+    }
 }
 
 function Compute-EUI64([string]$mac) {
@@ -136,4 +153,9 @@ function Remove-VMClone {
 function Suspend-Computer {
     Add-Type -AssemblyName System.Windows.Forms
     [System.Windows.Forms.Application]::SetSuspendState([System.Windows.Forms.PowerState]::Suspend, $false, $false)
+}
+
+function Reset-VMSwitch {
+  Get-NetAdapter | where { $_.Status -eq "Up" -and $_.PhysicalMediaType -ne "Unspecified" } | select -first 1 | % { Set-VMSwitch external -NetAdapterName $_.Name }
+
 }
