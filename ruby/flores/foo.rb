@@ -69,7 +69,10 @@ class Leaf < Cert
   end
 end
 
-root = Root.new("CN=fancy root").write("root")
-int1 = Intermediate.new("CN=fancy int1", root).write("int1")
-int2 = Intermediate.new("CN=fancy int2", int1).write("int2")
-leaf = Leaf.new("CN=localhost", int2, ["IP:1.2.3.4", "DNS:localhost"]).write("leaf")
+root = Root.new("CN=root1").write("root1")
+int1 = Intermediate.new("CN=root1 int 1", root).write("root1.int1")
+leaf = Leaf.new("CN=localhost", int1, ["IP:1.2.3.4", "DNS:localhost"]).write("root1.int1.leaf1")
+leaf2 = Leaf.new("CN=localhost", int1, ["IP:1.2.3.4", "DNS:localhost"]).write("root1.int1.leaf2")
+
+root2 = Root.new("CN=root 2").write("root2")
+int2_1 = Intermediate.new("CN=root 2 - int1", root).write("root2.int1")
