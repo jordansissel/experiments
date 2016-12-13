@@ -3,7 +3,6 @@
 #include <sys/syscall.h>
 #include <stddef.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <errno.h>
 #include <stdio.h>
 #include <sys/prctl.h>
