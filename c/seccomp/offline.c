@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     // Try filtering based on the sockaddr len. This isn't great, but may be better than nothing.
     //   - Reject sockaddr_in and sockaddr_in6
     //   - Allow everything else (unix sockets, etc)
-    BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, sizeof(struct sockaddr_in), 1, 2),
+    BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, sizeof(struct sockaddr_in), 1, 0),
     BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, sizeof(struct sockaddr_in6), 0, 1),
     BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ERRNO|(EACCES&SECCOMP_RET_DATA)),
     BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ALLOW),
