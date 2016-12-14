@@ -14,20 +14,24 @@
 
 int main(int argc, char **argv) {
   struct sock_filter filter[] = {
+    // LD|W|ABS == Load Word at ABSolute offset
     // Load the syscall number
     BPF_STMT(BPF_LD|BPF_W|BPF_ABS, (offsetof(struct seccomp_data, nr))),
 
+    // JMP|JEQ|K Do a jump after comparing EQuality of the loaded value and a
+    // constant. If equal, jump 2 positions forward, if not equal, do not jump(zero jump).
     // Is it the `connect` syscall?
     BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_connect, 2, 0),
     // Is it the `bind` syscall?
     BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_bind, 1, 0),
 
+    // RET|K Return a constant.
     // Neither bind nor connect? Allow it.
     BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ALLOW),
 
     // Fun fact. `connect` and `bind` take the same arguments, so we can process them the same way.
-    // int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-    // int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+    // int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+    // int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 
     // Ideally, we'd load the 2nd arg (sockaddr struct) and look at the `sa_family` member to see
     // what kind of socket address is to be used. However, BPF/seccomp doesn't allow you to 
