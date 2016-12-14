@@ -25,4 +25,7 @@ Ncat: Connection refused.
 
 % ./offline nc localhost 10000
 Ncat: Permission denied.
+
+% ./offline host google.com
+host: isc_socket_bind: permission denied
 ```
