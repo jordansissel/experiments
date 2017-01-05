@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 EXPOSE 443
 
+
 RUN apt-get update
 
 # Translated from the nextcloud docs:
@@ -74,3 +75,10 @@ RUN cd /var/www/nextcloud; sudo -u www-data php occ config:system:set trusted_do
     sudo -u www-data php occ config:system:set trusted_domains 2 --value pork.semicomplete.com; \
     sudo -u www-data php occ config:system:set trusted_domains 3 --value pork;
 
+RUN mkdir -p /srv/data
+RUN cd /var/www/nextcloud; sudo -u www-data php occ config:system:set datadirectory --value /srv/data
+
+ADD entry.sh /usr/bin/nextcloud-entry.sh
+RUN chmod 755 /usr/bin/nextcloud-entry.sh
+
+ENTRYPOINT [ "/usr/bin/nextcloud-entry.sh" ]
