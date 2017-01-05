@@ -1,6 +1,6 @@
-FROM ubuntu:16.04
-EXPOSE 443
-
+FROM ubuntu:16.10
+ENV WEBDOMAIN pork.semicomplete.com
+ENV EMAIL jls@semicomplete.com
 
 RUN apt-get update
 
@@ -38,6 +38,9 @@ RUN apt-get install -y \
   #php7.0-apcu
   #php7.0-openssl\
 
+# For letsencrypt
+RUN apt-get install -y python-certbot-apache 
+
 # I'm not using mariadb yet ... and it's not clear I will. Docker makes it
 # really annoying to run multiple processes in a single container.
 #RUN apt-get install -y mariadb-server php7.0-pdo_mysql
@@ -56,10 +59,6 @@ ADD apache-httpd/default-ssl.conf apache-httpd/nextcloud.conf /etc/apache2/sites
 
 RUN a2ensite default-ssl nextcloud
 # XXX: Enable webdav
-
-# TODO(sissel): SSL configuration?
-# For now, generate a self-signed cert
-RUN openssl req -x509 -batch -nodes -newkey rsa:2048 -keyout /etc/ssl/private/apache-httpd.key -out /etc/ssl/certs/apache-httpd.crt
 
 # XXX: Randomize the password.
 # Extract to /var/www/nextcloud
@@ -81,4 +80,5 @@ RUN cd /var/www/nextcloud; sudo -u www-data php occ config:system:set datadirect
 ADD entry.sh /usr/bin/nextcloud-entry.sh
 RUN chmod 755 /usr/bin/nextcloud-entry.sh
 
+EXPOSE 443
 ENTRYPOINT [ "/usr/bin/nextcloud-entry.sh" ]
