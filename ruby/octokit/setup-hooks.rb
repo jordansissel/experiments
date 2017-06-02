@@ -11,8 +11,8 @@ cli = Class.new(Clamp::Command) do
   option "--github-token", "GITHUB_TOKEN", "Your github auth token", :required => true
   #option "--hipchat-token", "HIPCHAT_TOKEN", "Your hipchat admin auth token", :required => true
   #option "--hipchat-room", "HIPCHAT_ROOM", "The room to send notifications to", :required => true
-  option "--clacheck-url", "CLACHECK_URL", "The url (w/ user+pass) to set for cla checking", :required => true
-  option "--slack-hook-url", "SLACK_HOOK_URL", "The url to send hooks for Slack.", :required => true
+  #option "--clacheck-url", "CLACHECK_URL", "The url (w/ user+pass) to set for cla checking", :required => true
+  #option "--slack-hook-url", "SLACK_HOOK_URL", "The url to send hooks for Slack.", :required => true
 
   parameter "ORGANIZATION", "The github organization"
   parameter "[REPOSITORY] ...", "The repository name"
@@ -36,8 +36,8 @@ cli = Class.new(Clamp::Command) do
         #"room" => hipchat_room,
         #"auth_token" => hipchat_token
       #)
-      setup_slack(organization, r, slack_hook_url)
-      setup_clacheck(organization, r)
+      #setup_slack(organization, r, slack_hook_url)
+      #setup_clacheck(organization, r)
       remove_old_hooks(organization, r)
     end
   end
@@ -147,6 +147,13 @@ cli = Class.new(Clamp::Command) do
   def remove_old_hooks(org, repo)
     full_repo_name = "#{org}/#{repo}"
     hooks = client.hooks(full_repo_name)
+
+    [ "hooks.waffle.io", "clacheck.elastic.co", "zube.io" ].each do |addr|
+      hooks.select { |h| h[:name] == "web" && h[:config][:url].include?(addr) }.each do |hook|
+        puts "Removing old webhook #{hook[:config][:url]}"
+        client.remove_hook(full_repo_name, hook.id)
+      end
+    end
 
     [ "jenkins", "hipchat" ].each do |name| 
       hook = hooks.find { |h| h[:name] == name }
