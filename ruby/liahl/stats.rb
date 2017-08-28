@@ -111,7 +111,7 @@ class ScoringEvent
 
   def to_hash
     { 
-      time: time.to_hash,
+      time: time && time.to_hash,
       condition: condition,
       player: @player && @player.to_hash,
       assists: @assists.collect(&:to_hash)
@@ -120,6 +120,16 @@ class ScoringEvent
 end
 
 class GameTime
+  class InvalidTimeFormat < StandardError
+    def initialize(time)
+      @time = time
+    end
+
+    def to_s
+      "Invalid time value: #{@time}"
+    end
+  end
+
   PERIOD_DURATION_SECONDS = 20 * 60
 
   attr_reader :time, :period
@@ -138,8 +148,11 @@ class GameTime
     when /^\d+\.\d+$/
       seconds, subsec = clock.split(/[.]/).map(&:to_i)
       seconds + "0.#{subsec}".to_f
+    when /^\d+:\d+$/
+      minutes, seconds = clock.split(":").map(&:to_i)
+      (minutes * 60) + seconds
     else
-      raise "Unknown time format: #{clock.inspect}"
+      raise InvalidTimeFormat, clock
     end
 
     @time = period_time
@@ -187,7 +200,9 @@ class Stats < Clamp::Command
   BASE_URL = "http://stats.liahl.org"
 
   module XPath
-    SHOTS_ON_GOAL = "//th[contains(text(), 'Shots on Goal')]/ancestor::table[1]/tr/th"
+    #SHOTS_ON_GOAL = "//th[contains(text(), 'Home Saves:')]/ancestor::table[1]/tr/th"
+    HOME_SHOTS_ON_GOAL = "//th[contains(text(), 'Home Saves:')]/text()"
+    VISITOR_SHOTS_ON_GOAL = "//th[contains(text(), 'Home Saves:')]/text()"
     PLAYERS = "//th[contains(text(), 'Players in')]/ancestor::table[1]"
     REFEREES = "//th[contains(text(), 'Referee')]/following-sibling::td"
     SCOREKEEP = "//th[contains(text(), 'Scorekeeper')]/following-sibling::td"
@@ -209,7 +224,11 @@ class Stats < Clamp::Command
     if urls.count == 1
       result["docs"].first["_source"]["content"]
     else
-      result["docs"].collect { |doc| doc["_source"]["content"] }
+      missing = result["docs"].reject { |doc| doc["found"] }.count
+      if missing > 0
+        puts "Missing #{missing} of #{urls.count} pages requested. Only partial stats available."
+      end
+      result["docs"].select { |doc| doc["found"] }.collect { |doc| doc["_source"]["content"] }
     end
   rescue => e
     logger.error("Failure fetching docs", error: e, stack: e.backtrace)
@@ -225,7 +244,7 @@ class Stats < Clamp::Command
     stats_main = "#{BASE_URL}/display-stats.php?league=1&season=#{season}"
 
     doc = Nokogiri::HTML(fetch(stats_main))
-    team_links = doc.xpath("//a[contains(@href,'display-schedule.php')]").collect { |anchor| BASE_URL + "/" + anchor.attributes["href"] }
+    team_links = doc.xpath("//a[contains(@href,'display-schedule')]").collect { |anchor| BASE_URL + "/" + anchor.attributes["href"] }
 
     if team_links.empty?
       logger.warn("No data found for season", season: season)
@@ -259,13 +278,13 @@ class Stats < Clamp::Command
     visitor = {
       name: visitor_name,
       players: visitor_players,
-      shots: game.xpath(XPath::SHOTS_ON_GOAL)[1].text.sub(/Visitor:/, "").to_i,
+      shots: game.xpath(XPath::HOME_SHOTS_ON_GOAL).text.sub(/Visitor:/, "").to_i,
     }
 
     home = {
       name: home_name,
       players: home_players,
-      shots: game.xpath(XPath::SHOTS_ON_GOAL)[2].text.sub(/Home:/, "").to_i,
+      shots: game.xpath(XPath::VISITOR_SHOTS_ON_GOAL).text.sub(/Home:/, "").to_i,
     }
 
     refs = game.xpath(XPath::REFEREES).collect(&:text)
@@ -345,6 +364,10 @@ class Stats < Clamp::Command
     logger.info("Game processed", home: home[:name], visitor: visitor[:name], start_time: game_start_time, location: location, events: events.count)
 
     events
+  rescue => e
+    require "pry"
+    binding.pry
+    raise
   end # def process_game
 
   def parse_players(doc)
@@ -362,8 +385,14 @@ class Stats < Clamp::Command
       player = players.find { |p| p.number == player.text.to_i }
       assist = assist.collect { |a| players.find { |p| p.number == a.text.to_i } }.reject(&:nil?)
 
-      ScoringEvent.new(GameTime.new(period.text.to_i, time.text.strip), condition.text.strip, player, assist)
-    end
+      begin
+        time = GameTime.new(period.text.to_i, time.text.strip)
+        ScoringEvent.new(time, condition.text.strip, player, assist)
+      rescue => e
+        @logger.warn(e.to_s)
+        nil
+      end
+    end.reject(&:nil?)
   end
 
   def parse_penalties(doc, players)
@@ -373,12 +402,33 @@ class Stats < Clamp::Command
       player = players.find { |p| number == p.number }
       infraction = infraction.text if infraction
       minutes = minutes.text.to_i if minutes
-      off_ice = GameTime.new(period, off_ice.text.strip) if off_ice
-      pstart = GameTime.new(period, pstart.text.strip) if pstart
+
+      if off_ice
+        begin
+          off_ice = GameTime.new(period, off_ice.text.strip)
+        rescue GameTime::InvalidTimeFormat => e
+          logger.warn(e.to_s)
+          off_ice = nil
+        end
+      end
+
+      if pstart
+        begin
+          pstart = GameTime.new(period, pstart.text.strip)
+        rescue GameTime::InvalidTimeFormat => e
+          logger.warn(e.to_s)
+          pstart = nil
+        end
+      end
 
       if pend
         if !pend.text.strip.empty?
-          pend = GameTime.new(period, pend.text.strip)
+          begin
+            pend = GameTime.new(period, pend.text.strip)
+          rescue GameTime::InvalidTimeFormat => e
+            logger.warn(e.to_s)
+            pend = nil
+          end
         else
           pend = nil
         end
@@ -388,22 +438,24 @@ class Stats < Clamp::Command
         if on_ice.text.strip.empty?
           on_ice = nil
         else
-          on_ice = GameTime.new(period, on_ice.text.strip) rescue nil
+          begin
+            on_ice = GameTime.new(period, on_ice.text.strip)
+          rescue GameTime::InvalidTimeFormat => e
+            logger.warn(e.to_s)
+            pend = nil
+          end
         end
       end
 
       PenaltyEvent.new(player, infraction, minutes, off_ice, pstart, pend, on_ice)
     end
-  rescue => e
-    require "pry"
-    binding.pry
   end
 
   def execute
     logger.subscribe(STDOUT)
     logger.level = :info
 
-    seasons = (35..35)
+    seasons = (39..39)
     seasons.to_a.reverse.each do |s| 
       matches = find_games_in_season(s)
       next if matches.nil?

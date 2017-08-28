@@ -116,8 +116,11 @@ class LIAHLDownload < Clamp::Command
     stats_links = doc.xpath("//a[contains(text(),'Player Stats')]")
     levels = doc.xpath("//a[contains(text(), 'Player Stats')]/../../preceding-sibling::tr[1]").collect(&:text)
 
+    require "pry"
+    binding.pry
+
     # Download all the current score sheets
-    doc.xpath("//a[contains(@href, 'display-schedule.php')]").each do |link|
+    doc.xpath("//a[contains(@href, 'display-schedule')]").each do |link|
       team = link.text
       href = link.attributes["href"].value
       url = base_url + "/" + href
@@ -137,7 +140,7 @@ class LIAHLDownload < Clamp::Command
   end
 
   def execute
-    seasons = (35..35)
+    seasons = (39..39)
     seasons.each do |s| 
       process_season(s)
     end
