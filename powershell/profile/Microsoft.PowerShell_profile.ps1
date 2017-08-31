@@ -1,3 +1,6 @@
+import-module PSReadline
+Set-PSReadlineOption -EditMode Emacs
+
 Import-Module Hyper-V
 function Clone-VM($parent, $suffix) {
         $diskpath='C:\users\public\documents\hyper-v\Virtual hard disks'
@@ -33,6 +36,33 @@ function Connect-VM {
 
         [switch]$ssh,
         [string]$user
+    )
+ 
+    Process {
+        if ($Name) {
+          $inputObject = Get-VM -Name $Name -ErrorAction Stop
+        }
+
+        if ($ssh) {
+            SSH-VM -user $user -inputObject $inputObject
+        } else {
+            foreach ($vm in $inputObject) {
+                & vmconnect.exe $vm.ComputerName $vm.Name -G $vm.Id.Guid
+            }
+        }
+    }
+}
+
+function SSH-VM {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='inputObject')]
+        [Microsoft.HyperV.PowerShell.VirtualMachine[]]$inputObject,
+
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name,
+
+        [string]$user
     ) 
  
     Process {
@@ -41,19 +71,22 @@ function Connect-VM {
         }
 
         foreach ($vm in $inputObject) {
-            if ($ssh) {
-                $ipv6 = Get-VMIPv6Address $vm
-                if ($user) {
-                    & 'C:\Program Files (x86)\PuTTY\putty.exe' $user@$ipv6
-                } else {
-                    & 'C:\Program Files (x86)\PuTTY\putty.exe' $ipv6
-                }
+            $ipv6 = Get-VMIPv6Address $vm
+                
+            if (test-path Env:ConEmuPid) {
+                # When running under ConEmu, let's just open a new console within ConEmu.
+                $flags = "-new_console"
+            } 
+            if ($user) {
+                & 'C:\Program Files (x86)\PuTTY\putty.exe' $flags $user@$ipv6
             } else {
-                & vmconnect.exe $vm.ComputerName $vm.Name -G $vm.Id.Guid
+                & 'C:\Program Files (x86)\PuTTY\putty.exe' $flags $ipv6
             }
         }
     }
+
 }
+
 
 function Get-VMIPv6Address() {
     [CmdletBinding()]
