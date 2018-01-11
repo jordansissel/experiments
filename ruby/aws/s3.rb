@@ -28,7 +28,7 @@ begin
 
       date = (Time.now - 86400).strftime("%Y/%m/%d")
       regions.each do |region|
-        puts "Listing objects in account [redacted] type #{type} region #{region}"
+        puts "Listing objects in account [redacted] type #{type} region #{region} date #{date}"
         # List files for today
         prefix = "AWSLogs/#{account}/#{type}/#{region}/#{date}/"
 
@@ -40,7 +40,7 @@ begin
           region_count += 1
           #$stdout.syswrite(".")
         end
-        puts "#{region_count} objects in account [redacted] type #{type} region #{region}"
+        puts "#{region_count} objects in account [redacted] type #{type} region #{region} date #{date}"
       end
     end
   end
