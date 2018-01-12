@@ -1,7 +1,7 @@
 package main
 
 import (
-  "io"
+	"io"
 )
 
 type NullTrimmer struct {
@@ -22,4 +22,3 @@ func (t NullTrimmer) Read(p []byte) (n int, err error) {
 	}
 	return
 }
-
