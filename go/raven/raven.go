@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/xml"
 	"log"
+	"time"
 	//"github.com/coreos/go-systemd/daemon"
 )
 
@@ -10,11 +11,17 @@ type Notification interface {
 	Notification() // marker
 }
 
-type Watts float64
+type Watts struct {
+	Value float64
+	Time  time.Time
+}
 
 func (Watts) Notification() {} // marker
 
-type Price float64
+type Price struct {
+	Value float64
+	Time  time.Time
+}
 
 func (Price) Notification() {} // marker
 
@@ -34,13 +41,13 @@ func Handle(decoder *xml.Decoder) (Notification, error) {
 				if err = decoder.DecodeElement(&e, &t); err != nil {
 					return nil, err
 				}
-				return Watts(e.Watts()), nil
+				return e.ToWatts(), nil
 			case "PriceCluster":
 				var e PriceCluster
 				if err = decoder.DecodeElement(&e, &t); err != nil {
 					return nil, err
 				}
-				return Price(e.Cost()), nil
+				return e.ToPrice(), nil
 			case "CurrentSummationDelivered":
 				var e CurrentSummationDelivered
 				if err = decoder.DecodeElement(&e, &t); err != nil {
