@@ -55,6 +55,7 @@ func main() {
 		defer reader.Close()
 		decoder := xml.NewDecoder(NullTrimmer{reader})
 
+		var last time.Time
 		for {
 			n, err := Handle(decoder)
 			if err != nil {
@@ -66,10 +67,20 @@ func main() {
 				log.Printf("Watts: %.0f", v)
 				watts_history.Value = v
 				watts_history = watts_history.Prev() // Store items in reverse-chronological order.
+				last = v.Time
 			case Price:
 				log.Printf("Price: $%.4f", v)
-				price_history.Value = v
-				price_history = price_history.Prev() // Store items in reverse-chronological order.
+				if !last.IsZero() {
+					// Override the "time" value in the PriceCluster. I chose this
+					// because the <TimeStamp> provided by a <PriceCluster> update appears to be
+					// the time at which the PriceClsuter became active. Not the time the
+					// reading was made.
+					// Side effect is this will throw away any PriceCluster notifications until
+					// at least one InstantaneousDemand has been seen.
+					v.Time = last
+					price_history.Value = v
+					price_history = price_history.Prev() // Store items in reverse-chronological order.
+				}
 			}
 		}
 	}()
@@ -127,7 +138,7 @@ func main() {
 			} else {
 				fmt.Fprintf(w, ",")
 			}
-			fmt.Fprintf(w, "{\"timestamp\":\"%s\",\"price\":%.04f}", v.(Watts).Time.Format("2006-01-02T15:04:05.000-0700"), v.(Price).Value)
+			fmt.Fprintf(w, "{\"timestamp\":\"%s\",\"price\":%.04f}", v.(Price).Time.Format("2006-01-02T15:04:05.000-0700"), v.(Price).Value)
 		})
 		fmt.Fprintln(w, "]")
 	})

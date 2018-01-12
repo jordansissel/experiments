@@ -9,6 +9,7 @@
     <script>
 window.onload = function() {
   console.log("Loading...");
+
   d3.json('/api/usage', function(data) {
     console.log("Loaded...");
     data = MG.convert.date(data, "timestamp", "%Y-%m-%dT%H:%M:%S.%L%Z");
@@ -23,10 +24,25 @@ window.onload = function() {
       y_accessor: 'usage'
     });
   });
+
+  d3.json('/api/price', function(data) {
+    data = MG.convert.date(data, "timestamp", "%Y-%m-%dT%H:%M:%S.%L%Z");
+    MG.data_graphic({
+      title: "Price ($ per kWh)",
+      data: data,
+      width: 800,
+      height: 300,
+      right: 40,
+      target: document.getElementById('price'),
+      x_accessor: 'timestamp',
+      y_accessor: 'price'
+    });
+  });
 };
     </script>
   </head>
   <body>
     <div id="usage"></div>
+    <div id="price"></div>
   </body>
 </html>
