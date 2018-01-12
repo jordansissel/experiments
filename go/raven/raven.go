@@ -2,49 +2,29 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt"
-	"github.com/jacobsa/go-serial/serial"
 	"io"
 	"log"
 	//"github.com/coreos/go-systemd/daemon"
-	"net/http"
-	"time"
 )
 
-type PowerState struct {
-	Watts     float64
-	Cost      float64
-	Timestamp time.Time
+type Notification interface {
+	Notification() // marker
 }
 
-func powerReader(state *PowerState) {
-	options := serial.OpenOptions{
-		PortName:        "/dev/ttyUSB0",
-		BaudRate:        115200,
-		DataBits:        8,
-		StopBits:        1,
-		MinimumReadSize: 1,
-	}
+type Watts float64
 
-	port, err := serial.Open(options)
-	if err != nil {
-		log.Fatalf("serial.Open: %v", err)
-	}
+func (Watts) Notification() {} // marker
 
-	// Make sure to close it later.
-	defer port.Close()
+type Price float64
 
-	decoder := xml.NewDecoder(NullTrimmer{port})
+func (Price) Notification() {} // marker
 
-	var cost float64
+func Handle(reader io.Reader) (Notification, error) {
+	decoder := xml.NewDecoder(reader)
 	for {
 		t, err := decoder.Token()
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			log.Printf("xml err: %s\n", err)
-			return
+			return nil, err
 		}
 
 		switch t := t.(type) {
@@ -53,69 +33,39 @@ func powerReader(state *PowerState) {
 			case "InstantaneousDemand":
 				var e InstantaneousDemand
 				if err = decoder.DecodeElement(&e, &t); err != nil {
-					log.Printf("xml err2: %s\n", err)
-					return
+					return nil, err
 				}
-				state.Watts = e.Watts()
-				state.Timestamp = time.Now()
-				if cost > 0 {
-					estimate := (e.Watts() / 1000.0) * cost
-					log.Printf("Watts: %.0f (per hour: $%.2f)\n", e.Watts(), estimate)
-				} else {
-					log.Printf("Watts: %.0f (no cost rate known yet)\n", e.Watts())
-				}
+				return Watts(e.Watts()), nil
 			case "PriceCluster":
 				var e PriceCluster
 				if err = decoder.DecodeElement(&e, &t); err != nil {
-					log.Printf("xml err2: %s\n", err)
-					return
+					return nil, err
 				}
-				cost = e.Cost()
-				state.Cost = cost
-				state.Timestamp = time.Now()
-				log.Printf("kWh rate: %f\n", cost)
+				return Price(e.Cost()), nil
 			case "CurrentSummationDelivered":
 				var e CurrentSummationDelivered
 				if err = decoder.DecodeElement(&e, &t); err != nil {
-					log.Printf("xml err3: %s\n", err)
-					return
+					return nil, err
 				}
+				// Nothing to do here...
 				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
 			case "TimeCluster":
 				var e TimeCluster
 				if err = decoder.DecodeElement(&e, &t); err != nil {
-					log.Printf("xml err4: %s\n", err)
-					return
+					return nil, err
 				}
 				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
-      case "ConnectionStatus":
+			case "ConnectionStatus":
 				var e ConnectionStatus
 				if err = decoder.DecodeElement(&e, &t); err != nil {
-					log.Printf("xml err5: %s\n", err)
-					return
+					return nil, err
 				}
 				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
 			default:
 				log.Printf("Unknown element: %#v\n", t)
-				return
 			}
 		}
 	}
-}
 
-func main() {
-	var state PowerState
-	go powerReader(&state)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Watts: %.0f @ $%.2f per kWh\n", state.Watts, state.Cost)
-		hourly := (state.Watts / 1000) * state.Cost
-		fmt.Fprintf(w, "Hourly cost: $%.2f\n", hourly)
-		fmt.Fprintf(w, "Daily cost: $%.2f\n", hourly*24)
-		fmt.Fprintf(w, "Monthly cost: $%.2f\n", hourly*24*30)
-		fmt.Fprintf(w, "Last read: %s\n", time.Since(state.Timestamp))
-	})
-
-	http.ListenAndServe(":8080", nil)
-
+	panic("Should not get here")
 }
