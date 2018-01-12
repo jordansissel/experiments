@@ -76,7 +76,7 @@ func main() {
 
 	http.Handle("/public/", http.FileServer(http.Dir(".")))
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/txt", func(w http.ResponseWriter, r *http.Request) {
 		if watts_history.Next() == nil || price_history.Next() == nil {
 			fmt.Fprintf(w, "Missing one or both of power and price readings. Try again later.")
 			return
@@ -132,6 +132,9 @@ func main() {
 		fmt.Fprintln(w, "]")
 	})
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "public/index.html")
+	})
 	http.ListenAndServe(":8080", nil)
 
 }
