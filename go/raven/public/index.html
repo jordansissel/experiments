@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/public/metrics-graphics-2.11.0/dist/metricsgraphics.min.js"></script>
+    <link rel="stylesheet" href="/public/metrics-graphics-2.11.0/dist/metricsgraphics.css"></link>
+
+    <script>
+window.onload = function() {
+  console.log("Loading...");
+  d3.json('/api/usage', function(data) {
+    console.log("Loaded...");
+    data = MG.convert.date(data, "timestamp", "%Y-%m-%dT%H:%M:%S.%L%Z");
+    MG.data_graphic({
+      title: "Power Usage (Watts)",
+      data: data,
+      width: 800,
+      height: 300,
+      right: 40,
+      target: document.getElementById('usage'),
+      x_accessor: 'timestamp',
+      y_accessor: 'usage'
+    });
+  });
+};
+    </script>
+  </head>
+  <body>
+    <div id="usage"></div>
+  </body>
+</html>
