@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"log"
 	"net/http"
@@ -33,9 +34,10 @@ func main() {
 		}
 		// Make sure to close it later.
 		defer port.Close()
+		decoder := xml.NewDecoder(port)
 
 		for {
-			n, err := Handle(port)
+			n, err := Handle(decoder)
 			if err != nil {
 				log.Printf("Error reading RAVEn data: %s", err)
 				return

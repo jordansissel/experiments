@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"io"
 	"log"
 	//"github.com/coreos/go-systemd/daemon"
 )
@@ -19,8 +18,8 @@ type Price float64
 
 func (Price) Notification() {} // marker
 
-func Handle(reader io.Reader) (Notification, error) {
-	decoder := xml.NewDecoder(reader)
+//func Handle(reader io.Reader) (Notification, error) {
+func Handle(decoder *xml.Decoder) (Notification, error) {
 	for {
 		t, err := decoder.Token()
 		if err != nil {
