@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/ring"
 	"encoding/xml"
 	"fmt"
 	"log"
@@ -15,10 +16,15 @@ func CostEstimate(w Watts, p Price, d time.Duration) float64 {
 	return d.Hours() * hourly
 }
 
+type Event struct {
+	n Notification
+	t time.Time
+}
+
 func main() {
-	var watts Watts
-	var last time.Time
-	var price Price
+	watts_history := ring.New(86400 / 10) // generally one update per 10 seconds
+	price_history := ring.New(86400 / 30) // generally one update per 30 seconds
+
 	go func() {
 		options := serial.OpenOptions{
 			PortName:        "/dev/ttyUSB0",
@@ -42,19 +48,26 @@ func main() {
 				log.Printf("Error reading RAVEn data: %s", err)
 				return
 			}
-			last = time.Now()
 			switch v := n.(type) {
 			case Watts:
 				log.Printf("Watts: %.0f", v)
-				watts = v
+				watts_history.Value = &Event{v, time.Now()}
+				watts_history = watts_history.Prev() // Store items in reverse-chronological order.
 			case Price:
 				log.Printf("Price: $%.4f", v)
-				price = v
+				price_history.Value = &Event{v, time.Now()}
+				price_history = watts_history.Prev() // Store items in reverse-chronological order.
 			}
 		}
 	}()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		watts := watts_history.Value.(Event).n.(Watts)
+		price := price_history.Value.(Event).n.(Price)
+		last := watts_history.Value.(Event).t
+		if t := price_history.Value.(Event).t; t.After(last) {
+			last = t
+		}
 		fmt.Fprintf(w, "Watts: %.0f @ $%.2f per kWh\n", watts, price)
 		fmt.Fprintf(w, "Hourly cost: $%.2f\n", CostEstimate(watts, price, 1*time.Hour))
 		fmt.Fprintf(w, "Daily cost: $%.2f\n", CostEstimate(watts, price, 24*time.Hour))
