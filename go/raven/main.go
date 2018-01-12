@@ -34,7 +34,7 @@ func main() {
 		}
 		// Make sure to close it later.
 		defer port.Close()
-		decoder := xml.NewDecoder(port)
+		decoder := xml.NewDecoder(NullTrimmer{port})
 
 		for {
 			n, err := Handle(decoder)
