@@ -82,7 +82,7 @@ class PenaltyEvent
       infraction: infraction,
       minutes: minutes,
       duration: penalty_end.to_f - penalty_start.to_f,
-      time: penalty_start.to_hash
+      time: penalty_start ? penalty_start.to_hash : nil
     }
   end
 end
@@ -151,6 +151,8 @@ class GameTime
     when /^\d+:\d+$/
       minutes, seconds = clock.split(":").map(&:to_i)
       (minutes * 60) + seconds
+    when /^\d+$/
+      clock.to_i
     else
       raise InvalidTimeFormat, clock
     end
@@ -232,8 +234,8 @@ class Stats < Clamp::Command
     end
   rescue => e
     logger.error("Failure fetching docs", error: e, stack: e.backtrace)
-    require "pry"
-    binding.pry
+    #require "pry"
+    #binding.pry
     sleep 1
     retry
   end
@@ -317,7 +319,9 @@ class Stats < Clamp::Command
       (team[:penalties] + team[:scoring]).each do |event|
         real_time = (game_start_time + event.time.to_f).iso8601(3)
         event_hash = event.to_hash.merge(team_event)
-        event_hash[:time][:real] = real_time
+        if event_hash[:time]
+          event_hash[:time][:real] = real_time
+        end
         event_hash[:event] = event.class.name.sub(/Event$/, "").downcase
 
         if event.nil?
@@ -341,14 +345,15 @@ class Stats < Clamp::Command
             end
           end
         rescue => e
-          require "pry"
-          binding.pry
+          logger.error("Failure something?", error: e.to_s)
+          #require "pry"
+          #binding.pry
         end
       end
     end
 
 
-    events = events.sort_by { |e| e[:time][:game] }
+    events = events.sort_by { |e| e[:time] ? e[:time][:game] : 0 }
 
     # Make each event unique within a game, and make that identifier the same
     # regardless of how we process things (do it based on order)
@@ -361,12 +366,13 @@ class Stats < Clamp::Command
       #binding.pry
     #end
 
-    logger.info("Game processed", home: home[:name], visitor: visitor[:name], start_time: game_start_time, location: location, events: events.count)
+    logger.debug("Game processed", home: home[:name], visitor: visitor[:name], start_time: game_start_time, location: location, events: events.count)
+    $stdout.syswrite(".")
 
     events
   rescue => e
-    require "pry"
-    binding.pry
+    #require "pry"
+    #binding.pry
     raise
   end # def process_game
 
@@ -376,8 +382,9 @@ class Stats < Clamp::Command
       Player.new(number.text.to_i, position.empty? ? nil : position, name.text.strip.gsub(/[[:space:]]+/, " "))
     end
   rescue => e
-    require "pry"
-    binding.pry
+    logger.error("Failed parsing players", doc: doc.to_s[0..30])
+    #require "pry"
+    #binding.pry
   end
 
   def parse_scoring(doc, players)
@@ -455,7 +462,7 @@ class Stats < Clamp::Command
     logger.subscribe(STDOUT)
     logger.level = :info
 
-    seasons = (39..39)
+    seasons = (20..40)
     seasons.to_a.reverse.each do |s| 
       matches = find_games_in_season(s)
       next if matches.nil?
@@ -482,9 +489,9 @@ class Stats < Clamp::Command
         logtime(logger, "Uploading #{slice.count} slice of #{events.count} events from #{unique_games} games in season #{s}") do
           resp = es.bulk(body: slice.flatten)
           if resp["errors"]
-            logger.error("Errors occurred uploading bulk.")
-            require "pry"
-            binding.pry
+            logger.error("Errors occurred uploading bulk.", errors: resp["errors"])
+            #require "pry"
+            #binding.pry
           end
         end
       end

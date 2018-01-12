@@ -22,7 +22,7 @@ class LIAHLDownload < Clamp::Command
   end
 
   def open(*args)
-    sleep(1)
+    sleep(0.500)
     time("fetch #{args.first}") do
       Kernel::open(*args)
     end
@@ -34,7 +34,7 @@ class LIAHLDownload < Clamp::Command
 
     begin
       result = time("cache check #{urls.count} pages #{urls.first if urls.count == 1}") do
-        es.mget(index: elasticsearch_index, body: { ids: ids })
+        es.mget(index: elasticsearch_index, type: "web", body: { ids: ids })
       end
 
       begin
@@ -77,7 +77,7 @@ class LIAHLDownload < Clamp::Command
       begin
         open(url, HTTP_HEADERS).read.force_encoding(Encoding::UTF_8).encode(Encoding::UTF_8, :invalid => :replace, :undef => :replace)
       rescue => e
-        puts "Fetch failed #{url}"
+        puts "Fetch failed #{url}: #{e.to_s}"
         sleep 5
         retry
       end
@@ -116,9 +116,6 @@ class LIAHLDownload < Clamp::Command
     stats_links = doc.xpath("//a[contains(text(),'Player Stats')]")
     levels = doc.xpath("//a[contains(text(), 'Player Stats')]/../../preceding-sibling::tr[1]").collect(&:text)
 
-    require "pry"
-    binding.pry
-
     # Download all the current score sheets
     doc.xpath("//a[contains(@href, 'display-schedule')]").each do |link|
       team = link.text
@@ -140,7 +137,7 @@ class LIAHLDownload < Clamp::Command
   end
 
   def execute
-    seasons = (39..39)
+    seasons = (39..40).to_a.reverse
     seasons.each do |s| 
       process_season(s)
     end
