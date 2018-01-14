@@ -1011,3 +1011,338 @@
   <DigitsLeft>0x0f</DigitsLeft>
   <SuppressLeadingZero>Y</SuppressLeadingZero>
 </InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb244</TimeStamp>
+  <Demand>0x00028f</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb24c</TimeStamp>
+  <Demand>0x00028f</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb254</TimeStamp>
+  <Demand>0x00028f</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb25c</TimeStamp>
+  <Demand>0x00028f</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<CurrentSummationDelivered>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb262</TimeStamp>
+  <SummationDelivered>0x0000000004623392</SummationDelivered>
+  <SummationReceived>0x0000000000000000</SummationReceived>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</CurrentSummationDelivered>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb264</TimeStamp>
+  <Demand>0x0002c0</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb26d</TimeStamp>
+  <Demand>0x000296</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<PriceCluster>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21ed9240</TimeStamp>
+  <Price>0x00004e6e</Price>
+  <Currency>0x0348</Currency>
+  <TrailingDigits>0x05</TrailingDigits>
+  <Tier>0x01</Tier>
+  <StartTime>0x21ec7900</StartTime>
+  <Duration>0x05a0</Duration>
+  <RateLabel>Tier1</RateLabel>
+</PriceCluster>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb275</TimeStamp>
+  <Demand>0x000296</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<PriceCluster>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21ed9240</TimeStamp>
+  <Price>0x00004e6e</Price>
+  <Currency>0x0348</Currency>
+  <TrailingDigits>0x05</TrailingDigits>
+  <Tier>0x01</Tier>
+  <StartTime>0x21ec7900</StartTime>
+  <Duration>0x05a0</Duration>
+  <RateLabel>Tier1</RateLabel>
+</PriceCluster>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb27e</TimeStamp>
+  <Demand>0x00029c</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb286</TimeStamp>
+  <Demand>0x00029c</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb28f</TimeStamp>
+  <Demand>0x0002bd</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb297</TimeStamp>
+  <Demand>0x0002bd</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb29f</TimeStamp>
+  <Demand>0x0002ae</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2a7</TimeStamp>
+  <Demand>0x0002ae</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2af</TimeStamp>
+  <Demand>0x000290</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2b7</TimeStamp>
+  <Demand>0x000290</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2bf</TimeStamp>
+  <Demand>0x000295</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<PriceCluster>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21ed9240</TimeStamp>
+  <Price>0x00004e6e</Price>
+  <Currency>0x0348</Currency>
+  <TrailingDigits>0x05</TrailingDigits>
+  <Tier>0x01</Tier>
+  <StartTime>0x21ec7900</StartTime>
+  <Duration>0x05a0</Duration>
+  <RateLabel>Tier1</RateLabel>
+</PriceCluster>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2c7</TimeStamp>
+  <Demand>0x000295</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2d2</TimeStamp>
+  <Demand>0x000297</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<PriceCluster>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21ed9240</TimeStamp>
+  <Price>0x00004e6e</Price>
+  <Currency>0x0348</Currency>
+  <TrailingDigits>0x05</TrailingDigits>
+  <Tier>0x01</Tier>
+  <StartTime>0x21ec7900</StartTime>
+  <Duration>0x05a0</Duration>
+  <RateLabel>Tier1</RateLabel>
+</PriceCluster>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2da</TimeStamp>
+  <Demand>0x00029c</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2e3</TimeStamp>
+  <Demand>0x00029c</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2eb</TimeStamp>
+  <Demand>0x00029a</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2f3</TimeStamp>
+  <Demand>0x00029a</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb2fb</TimeStamp>
+  <Demand>0x00028f</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb303</TimeStamp>
+  <Demand>0x000293</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
+<InstantaneousDemand>
+  <DeviceMacId>0x0011223344556677</DeviceMacId>
+  <MeterMacId>0x1122334455667788</MeterMacId>
+  <TimeStamp>0x21edb30b</TimeStamp>
+  <Demand>0x000293</Demand>
+  <Multiplier>0x00000001</Multiplier>
+  <Divisor>0x000003e8</Divisor>
+  <DigitsRight>0x03</DigitsRight>
+  <DigitsLeft>0x0f</DigitsLeft>
+  <SuppressLeadingZero>Y</SuppressLeadingZero>
+</InstantaneousDemand>
