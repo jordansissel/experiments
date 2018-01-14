@@ -75,14 +75,26 @@ func powerReader(state *PowerState) {
 				state.Timestamp = time.Now()
 				log.Printf("kWh rate: %f\n", cost)
 			case "CurrentSummationDelivered":
-				var e map[string]string
+				var e CurrentSummationDelivered
 				if err = decoder.DecodeElement(&e, &t); err != nil {
 					log.Printf("xml err3: %s\n", err)
 					return
 				}
 				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
 			case "TimeCluster":
-				log.Printf("Unsupported right now: %s\n", t.Name.Local)
+				var e TimeCluster
+				if err = decoder.DecodeElement(&e, &t); err != nil {
+					log.Printf("xml err4: %s\n", err)
+					return
+				}
+				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
+      case "ConnectionStatus":
+				var e ConnectionStatus
+				if err = decoder.DecodeElement(&e, &t); err != nil {
+					log.Printf("xml err5: %s\n", err)
+					return
+				}
+				log.Printf("Unsupported right now: %s: %#v\n", t.Name.Local, e)
 			default:
 				log.Printf("Unknown element: %#v\n", t)
 				return

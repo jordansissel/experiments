@@ -80,3 +80,15 @@ type TimeCluster struct {
 	UTCTime     string
 	LocalTime   string
 }
+
+type ConnectionStatus struct {
+  DeviceMacId string
+  MeterMacId string
+  Status string
+  Description string
+  StatusCode string
+  ExtPanId string
+  Channel string
+  ShortAddr string
+  LinkStrength string
+}
