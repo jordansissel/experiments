@@ -1,5 +1,0 @@
-path.data: /data/jls/millionlogstest/7.yml
-compress.default.type: snappy
-index.store.compress.stored: true
-index.store.compress.tv: true
-
