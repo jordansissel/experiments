@@ -3,7 +3,7 @@ Set-PSReadlineOption -EditMode Emacs
 
 Import-Module Hyper-V
 function Clone-VM($parent, $suffix) {
-        $diskpath='C:\users\public\documents\hyper-v\Virtual hard disks'
+        $diskpath='D:\Hyper-v\Disks'
 
         $name = "$parent - $suffix"
         $disk="$diskpath\$name.vhdx"
@@ -14,7 +14,6 @@ function Clone-VM($parent, $suffix) {
         # Create a new differencing drive against the parent vm's drive.
         $parentdisk=(Get-VMHardDiskDrive $parent).Path
         New-VHD $disk -ParentPath $parentdisk -Differencing
-
         # Use parent's switch
         $parentswitch=(Get-VMNetworkAdapter $parent).SwitchName
 
@@ -78,9 +77,9 @@ function SSH-VM {
                 $flags = "-new_console"
             } 
             if ($user) {
-                & 'C:\Program Files (x86)\PuTTY\putty.exe' $flags $user@$ipv6
+                & 'C:\Program Files\PuTTY\putty.exe' $flags $user@$ipv6
             } else {
-                & 'C:\Program Files (x86)\PuTTY\putty.exe' $flags $ipv6
+                & 'C:\Program Files\PuTTY\putty.exe' $flags $ipv6
             }
         }
     }
@@ -187,7 +186,7 @@ function New-BaseVM() {
    [CmdletBinding()]
     Param(
         [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
-        [string]$Name
+        [string]$Name,
         [Parameter(Position=1,Mandatory=$true,ParameterSetName='ISO')]
         [string]$ISO
 
