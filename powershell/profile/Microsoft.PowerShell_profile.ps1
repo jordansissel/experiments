@@ -183,6 +183,33 @@ function Remove-VMClone {
 
 }
 
+function New-BaseVM() {
+   [CmdletBinding()]
+    Param(
+        [Parameter(Position=0,Mandatory=$true,ParameterSetName='Name')]
+        [string]$Name
+        [Parameter(Position=1,Mandatory=$true,ParameterSetName='ISO')]
+        [string]$ISO
+
+    ) 
+ 
+    Process {
+        New-VM $Name -Generation 1 -SwitchName External
+        Set-VM $Name -MemoryStartupBytes (24*1024*1024*1024) -ProcessorCount 20
+
+        # Create a new disk for this VM.
+        New-VHD "D:\Hyper-V\Disks\$Name.vhdx" -SizeBytes (40*1024*1024*1024) -Dynamic
+        Add-VMHardDiskDrive "Ubuntu 17.10" -path "D:\Hyper-V\Disks\$Name.vhdx"
+
+        # Set to boot off the given ISO
+        Set-VMDvdDrive $Name -Path $ISO
+        Set-VMBIOS $Name -StartupOrder @('CD', 'IDE')
+ 
+        # Disable checkpoints because checkpoints seem to prevent making a linked VHD w/ Differencing enabled.
+        Set-VM $Name -CheckpointType Disabled
+    }
+}
+
 function Suspend-Computer {
     Add-Type -AssemblyName System.Windows.Forms
     [System.Windows.Forms.Application]::SetSuspendState([System.Windows.Forms.PowerState]::Suspend, $false, $false)
