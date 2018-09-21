@@ -5,17 +5,24 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
+var url = flag.String("url", "", "Elasticsearch URL (must have trailing /)")
+var user = flag.String("user", "", "Elasticsearch username")
+var pass = flag.String("pass", "", "Elasticsearch password")
+var query = flag.String("query", "", "Elasticsearch Query (JSON) DSL")
+var index = flag.String("index", "", "Elasticsearch index pattern")
+
 func main() {
-	base := os.Args[1]
-	user := os.Args[2]
-	pass := os.Args[3]
+
+	flag.Parse()
 
 	trust, _ := x509.SystemCertPool()
 	if trust == nil {
@@ -36,18 +43,10 @@ func main() {
 		return
 	}
 
-	body := map[string]interface{}{
-		"size": 1000,
-		"query": map[string]interface{}{
-			// TODO: Don't hardcode the query
-			"range": map[string]interface{}{
-				"@timestamp": map[string]interface{}{
-					"gte": "now-7d",
-				},
-			},
-		},
-	}
+	var body map[string]interface{}
+	json.Unmarshal([]byte(*query), &body)
 
+	log.Printf("Query: %v\n", body)
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(body)
 
@@ -60,16 +59,20 @@ func main() {
 	}
 
 	// TODO: don't hardcode the index.
-	req, err := http.NewRequest("POST", base+"filebeat-*/_search?scroll=5m", b)
-	req.SetBasicAuth(user, pass)
+	path := *url + "/" + *index + "/_search?scroll=5m"
+	req, err := http.NewRequest("POST", path, b)
+	req.SetBasicAuth(*user, *pass)
 	req.Header.Add("Content-Type", "application/json")
 
 	for {
+		log.Printf("Path: %s\n", path)
+		start := time.Now()
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Printf("Request failed: %s\n", err)
 			return
 		}
+		log.Printf("Duration: %s\n", time.Since(start))
 
 		var results map[string]interface{}
 		json.NewDecoder(resp.Body).Decode(&results)
@@ -81,17 +84,16 @@ func main() {
 		}
 
 		if results["error"] != nil {
-			fmt.Printf("error: %s\n", results["error"])
+			log.Printf("error: %s\n", results["error"])
 			return
 		}
-		fmt.Printf("[hits]: %T\n", results["hits"])
-		fmt.Printf("[hits]: %T\n", results["hits"].(map[string]interface{})["hits"])
 		hits := results["hits"].(map[string]interface{})["hits"].([]interface{})
 
 		if len(hits) == 0 {
 			log.Printf("Reached end of logs...")
 			break
 		}
+		log.Printf("hits: %d\n", len(hits))
 
 		printer := json.NewEncoder(os.Stdout)
 		for _, hit := range hits {
@@ -107,8 +109,9 @@ func main() {
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(body)
 
-		req, _ = http.NewRequest("POST", base+"_search/scroll", b)
-		req.SetBasicAuth(user, pass)
+		path = *url + "/_search/scroll"
+		req, _ = http.NewRequest("POST", path, b)
+		req.SetBasicAuth(*user, *pass)
 		req.Header.Add("Content-Type", "application/json")
 	}
 }
