@@ -1,0 +1,4 @@
+dependencies:
+- name: child
+  repository: file://charts/child
+  version: 0.1.0

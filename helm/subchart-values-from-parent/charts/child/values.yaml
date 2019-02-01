@@ -1,0 +1,5 @@
+map:
+  foo: bar
+list:
+  - default 1
+  - default 2

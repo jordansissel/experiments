@@ -1,0 +1,5 @@
+Map:
+{{ .Values.map | toYaml }}
+
+List:
+{{ .Values.list | toYaml }}

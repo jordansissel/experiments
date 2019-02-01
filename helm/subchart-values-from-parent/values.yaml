@@ -1,0 +1,6 @@
+child:
+  map:
+    one: two
+  list:
+    - test
+    - foo
