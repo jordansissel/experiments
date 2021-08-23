@@ -17,6 +17,5 @@ $(WORKDIR):
 $(WORKDIR)/data $(WORKDIR)/log: | $(WORKDIR)
 	mkdir $@
 
-# Mysql is retarded.
 $(WORKDIR)/log/binlog.index: | $(WORKDIR)/log
 	touch $@
