@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"> <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- Napster JS SDK will load Html5Player class from https://app.napster.com -->
+    <!-- Napster JS SDK will also create a <video> worker with url 'blob:file://...' so we need to add worker-src blob: -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://app.napster.com https://api.napster.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.napster.com http://api.napster.com"> -->
+    <title>Hello World!</title>
+</head>
+
+<body>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="napster.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
