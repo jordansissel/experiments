@@ -5,11 +5,13 @@ const https = require("https");
 const WebSocket = require("ws");
 
 const { secrets } = require("./secrets");
-const { stringify } = require('querystring');
+const { wsrpc } = require("./wsrpc")
+
+console.log("WSRPC", wsrpc)
 
 async function httpsrequest(url, options) {
     return new Promise((resolve, reject) => {
-        console.log(url.toString())
+        console.log("httpsrequest(" + url.toString() + ")")
         https.request(url, options, (response) => {
             console.log("Got response", response.statusMessage)
             var body = '';
@@ -43,38 +45,74 @@ class NapsterAPI {
         loginurl.password = this.api_secret
 
         const [response, body] = await httpsrequest(loginurl, { method: "POST" })
+        if (response.statusCode != 200) {
+            throw 'Login to Napster failed: ' + response.statusMessage + ' -- ' + body
+        }
         const result = JSON.parse(body)
+
+        this.access_token = result.access_token
+        this.refresh_token = result.refresh_token
         return result
+    }
+
+    async search(query, options={}) {
+        // http://api.napster.com/v2.2/search?apikey=YTkxZTRhNzAtODdlNy00ZjMzLTg0MWItOTc0NmZmNjU4Yzk4&query=weezer&type=artist
+        const searchurl = new URL("https://api.napster.com/v2.2/search")
+        searchurl.search = new url.URLSearchParams({
+            apikey: this.api_key,
+            query: query
+        }).toString()
+
+        const [response, body] = await httpsrequest(searchurl, { 
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + this.access_token,
+                "Accept": "application/json"
+            }
+         })
+
+        if (response.statusCode != 200) {
+            throw 'Search query failed: ' + response.statusMessage + ' -- ' + body
+        }
+        return JSON.parse(body)
     }
 }
 
 (async () => {
+    // Login on startup...
+    // XXX: Store and refresh with any available refreshToken when possible.
     const napsterapi = new NapsterAPI(secrets.API_KEY, secrets.API_SECRET)
-
     const auth = await napsterapi.auth(secrets.user, secrets.password);
     const token = auth.access_token;
 
     console.log("Auth token: " + token);
 
-    const player = express();
+    // Websocket interface between 
+    // * the Napster music player running in Chrome/puppeteer
+    // * and, the controller http api
     const wss = new WebSocket.Server({ noServer: true });
     wss.on('connection', (ws) => {
-        // New websocket client.
-        ws.on('message', (message) => {
-            const m = JSON.parse(message)
-            console.log("Got message", m)
-        })
+        wsrpc.setup(ws)
 
-        ws.send(JSON.stringify({
+        wsrpc.send(ws, "auth", {
             auth: {
                 accessToken: auth.access_token,
                 refreshToken: auth.refresh_token,
                 api_key: secrets.API_KEY
             }
-        }))
+        }).then(() => {
+
+            wsrpc.send(ws, "search", { query: "Marianas Trench" }).then((results) => {
+                console.log("Got search results")
+                console.log(results)
+            })
+        })
+
+
     })
 
-    player.use(express.static('public'))
+    const player = express();
+    player.use(express.static('public/player'))
 
     const playerHttpServer = player.listen("3000", "localhost", async () => {
         console.log("Listening...")
@@ -118,7 +156,20 @@ class NapsterAPI {
         browser.close()
         playerHttpServer.close()
     })
-    // page.on('load', console.log("Loaded!!"))
 
-    // await browser.close();
+    // Now let's do the server part which will let me control Napster from my phone.
+    const controller = express();
+    controller.use(express.static('public/controller'))
+    controller.listen("3001", "0.0.0.0", async () => {
+        console.log("Listening controller...")
+    })
+
+    controller.get("/search", (request, response) => {
+        console.log("/search: ", request.query)
+        napsterapi.search(request.query["query"]).then((results) => {
+            response.append("Content-Type", "application/json")
+
+            response.send(JSON.stringify(results))
+        })
+    })
 })();
