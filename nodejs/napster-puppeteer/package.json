@@ -10,6 +10,7 @@
   "license": "AGPL3",
   "dependencies": {
     "express": "^4.17.1",
+    "mustache": "^4.2.0",
     "puppeteer": "^10.4.0"
   }
 }

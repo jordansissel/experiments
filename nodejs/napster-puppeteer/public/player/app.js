@@ -22,12 +22,13 @@ const RPC = {
             console.log(e.data);
         })
 
-
         Napster.player.on('ready', (e) => {
+            console.log("Player is ready", Napster.player.play)
             Napster.member.set({
                 accessToken: message.accessToken,
                 refreshToken: message.refreshToken,
             })
+            Napster.player.auth()
         })
     },
 
@@ -46,6 +47,24 @@ const RPC = {
                 resolve(data)
             })
         })
+    },
+
+    async play({ id }) {
+        console.log("Playing ", id)
+
+        if (id.match(/^[Aa]lb\./)) {
+            // Album
+            console.log("Playing2 ", id)
+            Napster.api.get(false, '/albums/' + id + '/tracks', (data) => {
+                Napster.player.clearQueue();
+                data.tracks.forEach(track => {
+                    Napster.player.queue(track.id.charAt(0).toUpperCase() + track.id.slice(1));
+                })
+                Napster.player.next()
+            })
+        } else {
+            Napster.player.play(id)
+        }
     }
 }
 
@@ -67,20 +86,28 @@ ws.onmessage = (event) => {
     console.log("Received:", message)
 
     if ('auth' in message) {
-        RPC.auth(message.auth).then(() => { 
-            const payload = { 
-                message_id: message.message_id 
+        RPC.auth(message.auth).then(() => {
+            const payload = {
+                message_id: message.message_id
             }
             ws.send(JSON.stringify(payload))
         })
     } else if ('search' in message) {
         RPC.search(message.search).then((results) => {
-            const payload = { 
-                message_id: message.message_id ,
+            const payload = {
+                message_id: message.message_id,
                 search: results
             }
             ws.send(JSON.stringify(payload))
         }).catch((error) => { console.log("Search failed", error) })
+    } else if ('play' in message) {
+        RPC.play(message.play).then((results) => {
+            const payload = {
+                message_id: message.message_id,
+                play: results
+            }
+            ws.send(JSON.stringify(payload))
+        }).catch((error) => { console.log("Play failed", error) })
     } else {
         console.log("Unknown message: ", message)
     }

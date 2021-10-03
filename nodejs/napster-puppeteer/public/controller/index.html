@@ -5,14 +5,22 @@
     <meta charset="UTF-8">
     <title>Music stuff?</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <header>
-        Search:
-        <input type="text" id="search" name="search" placeholder="search for stuff" onchange="search()">
-    </header>
+    <nav>
+        <form id="search" onsubmit="search(); return false;">
+            <label for="query">🔎</label>
+            <input type="text" name="query" placeholder="search for stuff">
+            <input type="submit" value="Submit"">
+        </form>
+    </nav>
+
+    <section id="results">
+
+    </section>
 
     <script src="app.js"></script>
 </body>
