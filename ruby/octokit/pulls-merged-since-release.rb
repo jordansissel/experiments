@@ -35,7 +35,7 @@ class ProjectInfoCLI < Clamp::Command
     contributors = {}
     pulls.each do |pr|
       contributor = (contributors[pr.user.url] ||= client.get(pr.user.url))
-      puts "* ... (`\##{pr.number}`_; #{contributor.name})"
+      puts "* #{pr.html_url} (`\##{pr.number}`_; #{contributor.name})"
     end
   end
 
