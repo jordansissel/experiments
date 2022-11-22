@@ -1,19 +1,7 @@
-// 3,4
-// Split by space
-// Select 3rd split
-// Split by comma
-// Select 4th split
-
-// enum State {
-//     // Splitter,
-//     Selector,
-// }
-
 use regex::Regex;
+use std::env;
 use std::io;
 use std::iter::Peekable;
-// use std::num::ParseIntError;
-use std::env;
 use std::ops::RangeInclusive;
 use std::str::Chars;
 
@@ -28,6 +16,7 @@ enum Step {
 #[derive(Debug)]
 enum Error {
     UnexpectedEnd,
+    InvalidSyntax(char),
 }
 
 impl std::fmt::Display for Error {
@@ -89,7 +78,7 @@ fn parse_selector(chars: &mut Peekable<Chars>) -> Result<Step, Error> {
                 } else if c.is_digit(10) || c == ':' || c == ',' || c == '-' {
                     select.push(c);
                 } else {
-                    panic!("Invalid range");
+                    return Err(Error::InvalidSyntax(c));
                 }
             }
 
@@ -139,17 +128,22 @@ fn parse(code: &str) -> Vec<Step> {
     if first.is_digit(10) || *first == '{' {
         // println!("Assuming first split is by space");
         steps.push(Step::Split(' '));
-    }
 
-    while let Some(_) = chars.peek() {
         match parse_selector(&mut chars) {
             Err(e) => panic!("Error parsing select #{e}"),
             Ok(step) => steps.push(step),
         }
+    }
+
+    while let Some(_) = chars.peek() {
+        match parse_splitter(&mut chars) {
+            Err(e) => println!("Error parsing splitter: {e}"),
+            Ok(step) => steps.push(step),
+        }
 
         if let Some(_) = chars.peek() {
-            match parse_splitter(&mut chars) {
-                Err(e) => println!("Error parsing splitter: {e}"),
+            match parse_selector(&mut chars) {
+                Err(e) => panic!("Error parsing select #{e}"),
                 Ok(step) => steps.push(step),
             }
         }
@@ -206,10 +200,7 @@ fn process(input: String, steps: &Vec<Step>) -> Vec<String> {
 }
 
 fn main() {
-    //let procs = env::args().map(|arg| parse(arg.as_str()));
     let args: Vec<String> = env::args().collect();
-    // let steps = parse(args.get(1).unwrap());
-
     let procs: Vec<Vec<Step>> = args.iter().skip(1).map(|arg| parse(arg)).collect();
 
     for line in io::stdin().lines() {
@@ -225,9 +216,7 @@ fn main() {
             let line = line.clone();
             let fields = process(line, steps);
 
-            for f in fields {
-                println!("{}", f);
-            }
+            println!("{}", fields.join(" "));
         }
     }
 }
