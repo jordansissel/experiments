@@ -2,7 +2,7 @@ require 'octokit'
 require "clamp"
 require "time"
 require "json"
-require "elasticsearch"
+require "opensearch"
 require "stud/try"
 
 class Time
@@ -34,7 +34,7 @@ end
 
 class ProjectInfoCLI < Clamp::Command
   option "--github-token", "GITHUB_TOKEN", "Your github auth token", :required => true
-  option "--elasticsearch-host", "ELASTICSEARCH_HOST", "The elasticsearch host. This can be a full url like `https://user:pass@host:port/` if you need to use SSL and authentication such as with Elastic Shield.", :required => true
+  option "--opensearch-host", "OPENSEARCH_HOST", "The opensearch host. This can be a full url like `https://user:pass@host:port/` if you need to use SSL and authentication", :required => true
   parameter "ORGANIZATION[/REPO] ...", "The project(s) for which to gather information", :attribute_name => :repository_list
 
   def execute
@@ -53,11 +53,13 @@ class ProjectInfoCLI < Clamp::Command
     repositories.each do |repo|
       Stud::try(5.times) do
         client.pull_requests(repo, state: "all").each do |pr|
+          puts "Pull Request #{pr.number}"
           process_pr(repo, pr)
         end
       end
       Stud::try(5.times) do
         client.issues(repo, state: "all").each do |issue|
+          puts "Pull Request #{issue.number}"
           process_issue(repo, issue)
         end
       end
@@ -87,12 +89,12 @@ class ProjectInfoCLI < Clamp::Command
   end
 
   def index(name, object)
-    es.index(index: "github-#{name}", type: name, id: object[:url], body: object)
+    os.index(index: "github-#{name}", id: object[:url], body: object)
   end
 
-  def es
-    return @es if @es 
-    @es = Elasticsearch::Client.new(host: elasticsearch_host)
+  def os
+    return @os if @os 
+    @os = OpenSearch::Client.new(host: opensearch_host, transport_options: { ssl: { verify: false } })
   end
 
 
