@@ -1,5 +1,3 @@
-//use std::io;
-
 // 3,4
 // Split by space
 // Select 3rd split
@@ -11,8 +9,21 @@
 //     Selector,
 // }
 
+use regex::Regex;
+use std::io;
 use std::iter::Peekable;
+// use std::num::ParseIntError;
+use std::env;
+use std::ops::RangeInclusive;
 use std::str::Chars;
+
+#[derive(Debug)]
+enum Step {
+    Select(Vec<RangeInclusive<usize>>),
+    SelectRegex(Regex),
+    Split(char),
+    End,
+}
 
 #[derive(Debug)]
 enum Error {
@@ -25,7 +36,7 @@ impl std::fmt::Display for Error {
     }
 }
 
-fn parse_selector(chars: &mut Peekable<Chars>) -> Result<(), Error> {
+fn parse_selector(chars: &mut Peekable<Chars>) -> Result<Step, Error> {
     while let Some(&c) = chars.peek() {
         if c.is_digit(10) {
             // Got digit, read all digits?
@@ -40,7 +51,10 @@ fn parse_selector(chars: &mut Peekable<Chars>) -> Result<(), Error> {
             }
 
             // We scanned one too many, go back.
-            println!("Digits: {digits}");
+            // println!("Digits: {digits}");
+
+            let num = digits.parse::<usize>().unwrap();
+            return Ok(Step::Select(vec![RangeInclusive::new(num - 1, num - 1)]));
         } else if c == '/' {
             // regex, read until next non-escaped /
             let mut regex = String::new();
@@ -59,9 +73,11 @@ fn parse_selector(chars: &mut Peekable<Chars>) -> Result<(), Error> {
                     regex.push(c);
                 }
             }
-            println!("Regex: /{regex}/");
+            // println!("Regex: /{regex}/");
+
+            return Ok(Step::SelectRegex(Regex::new(regex.as_str()).unwrap()));
         } else if c == '{' {
-            // multiselect, read until next }
+            // multiselect, read until next '}'
             let mut select = String::new();
 
             // Skip leading {
@@ -70,48 +86,145 @@ fn parse_selector(chars: &mut Peekable<Chars>) -> Result<(), Error> {
             while let Some(c) = chars.next() {
                 if c == '}' {
                     break;
-                } else {
+                } else if c.is_digit(10) || c == ':' || c == ',' || c == '-' {
                     select.push(c);
+                } else {
+                    panic!("Invalid range");
                 }
             }
-            println!("Select range: {select}");
+
+            return Ok(Step::Select(
+                select
+                    .split(",")
+                    .map(|s| -> RangeInclusive<usize> {
+                        if s.contains(":") {
+                            let mut splits = s.splitn(2, ':');
+                            RangeInclusive::new(
+                                splits.next().unwrap().parse::<usize>().unwrap() - 1,
+                                splits.next().unwrap().parse::<usize>().unwrap() - 1,
+                            )
+                        } else {
+                            RangeInclusive::new(
+                                s.parse::<usize>().unwrap(),
+                                s.parse::<usize>().unwrap(),
+                            )
+                        }
+                    })
+                    .collect::<Vec<RangeInclusive<usize>>>(),
+            ));
         } else {
-            break;
+            panic!("??? unexpected {}", c);
         }
     }
 
-    return Ok(());
+    // Todo: Error?
+    return Ok(Step::End);
 }
 
-fn parse_splitter(chars: &mut Peekable<Chars>) -> Result<(), Error> {
+fn parse_splitter(chars: &mut Peekable<Chars>) -> Result<Step, Error> {
+    // println!("Split: {}", chars.peek().unwrap());
     match chars.next() {
         None => Err(Error::UnexpectedEnd),
-        Some(c) => {
-            println!("Splitter: {}", c);
-            Ok(())
-        }
+        Some(c) => Ok(Step::Split(c)),
     }
 }
 
-fn parse(code: &str) {
+fn parse(code: &str) -> Vec<Step> {
     let mut chars = code.chars().peekable();
+    let mut steps = vec![];
+
+    println!("Parsing code: {}", code);
+
+    let first = chars.peek().unwrap();
+    if first.is_digit(10) || *first == '{' {
+        println!("Assuming first split is by space");
+        steps.push(Step::Split(' '));
+    }
 
     while let Some(_) = chars.peek() {
-        if let Err(e) = parse_selector(&mut chars) {
-            println!("Error parsing select: {e}")
+        match parse_selector(&mut chars) {
+            Err(e) => panic!("Error parsing select #{e}"),
+            Ok(step) => steps.push(step),
         }
 
         if let Some(_) = chars.peek() {
-            if let Err(e) = parse_splitter(&mut chars) {
-                println!("Error parsing splitter: {e}")
+            match parse_splitter(&mut chars) {
+                Err(e) => println!("Error parsing splitter: {e}"),
+                Ok(step) => steps.push(step),
             }
         }
     }
+
+    // println!("Steps: {:?}", steps);
+    return steps;
+}
+
+fn process(input: String, steps: &Vec<Step>) -> Vec<String> {
+    let mut fields = vec![input];
+
+    for step in steps.iter() {
+        fields = match step {
+            Step::End => break,
+            Step::Select(ranges) => {
+                // println!("Step::Select - {:?}", ranges);
+                ranges
+                    .iter()
+                    .map(|r| {
+                        if let Some(f) = fields.get(r.clone()) {
+                            f.to_vec()
+                        } else {
+                            panic!("Out of range: Range {:?}, length was {}", r, fields.len());
+                        }
+                    })
+                    .flatten()
+                    .collect()
+            }
+            Step::SelectRegex(_regex) => {
+                // println!("Step::Regex - {:?}", _regex);
+                fields
+            }
+            Step::Split(c) => {
+                // println!("Step::Split({}) -- input: {:#?}", *c, fields);
+                fields
+                    .iter()
+                    .map(|f| {
+                        let result: Vec<_> = f.split(*c).map(|s| s.to_string()).collect(); //.flatten().collect()
+                                                                                           //   println!("Result: {:#?}", result);
+                        result
+                    })
+                    .flatten()
+                    .collect()
+            }
+        };
+        // println!("After: {:#?}", fields);
+    }
+
+    fields
 }
 
 fn main() {
-    let input = "1,2:44 {1,2}:/test/";
-    // let text = "hello,world,foo/bar/baz,fizz";
+    //let procs = env::args().map(|arg| parse(arg.as_str()));
+    let args: Vec<String> = env::args().collect();
+    // let steps = parse(args.get(1).unwrap());
 
-    parse(input);
+    let procs: Vec<Vec<Step>> = args.iter().skip(1).map(|arg| parse(arg)).collect();
+
+    for line in io::stdin().lines() {
+        if let Err(e) = line {
+            println!("Error reading: {}", e);
+            break;
+        }
+
+        println!("Line: '{}'", line.as_ref().unwrap());
+        let line = line.unwrap();
+
+        for steps in &procs {
+            let line = line.clone();
+            let fields = process(line, steps);
+
+            for f in fields {
+                println!("{}", f);
+            }
+        }
+    }
 }
