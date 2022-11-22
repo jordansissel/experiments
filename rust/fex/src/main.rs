@@ -105,8 +105,8 @@ fn parse_selector(chars: &mut Peekable<Chars>) -> Result<Step, Error> {
                             )
                         } else {
                             RangeInclusive::new(
-                                s.parse::<usize>().unwrap(),
-                                s.parse::<usize>().unwrap(),
+                                s.parse::<usize>().unwrap() - 1,
+                                s.parse::<usize>().unwrap() - 1,
                             )
                         }
                     })
@@ -133,11 +133,11 @@ fn parse(code: &str) -> Vec<Step> {
     let mut chars = code.chars().peekable();
     let mut steps = vec![];
 
-    println!("Parsing code: {}", code);
+    // println!("Parsing code: {}", code);
 
     let first = chars.peek().unwrap();
     if first.is_digit(10) || *first == '{' {
-        println!("Assuming first split is by space");
+        // println!("Assuming first split is by space");
         steps.push(Step::Split(' '));
     }
 
@@ -162,12 +162,13 @@ fn parse(code: &str) -> Vec<Step> {
 fn process(input: String, steps: &Vec<Step>) -> Vec<String> {
     let mut fields = vec![input];
 
+    let mut splitchar = ' ';
     for step in steps.iter() {
         fields = match step {
             Step::End => break,
             Step::Select(ranges) => {
                 // println!("Step::Select - {:?}", ranges);
-                ranges
+                vec![ranges
                     .iter()
                     .map(|r| {
                         if let Some(f) = fields.get(r.clone()) {
@@ -177,13 +178,15 @@ fn process(input: String, steps: &Vec<Step>) -> Vec<String> {
                         }
                     })
                     .flatten()
-                    .collect()
+                    .collect::<Vec<String>>()
+                    .join(splitchar.to_string().as_str())]
             }
             Step::SelectRegex(_regex) => {
                 // println!("Step::Regex - {:?}", _regex);
                 fields
             }
             Step::Split(c) => {
+                splitchar = c.clone();
                 // println!("Step::Split({}) -- input: {:#?}", *c, fields);
                 fields
                     .iter()
@@ -215,7 +218,7 @@ fn main() {
             break;
         }
 
-        println!("Line: '{}'", line.as_ref().unwrap());
+        // println!("Line: '{}'", line.as_ref().unwrap());
         let line = line.unwrap();
 
         for steps in &procs {
