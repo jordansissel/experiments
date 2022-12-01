@@ -18,11 +18,17 @@ fn main() {
             continue;
         }
 
-        let calories = text.parse::<i32>().unwrap();
+        let calories = text.parse::<u32>().unwrap();
         count += calories;
     }
     if count > 0 { elves.push(count); }
 
+    // Part 1
     let max = elves.iter().max();
-    println!("Max: {}", max.unwrap());
+    println!("Highest single elf: {}", max.unwrap());
+
+    // Part 2
+    elves.sort();
+    elves.reverse();
+    println!("Sum of top 3: {}", elves[0..3].iter().sum::<u32>());
 }
