@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 
 [[bin]]
-name = "day1"
-path = "main.rs"
+name = "for_loop"
+path = "for_loop.rs"
 
 [[bin]]
 name = "with_iterators"
