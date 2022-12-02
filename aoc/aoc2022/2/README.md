@@ -1,3 +1,12 @@
+# Rust solutions
+
+[src/main.rs](src/main.rs)
+
+I wanted to play more with enums and FromStr, so that's what we solve it with today. My first rust attempt uses enums for the throws (rock, paper, scissors). Interesting notes:
+
+* implements FromStr to turn "A" into a Rock, etc, via str.parse()
+* outcome score calcualted with a match on a tuple of the two throws in the game
+
 # Shell solutions
 
 Input file: [input](input)
