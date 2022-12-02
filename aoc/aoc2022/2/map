@@ -1,0 +1,9 @@
+A X 4 # rock vs rock, draw, rock=1, draw=3
+A Y 8 # rock vs paper, win, paper=2, win=6
+A Z 3 # rock vs scissors, lose, scissors=3, lose=0
+B X 1 # paper vs rock, lose, rock=1, lose=0
+B Y 5 # paper vs paper, draw, paper=2, draw=3
+B Z 9 # paper vs scissors, win, scissors=3, win=6
+C X 7 # scissors vs rock, win, rock=1, win=6
+C Y 2 # scissors vs paper, lose, paper=2, lose=0
+C Z 6 # scissors vs scissors, draw, scissors=3, draw=3
