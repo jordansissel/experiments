@@ -68,6 +68,6 @@ fn main() {
     // for line in io::stdin().lines() {
     //     println!("Score: {}", parse(line.unwrap()));
     // }
-    println!("Total score: {}", 
+    println!("Total score, part 1: {}", 
     io::stdin().lines().map(|line| parse(line.unwrap()) ).sum::<u32>());
 }
