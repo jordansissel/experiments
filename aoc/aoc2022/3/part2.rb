@@ -1,6 +1,8 @@
 require_relative "util"
 
 # Groups are 3 elf rucksack contents
+# For fun, let's make an Enumerable that yields groups of 3 lines.
+# This makes it compatible with other collection functions like map and sum.
 class ElfGroups
   include Enumerable
 
@@ -11,8 +13,11 @@ class ElfGroups
   end
 end
 
-group = ElfGroups.new.map do |elves|
+group = ElfGroups.new.collect do |elves|
   # Find the item in common?
-  priority(common(common(elves.first.chars, elves[1]), common(elves.first.chars, elves[2])).first)
-end
+  common(
+    common(elves.first.chars, elves[1]),
+    common(elves.first.chars, elves[2])
+  ).first
+end.collect(&method(:priority))
 p group.sum
