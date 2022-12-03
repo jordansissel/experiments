@@ -1,14 +1,4 @@
-
-def priority(i)
-  case i
-  when /[[:upper:]]/
-    (i.ord - "A".ord) + 27
-  when /[[:lower:]]/
-    (i.ord - "a".ord) + 1
-  else
-    raise "Unexpected item: #{i}"
-  end
-end
+require_relative "util"
 
 priorities = []
 ARGF.each_line do |line|
@@ -16,9 +6,7 @@ ARGF.each_line do |line|
   compartments = [line[0...line.length()/2], line[line.length()/2..-1]] \
     .map(&:chars).map(&:uniq)
 
-  # Priorities
-  common = compartments.first.select { |i| compartments.last.include?(i) }
-  priorities << common.map(&method(:priority)).sum
+  priorities << priority(common(*compartments).first)
 end
 
 puts "Priority total: #{priorities.sum}"
