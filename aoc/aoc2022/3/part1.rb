@@ -1,4 +1,4 @@
-require_relative "util"
+require_relative "util" # Provides priority() and common()
 
 priorities = []
 ARGF.each_line do |line|

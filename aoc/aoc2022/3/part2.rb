@@ -1,4 +1,4 @@
-require_relative "util"
+require_relative "util" # Provides priority() and common()
 
 # Groups are 3 elf rucksack contents
 # For fun, let's make an Enumerable that yields groups of 3 lines.
