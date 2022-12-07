@@ -1,11 +1,15 @@
 #!/bin/sh
+# Recommend running this via podman/docker because this script 
+# translates the input into shell commands which are then executed.
+# 
+# Example:
+# podman run -i -v $PWD/chaos.sh:/chaos.sh ubuntu sh chaos.sh < input
 
-# Reads from stdin
 mkdir /tmp/chaos
 cd /tmp/chaos
 
 # Convert the ls/cd command history and output into new shell commands
-# Then run them!.
+# Then run them!. This awk invocation reads from stdin.
 awk '
 
 # Root directory is /tmp/chaos
