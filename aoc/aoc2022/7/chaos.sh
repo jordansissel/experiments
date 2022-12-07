@@ -10,6 +10,13 @@ cd /tmp/chaos
 
 # Convert the ls/cd command history and output into new shell commands
 # Then run them!. This awk invocation reads from stdin.
+#
+# I wrote this using macOS which is missing chdir() (which GNU awk has!)
+# Therefore, in order to actually implement `cd`, I figured I had to have
+# awk generate the shell commands to pipe to sh instead of creating directories
+# with system("mkdir ...") simply because macOS awk has no way to chdir...
+#
+# All of this is a fun way to avoid implementing chdir semantics like `cd ..`  
 awk '
 
 # Root directory is /tmp/chaos
