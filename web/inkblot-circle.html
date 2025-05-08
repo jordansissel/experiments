@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log(navigator.vendor);
+        if (navigator.vendor.startsWith("Apple")) {
+          // Safari on Sequoia doesn't seem to like when a css filter uses two things like 'blur() url()'
+          console.log("Patching for Safari");
+          document.querySelector("circle").style.filter = "url(#displacementFilter)"
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <svg
+    width="300"
+    height="300"
+    viewBox="0 0 350 350"
+    xmlns="http://www.w3.org/2000/svg">
+    <filter id="displacementFilter">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency=".04,.04"
+        numOctaves="4"
+        result="turbulence"
+        seed="8">
+      </feTurbulence>
+
+      <!-- turbulence generates rgb values, so rotate hue to cycle colors -->
+      <feColorMatrix in="turbulence" result="rotation" type="hueRotate" values="0" result="cloud">
+        <animate attributeName="values" from="0" to="360" dur="3s" repeatCount="indefinite"/>
+      </feColorMatrix>
+  
+      <feDisplacementMap
+        in2="rotation"
+        in="SourceGraphic"
+        scale="75"
+        xChannelSelector="R"
+        yChannelSelector="G" />
+    </filter>
+
+    <circle cx="100" cy="100" r="80" style="filter: blur(5px) url(#displacementFilter)"/>
+  </svg> 
+
+  </body>
+</html>
