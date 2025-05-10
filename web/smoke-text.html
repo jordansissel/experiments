@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      svg {
+        position: fixed;
+      }
+    </style>
+  </head>
+  <body>
+    <svg
+    xmlns="http://www.w3.org/2000/svg">
+    <filter id="displacementFilter">
+      <feTurbulence
+        type="turbulence"
+        baseFrequency="0.8,0.01"
+        numOctaves="2"
+        result="turbulence"
+        seed="1">
+      </feTurbulence>
+      <feColorMatrix in="turbulence" result="rotation" type="hueRotate" values="0" result="cloud">
+        <animate attributeName="values" from="0" to="360" dur="1s" repeatCount="indefinite"/>
+      </feColorMatrix>
+  
+      <feDisplacementMap
+        in2="rotation"
+        in="SourceGraphic"
+        scale="10"
+        xChannelSelector="R"
+        yChannelSelector="G" />
+      <feGaussianBlur stdDeviation="0.75"/>
+    </filter>
+
+    <filter id="filter2">
+      <feTurbulence
+        type="turbulence"
+        baseFrequency="0.05,0.5"
+        numOctaves="2"
+        result="turbulence"
+        seed="1">
+      </feTurbulence>
+      <feColorMatrix in="turbulence" result="rotation" type="hueRotate" values="0" result="cloud">
+        <animate attributeName="values" from="0" to="360" dur="1s" repeatCount="indefinite"/>
+      </feColorMatrix>
+  
+      <feDisplacementMap
+        in2="rotation"
+        in="SourceGraphic"
+        scale="10"
+        xChannelSelector="R"
+        yChannelSelector="G" />
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+
+    <style>
+      text {
+        font-size: 32px;
+      }
+    </style>
+
+    <text x="50" y="40" style="fill: #AAA; filter: url(#displacementFilter)""> Testing </text>
+    <text x="50" y="84" style="fill: #ccc; filter: url(#filter2)""> Testing </text>
+  </svg> 
+
+  <img src="quake-screenshot.png">
+
+  Two "smokey" text options.
+
+  </body>
+</html>
