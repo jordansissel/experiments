@@ -17,11 +17,10 @@
     <filter id="displacementFilter">
       <feTurbulence
         type="turbulence"
-        baseFrequency=".3,.005"
+        baseFrequency=".01,.01"
         numOctaves="3"
         result="turbulence"
         seed="1">
-        <animate attributeName="baseFrequency" from="0.001,0.001" to="1,0.001" dur="5s" repeatCount="indefinite" />
       </feTurbulence>
       <feColorMatrix in="turbulence" result="rotation" type="hueRotate" values="0" result="cloud">
         <animate attributeName="values" from="0" to="360" dur="1s" repeatCount="indefinite"/>
@@ -33,6 +32,8 @@
         scale="75"
         xChannelSelector="R"
         yChannelSelector="G" />
+
+
     </filter>
 
     <image href="quake-screenshot.png" style="filter: url(#displacementFilter)"/>
