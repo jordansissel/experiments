@@ -1,7 +1,46 @@
 <html>
   <head>
     <script src="wipeout.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const textElement = document.getElementById("engrave");
+        setInterval(() => {
+          const newText = wipeout_text(textElement.innerText, 5, 0)
+          textElement.innerText = newText;
+        }, 200);
+      });
+    </script>
+    <style>
+      #engrave {
+        max-width: 80em;
+        font-family: "Courier New", "Courier";
+        padding: 1em;
+        margin: auto;
+      }
+    </style>
   </head>
   <body>
+    <h2> Nethack wipeout_text </h2>
+
+    Nethack has a feature to engrave/write on objects. Depending on how the engraving is performed, it will suffer degradation over time as things interact with the engraving.
+
+    <p>
+
+    For example, writing on the ground with your finger will "engrave in dust"
+    which is very prone to corruption (movement disturbs the dust).
+
+    <p>
+
+    Using Emscripten and some copy-paste, the <code>wipeout_text</code>
+    function is made available to Javascript :)
+
+    <p id="engrave">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dapibus odio eget felis suscipit, eget auctor metus feugiat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum ut malesuada ex, in malesuada elit. Morbi porta hendrerit molestie. Etiam at dui quam. Curabitur volutpat pulvinar blandit. Nunc bibendum ornare arcu, interdum hendrerit arcu tristique eget.
+
+      <br />
+      <br />
+
+      ELBERETH
+    </p>
   </body>
 </html>
