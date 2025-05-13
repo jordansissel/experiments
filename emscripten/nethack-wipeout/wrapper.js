@@ -9,3 +9,5 @@ function wipeout_text (text, count, seed) {
   _free(ptr);
   return result;
 }
+
+Module["wipeout_text"] = wipeout_text;
