@@ -1,8 +1,26 @@
 <html>
   <head>
-    <script src="wipeout.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
+      var emscriptenReady = false;
+      var domReady = false;
+
+      var Module = {
+       // Wait for emscripten to be loaded.
+       onRuntimeInitialized: () => {
+         emscriptenReady = true;
+         go();
+       }
+      }
+
+       document.addEventListener("DOMContentLoaded", () => {
+         domReady = true;
+         go();
+       });
+
+      function go() {
+        if (!domReady || !emscriptenReady) {
+          return;
+        }
         const textElement = document.getElementById("long-text");
         setInterval(() => {
           const newText = wipeout_text(textElement.innerText, 5, 0)
@@ -18,9 +36,20 @@
           stepDemo.innerText += "\nWipe " + (i+1) + ": " + wipeout_text(text, 2, 0);
           text = next;
         }
-      });
+      }
     </script>
+
+    <script src="wipeout.js"></script>
+
     <style>
+      html {
+        max-width: 60em;
+        margin: auto;
+        margin-top: 2em;
+        background-color: darkslategrey;
+        color: rgb(208, 219, 230);
+      }
+
       .engrave {
         max-width: 80em;
         font-family: "Courier New", "Courier";
