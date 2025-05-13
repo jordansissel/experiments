@@ -3,19 +3,30 @@
     <script src="wipeout.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const textElement = document.getElementById("engrave");
+        const textElement = document.getElementById("long-text");
         setInterval(() => {
           const newText = wipeout_text(textElement.innerText, 5, 0)
           textElement.innerText = newText;
-        }, 200);
+        }, 100);
+
+        const stepDemo = document.getElementById("step-demo");
+        let text = stepDemo.innerText;
+        console.log("Text: " + JSON.stringify(text));
+        stepDemo.innerText = "Original: " + text;
+        for (let i = 0; i < 5; i++) {
+          let next = wipeout_text(text, 3, 0);
+          stepDemo.innerText += "\nWipe " + (i+1) + ": " + wipeout_text(text, 2, 0);
+          text = next;
+        }
       });
     </script>
     <style>
-      #engrave {
+      .engrave {
         max-width: 80em;
         font-family: "Courier New", "Courier";
         padding: 1em;
         margin: auto;
+        white-space: pre-wrap
       }
     </style>
   </head>
@@ -33,14 +44,22 @@
 
     Using Emscripten and some copy-paste, the <code>wipeout_text</code>
     function is made available to Javascript :)
+    
+    <p>
 
-    <p id="engrave">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dapibus odio eget felis suscipit, eget auctor metus feugiat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum ut malesuada ex, in malesuada elit. Morbi porta hendrerit molestie. Etiam at dui quam. Curabitur volutpat pulvinar blandit. Nunc bibendum ornare arcu, interdum hendrerit arcu tristique eget.
+    <code>wipeout_text(text, 2, 0)</code> run 5 times:
+    <p id="step-demo" class="engrave">Hello world</p>
 
-      <br />
-      <br />
+    wipeout_text invoked repeatedly on a large text:
 
-      ELBERETH
+    <p class="engrave" id="long-text">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum venenatis urna gravida eros aliquam finibus. Sed magna leo, convallis vel elit vitae, ultrices vulputate nulla. Praesent eget congue leo. In dictum, ipsum eu tincidunt fringilla, ex lacus commodo odio, in hendrerit massa augue vitae nulla. Cras a justo est. Sed finibus, enim a fermentum viverra, leo nisl cursus est, in auctor sem sapien et diam. Quisque nisl ligula, commodo nec luctus non, sollicitudin in tellus. Cras malesuada sollicitudin diam, in finibus ex facilisis quis. Phasellus sagittis sapien quis ultricies porta. Phasellus sit amet orci ut odio lobortis congue et at arcu.
+
+Duis semper eget mauris nec blandit. Nam rutrum tempor bibendum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pretium suscipit commodo. Mauris enim justo, lacinia a hendrerit a, tincidunt at erat. In vehicula faucibus nunc, et tristique turpis lacinia ut. Donec aliquet orci mauris, ac volutpat tortor laoreet elementum. Duis nec leo ut odio eleifend placerat vel non velit. Quisque in volutpat sem.
+
+Suspendisse vel fermentum nisi. Quisque pulvinar pretium elit vel finibus. Duis aliquam, lacus ut placerat euismod, nisi justo pulvinar dolor, ac euismod enim lacus non elit. Maecenas lobortis, sapien at feugiat consectetur, sapien sem finibus.
+
+ELBERETH
     </p>
   </body>
 </html>
