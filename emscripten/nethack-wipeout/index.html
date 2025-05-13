@@ -33,7 +33,7 @@
         stepDemo.innerText = "Original: " + text;
         for (let i = 0; i < 5; i++) {
           let next = wipeout_text(text, 3, 0);
-          stepDemo.innerText += "\nWipe " + (i+1) + ": " + wipeout_text(text, 2, 0);
+          stepDemo.innerText += "\n  Wipe " + (i+1) + ": " + wipeout_text(text, 2, 0);
           text = next;
         }
       }
