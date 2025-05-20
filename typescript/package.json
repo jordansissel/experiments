@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "mocha": "^11.4.0",
+    "typescript": "^5.8.3",
+    "@types/mocha": "^10.0.10"
+  }
+}
