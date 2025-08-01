@@ -67,6 +67,13 @@ class LibraryArchive
       "Header(name: #{@name}, mtime: #{@mtime}, uid: #{@uid}, gid: #{@gid}, mode: #{@mode}, size: #{@size}, trailer: #{@trailer.inspect})"
     end
 
+    # Reads a Library Archive (ar) header from the given IO.
+    # It returns a Header object or nil if EOF is reached.
+    #
+    # It raises EOFError if the header is incomplete.
+    #
+    # Example usage:
+    #   header = LibraryArchive::Header.read_from(io)
     def self.read_from(io)
       packstr = HEADER.values.map { |v| "A#{v}" }.join
       data = io.read(HEADER_LEN)
@@ -81,7 +88,9 @@ class LibraryArchive
 
       if header.name.start_with?("#1/")
         # If the name starts with "#1/", it indicates that the name is longer than
-        # 16 characters and is followed by the length of the name.
+        # 16 characters and is followed by the length of the name. The spec
+        # calls this an "overflow name". 
+        # An example entry is "#1/20" which means the name is 20 characters long.
         name_len = header.name[3..].to_i
         name_data = io.read(name_len)
         if name_data.nil? || name_data.length < name_len
@@ -97,11 +106,13 @@ class LibraryArchive
 
   attr_reader :io
 
-  # The AR file format has three states:
-  # - magic: reading the magic string
-  # - header: reading the header
-  # - payload: reading the file payload
-  # The state machine is used to read the archive in a structured way.
+  MAGIC = "!<arch>\n"
+
+  # Prepare to process the given IO as a library archive (ar) file.
+  # This method will immediately try to validate the file format by checking the
+  # file's magic string.
+  #
+  # Raises InvalidMagic if the magic string is not as expected.
   def initialize(io)
     @io = io
     @was_odd = false;
@@ -109,14 +120,21 @@ class LibraryArchive
     read_magic
   end
 
+  private
+  # Read the magic string from the archive.
+  # It raises InvalidMagic if the magic string is not as expected.
   def read_magic
     # spec> A file created with ar begins with the ``magic'' string "!<arch>\n".
     magic = @io.read(8)
-    if magic != "!<arch>\n"
-      raise InvalidMagic, "Invalid magic string, expected '!<arch>\\n', got #{magic.inspect}"
+    if magic != MAGIC
+      raise InvalidMagic, "Invalid magic string, expected #{MAGIC.inspect}, got #{magic.inspect}"
     end
   end # read_magic
 
+  # Read the next header from the archive.
+  # Returns a Header object or nil if EOF is reached.
+  # 
+  # It raises InvalidPayloadPadding if there is a padding problem with the payload.
   def next
     # If the previous payload was odd, then it is padded with a single newline that isn't part of the actual entry payload.
     # So we need to consume it before trying to read the next header.
@@ -133,9 +151,7 @@ class LibraryArchive
     end
 
     header = Header.read_from(@io)
-    if header
-      @payload_was_odd = header.size.odd?
-    end
+    @payload_was_odd = header.size.odd? if header
     return header
   end # next
 
@@ -150,6 +166,15 @@ class LibraryArchive
   end
 end # LibraryArchive
 
+# PipeProcessor is a utility class to run a command in a subprocess to process data from an IO stream.
+# It handles piping data into the command and reading the output.
+# It also provides error handling for command not found and command failure.
+#
+# Example usage:
+#   processor = PipeProcessor.new(["gzip", "-dc"])
+#   out_io = processor.start(File.new("file.tar.gz"))
+#   # Read from out_io as needed
+#   processor.wait()
 class PipeProcessor
   class CommandNotFound < StandardError; end
   class CommandFailed < StandardError; end
@@ -162,6 +187,10 @@ class PipeProcessor
     @command = command
   end
 
+  # Start the subprocess. You are responsibile for calling `wait` when you are done reading.
+  # 
+  # It takes an IO object to read data from and an optional length to limit the amount of data written.
+  # It returns an IO object that can be read to get the output of the command.
   def start(io, length = nil)
     in_reader, in_writer = IO.pipe
     out_reader, out_writer = IO.pipe
@@ -181,29 +210,41 @@ class PipeProcessor
     out_writer.close
   end
 
+  # Wait for the subprocess to finish and handle any errors.
+  # It raises CommandFailed if the command exits with a non-zero status.
+  # It also handles EPIPE errors that can occur if the command fails to read from the pipe.
+  #
+  # You must call this after you are done reading from the output IO returned by `start`.
   def wait
     status = Process.wait(@pid)
     if !$?.success?
       raise CommandFailed, "Command '#{@command.join(" ")}' failed with status #{$?.exitstatus}"
     end
 
-    copy_result = @tid.join
-    puts "Copy result: #{copy_result}"
+    begin
+      @tid.join
+    rescue Errno::EPIPE => e
+      raise CommandFailed, "Command '#{@command.join(" ")}' failed with EPIPE error: #{e.message}"
+    end
   end
 
   private
+  # Copy data from the input IO to the output IO.
+  # It raises an error if the number of bytes written does not match the expected length.
+  #
+  # If length is nil, it will copy all data until EOF.
+  # If length is specified, it will copy exactly that many bytes and raise an error if it doesn't.
+  #
+  # Note: This method does not close the input IO, as it is not the responsibility of this class.
   def copy_stream(input, output, length=nil)
     # Pipe the input into the subprocess
     wrote = IO.copy_stream(input, output, length)
     if !length.nil? && wrote != length
       raise "PipeProcessor: Terminated early before completing write. Wrote #{wrote} bytes, needed to write #{length} bytes"
     end
-    return true
-  rescue Errno::EPIPE => e
-    # This can happen if the subprocess exits before we finish writing to it.
-    return false
   ensure
     output.close unless output.closed?
+
     # Note: We don't close input here because it is not our responsibility.
   end
 end
@@ -212,6 +253,7 @@ class DebianPackage
   class Error < StandardError; end
   class InvalidPackage < Error; end
   class ProcessFailed < Error; end
+  class UnsupportedCompression < Error; end
 
   # Process a Debian package archive from the given IO object.
   # The block is called for each tar entry in the package.
@@ -263,7 +305,7 @@ class DebianPackage
     command = DECOMPRESSORS[compression]
 
     if command.nil?
-      raise "Unsupported compression format on file #{header.name}: #{compression}"
+      raise UnsupportedCompression, "Unsupported compression format on file #{header.name}: #{compression}"
     end
 
     processor = PipeProcessor.new(command)
