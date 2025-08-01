@@ -120,17 +120,6 @@ class LibraryArchive
     read_magic
   end
 
-  private
-  # Read the magic string from the archive.
-  # It raises InvalidMagic if the magic string is not as expected.
-  def read_magic
-    # spec> A file created with ar begins with the ``magic'' string "!<arch>\n".
-    magic = @io.read(8)
-    if magic != MAGIC
-      raise InvalidMagic, "Invalid magic string, expected #{MAGIC.inspect}, got #{magic.inspect}"
-    end
-  end # read_magic
-
   # Read the next header from the archive.
   # Returns a Header object or nil if EOF is reached.
   # 
@@ -155,6 +144,7 @@ class LibraryArchive
     return header
   end # next
 
+  public
   # Iterate over the archive's entry. Yields [header, io] for each entry.
   # You *must* read the payload from the io object.
   #
@@ -164,6 +154,18 @@ class LibraryArchive
       yield header, @io
     end
   end
+
+  private
+  # Read the magic string from the archive.
+  # It raises InvalidMagic if the magic string is not as expected.
+  def read_magic
+    # spec> A file created with ar begins with the ``magic'' string "!<arch>\n".
+    magic = @io.read(8)
+    if magic != MAGIC
+      raise InvalidMagic, "Invalid magic string, expected #{MAGIC.inspect}, got #{magic.inspect}"
+    end
+  end # read_magic
+
 end # LibraryArchive
 
 # PipeProcessor is a utility class to run a command in a subprocess to process data from an IO stream.
@@ -271,6 +273,7 @@ class DebianPackage
 
     # XXX: Should we require the archive entries be in a specific order, like "debian-binary" first?
     LibraryArchive.new(io).each do |header, io|
+      p header.name
       if header.name == "debian-binary"
         if header.size != 4
           raise InvalidPackage, "Invalid 'debian-binary' size: #{header.size}, expected 4"
