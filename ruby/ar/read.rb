@@ -1,8 +1,7 @@
 require "rubygems/package" # for Gem::Package::TarReader
-require "fcntl"
 
 # IOFaker can be included into an IO object to trick Gem::Package::TarReader into being able to read it.
-# TarReader expects to be able to call IO#seek and IO#rewind, but streams can't do this.
+# TarReader expects to be able to call IO#seek and IO#rewind, but streams can't do this, so, we lie.
 module IOFaker
   def pos
     return @pos ||= 0
@@ -152,29 +151,44 @@ class LibraryArchive
 end # LibraryArchive
 
 class PipeProcessor
-  def initialize(command)
-    @command = command
+  class CommandNotFound < StandardError; end
+  class CommandFailed < StandardError; end
 
-    if !@command.is_a?(Array) || @command.any? { |c| !c.is_a?(String) }
-      raise ArgumentError, "Command must be a Array of Strings, got #{@command.inspect}"
+  def initialize(command)
+    if !command.is_a?(Array) || command.any? { |c| !c.is_a?(String) }
+      raise ArgumentError, "Command must be a Array of Strings, got #{command.inspect}"
     end 
+
+    @command = command
   end
 
   def start(io, length = nil)
     in_reader, in_writer = IO.pipe
     out_reader, out_writer = IO.pipe
 
-    #@pid = Process.spawn("zstd", "-d", "--stdout", :in => in_reader, :err => STDERR, :out => out_writer, :close_others => true)
-    @pid = Process.spawn(*@command, :in => in_reader, :err => STDERR, :out => out_writer, :close_others => true)
-    in_reader.close
-    out_writer.close
+    begin
+      @pid = Process.spawn(*@command, :in => in_reader, :err => STDERR, :out => out_writer, :close_others => true)
+    rescue Errno::ENOENT => e
+      in_reader.close
+      out_writer.close
+      raise
+    end
+
     @tid = Thread.new { copy_stream(io, in_writer, length) }
     return out_reader
+  ensure
+    in_reader.close
+    out_writer.close
   end
 
   def wait
-    Process.wait(@pid)
-    @tid.join
+    status = Process.wait(@pid)
+    if !$?.success?
+      raise CommandFailed, "Command '#{@command.join(" ")}' failed with status #{$?.exitstatus}"
+    end
+
+    copy_result = @tid.join
+    puts "Copy result: #{copy_result}"
   end
 
   private
@@ -184,6 +198,10 @@ class PipeProcessor
     if !length.nil? && wrote != length
       raise "PipeProcessor: Terminated early before completing write. Wrote #{wrote} bytes, needed to write #{length} bytes"
     end
+    return true
+  rescue Errno::EPIPE => e
+    # This can happen if the subprocess exits before we finish writing to it.
+    return false
   ensure
     output.close unless output.closed?
     # Note: We don't close input here because it is not our responsibility.
@@ -191,28 +209,53 @@ class PipeProcessor
 end
 
 class DebianPackage
+  class Error < StandardError; end
+  class InvalidPackage < Error; end
+  class ProcessFailed < Error; end
+
+  # Process a Debian package archive from the given IO object.
+  # The block is called for each tar entry in the package.
+  # The block receives the tar name and a Gem::Package::TarReader object.
+  #
+  # Example:
+  #   DebianPackage.process(File.new("package.deb")) do |name, tar|
+  #     puts "Processing: #{name}"
+  #     tar.each do |entry|
+  #       puts "tar entry> #{[entry.header.prefix, entry.header.name].join}"
+  #     end
+  #   end
   def self.process(io, &block)
     raise ArgumentError, "A block must be provided" if block.nil?
 
+    # XXX: Should we require the archive entries be in a specific order, like "debian-binary" first?
     LibraryArchive.new(io).each do |header, io|
       if header.name == "debian-binary"
-        version = io.read(header.size)
+        if header.size != 4
+          raise InvalidPackage, "Invalid 'debian-binary' size: #{header.size}, expected 4"
+        end
+
+        # The 'debian-binary' file contains the version of the Debian package format.
+        # It should be "2.0\n" for Debian packages.
+        version = io.read(4)
+
         if version != "2.0\n"
-          puts "Unsupported debian package format: #{version.inspect}"
-          exit 1
+          raise InvalidPackage, "Unsupported debian package format: #{version.inspect}"
         end
       elsif header.name.start_with?("control.tar") || header.name.start_with?("data.tar")
         self.extract_tar(header, io, &block)
       else
         raise "Unknown deb entry: #{header.name}"
       end
-    end
+    end # LibraryArchive#each
   end # process
 
   private
 
   DECOMPRESSORS = {
-    "zst" => ["zstd", "-d", "--stdout"],
+    "zst" => ["zstd", "-dc"],
+    "gz" => ["gzip", "-dc"],
+    "bz2" => ["bzip2", "-dc"],
+    "xz" => ["xz", "-dc"],
   }
 
   def self.extract_tar(header, io, &block)
@@ -224,155 +267,43 @@ class DebianPackage
     end
 
     processor = PipeProcessor.new(command)
-    pipe_io = processor.start(io, header.size)
+    begin
+      pipe_io = processor.start(io, header.size)
+    rescue Errno::ENOENT => e
+      raise ProcessFailed, "Command '#{command.first}' not found and is needed to decompress '#{header.name}' in the archive. Ensure it is installed and in your PATH. Error: #{e.message}"
+    end
 
     # Trick Gem::Package::TarReader into being able to process a pipe/stream.
     class << pipe_io
       include IOFaker
     end
 
+    # This is kind of a race condition, but if the pipe is already at EOF before
+    # we read it, it means decompression process failed.
+    if pipe_io.eof?
+      raise ProcessFailed, "Tar file is unexpectedly empty or the decompression failed inside '#{io.path}'. The problem tar is '#{header.name}'. Is '#{command.first}' available in your PATH?"
+    end
     tar = Gem::Package::TarReader.new(pipe_io)
     block.call(header.name, tar)
     processor.wait()
-  end
-end
+  end # extract_tar
+end # DebianPackage
 
-#filter = PipeProcessor.new(["sort"])
-#io = filter.start(STDIN)
+begin
+  deb = DebianPackage::process(File.new(ARGV[0])) do |name, tar|
+    puts "Processing: #{name}"
+    tar.each do |entry|
+      filename = [entry.header.prefix, entry.header.name].join
+      puts "tar entry> #{filename}"
 
-#puts "--- start"
-#puts io.read
-#puts "--- done"
-#
-#filter.wait()
-#
-#exit 0
-
-deb = DebianPackage::process(File.new(ARGV[0])) do |name, tar|
-  puts "Processing: #{name}"
-  tar.each do |entry|
-    puts "tar entry> #{[entry.header.prefix, entry.header.name].join}"
-  end
-end
-
-exit 0
-
-ar = LibraryArchive.new(File.new(ARGV[0]))
-
-ar.each do |header, io|
-  puts "AR Header: #{header}"
-  if header.name == "debian-binary"
-    p io.read(header.size)
-  else
-    io.seek(header.size, IO::SEEK_CUR) # Skip the payload
-  end
-  #io.read(header.size)
-end
-exit 0
-
-while true
-  header = {}
-  puts "Reading AR header at position #{ar.pos}"
-  data = ar.read(HEADER_LEN)
-
-  if data == nil
-    # eof
-    break
-  end
-
-  puts "AR Header text: #{data.inspect}"
-  data.unpack(packstr).each_with_index do |value, key|
-    header[HEADER.keys[key]] = value
-  end
-
-  if header[:trailer] != "`\n"
-    puts "Found invalid header trailer: #{data.inspect}"
-    exit 1
-  end
-
-  header[:mtime] = header[:mtime].to_i
-  header[:uid] = header[:uid].to_i
-  header[:gid] = header[:gid].to_i
-  header[:mode] = header[:mode].to_i(8) # mode is octal
-  header[:size] = header[:size].to_i
-
-  # > If any file name is more than 16 characters in length or contains an
-  # > embedded space, the string "#1/" followed by the ASCII length of the name
-  # > is written in the name field.  The file size (stored in the archive header)
-  # > is incremented by the length of the name.  The name is then written
-  # > immediately following the archive header.
-  if header[:name].start_with?("#1/")
-    name_len = header[:name][3..].to_i
-    header[:name] = ar.read(name_len).unpack("A*") # Can be null padded?
-    header[:size] -= name_len
-  end
-
-  puts "AR Header: #{header.inspect}"
-
-  if header[:name].start_with?("control.tar") || header[:name].start_with?("data.tar")
-    compression = header[:name].split(".")[-1]
-    case compression
-    #when "zst"
-      #ar.seek(header[:size], IO::SEEK_CUR)
-    #when "zst-"
-    when "zst"
-      arin, arout = IO.pipe
-      pin, pout = IO.pipe
-
-      pid = Process.spawn("zstd", "-d", "--stdout", :in => arin, :err => STDERR, :out => pout, :close_others => true)
-      arin.close
-      pout.close
-      #fd.close
-
-      #puts "AR Pos before passing to zstd: #{ar.pos}"
-      # Pipe the payload into the compressor on a separate thread so that we can
-      # read the tar output as fast as it's available.
-      piper = Thread.new do
-        bytes = header[:size]
-        chunksize = 16384
-        while bytes > 0
-          chunk = (bytes > chunksize) ? chunksize : bytes
-          arout.syswrite(ar.sysread(chunk))
-          bytes -= chunk
-        end
-        arout.close()
+      # Example showing how to read the contents of a tar entry:
+      if filename == "./control"
+        puts "--- control file "
+        puts entry.read
+        puts "--- control file "
       end
-
-      #puts "AR Pos after passing to zstd: #{ar.pos}"
-      
-      # Trick Gem::Package::TarReader into being able to process a pipe/stream.
-      class << pin
-        include IOFaker
-      end
-
-      tar = Gem::Package::TarReader.new(pin)
-      tar.each do |entry|
-        puts "tar entry> #{[entry.header.prefix, entry.header.name].join}"
-      end
-      Process.wait(pid)
-      piper.join
-    else
-      puts "Unsupported compression on #{header[:name]}: #{compression}"
-      exit 1
-    end
-  else 
-    puts "Skipping payload for file: #{header[:name]}"
-    #payload = ar.read(header[:size])
-    ar.seek(header[:size], IO::SEEK_CUR)
-  end
-
-  # Seek ahead to skip the file payload
-  #ar.seek(header[:size], IO::SEEK_CUR)
-
-  # > Objects in the archive are always an even number of bytes long; files which are an odd
-  # > number of bytes long are padded with a newline (``\n'') character,
-  # > although the size in the header does not reflect this.
-  if header[:size].odd?
-    pad = ar.read(1)
-    if pad != "\n"
-      puts "Got unexpected payload padding #{pad.inspect} (payload length is an odd number and must end in a newline character"
-      exit 1
     end
   end
+rescue DebianPackage::Error => e
+  puts "Invalid package: #{e.message}"
 end
-
