@@ -86,7 +86,7 @@ class Header
   attr_reader :tags
 
   def inspect
-    "#<#{self.class.name} tag count: #{@tags.size}, tags: #{@tags.map { |e| e[0].tag }}>"
+    "#<#{self.class.name} tag count: #{@tags.size}, tags: #{@tags.map { |e| e.tag }}>"
   end
 
   class IndexEntry
@@ -106,8 +106,13 @@ class Header
       TAGS.merge!(TAGS.invert)
       TAGS.freeze
 
-      def self.lookup(tag)
-        TAGS.fetch(tag) do |key|
+      SIGNATURE_TAGS = Hash[RPM_Tags::Signature.constants.map { |v| [v, RPM_Tags::Signature.const_get(v)] }]
+      SIGNATURE_TAGS.merge!(SIGNATURE_TAGS.invert)
+      SIGNATURE_TAGS.freeze
+
+      def self.lookup(tag, signature: false)
+        tags = signature ? SIGNATURE_TAGS : TAGS
+        tags.fetch(tag) do |key|
           if key.is_a?(Symbol)
             raise KeyError, "Unknown RPM tag name: #{key}"
           elsif key.is_a?(Numeric)
@@ -178,14 +183,18 @@ class Header
       @value = v
     end
 
-    def self.from_io(io)
+    def self.from_io(io, signature: false)
       data = io.read(INDEX_ENTRY_LENGTH)
       if data.nil? || data.length != INDEX_ENTRY_LENGTH
         raise "Invalid RPM header index entry. Wrong length: #{data.length}, expected: #{INDEX_ENTRY_LENGTH}"
       end
 
       tag, type, offset, count = data.unpack(INDEX_ENTRY_FORMAT)
-      new(Tag.lookup(tag), Type.lookup(type), offset, count)
+      if signature
+        return new(Tag.lookup(tag, signature: signature), Type.lookup(type), offset, count)
+      else
+        return new(Tag.lookup(tag, signature: signature), Type.lookup(type), offset, count)
+      end
     end
   end # class IndexEntry
 
@@ -205,7 +214,7 @@ class Header
 
     #puts "Magic: #{magic.unpack1('H*')}, Index Length: #{index_length}, Data Length: #{data_length}"
     index = index_length.times.collect do
-      IndexEntry.from_io(io)
+      IndexEntry.from_io(io, signature: signature)
     end
 
     if data_length > 100 << 10 # 100 KiB
@@ -292,16 +301,21 @@ File.open(file_path, "rb") do |file|
 
   header = Header.from_io(file)
   puts "----"
-  #p signature
+  p signature
   #p header
 
-  puts "Name: " + header.tags.find { |tag, value| tag.tag == :NAME }.value
+  puts "Name: " + header.tags.find { |tag| tag.tag == :NAME }.value
 
-  puts "Files"
-  dirnames = header.tags.find { |tag, value| tag.tag == :DIRNAMES }.value
-  basenames = header.tags.find { |tag, value| tag.tag == :BASENAMES }.value
-  dirnames.zip(basenames).each do |dirname, basename|
-    puts File.join(dirname, basename)
-  end
+  #puts "Files"
+  #dirnames = header.tags.find { |tag| tag.tag == :DIRNAMES }.value
+  #basenames = header.tags.find { |tag| tag.tag == :BASENAMES }.value
+  #dirnames.zip(basenames).each do |dirname, basename|
+    #puts File.join(dirname, basename)
+  #end
+
+  require "stringio"
+  puts header.tags.find { |tag| tag.tag == :HEADERIMMUTABLE }.value
+  x = StringIO.new(header.tags.find { |tag| tag.tag == :HEADERIMMUTABLE }.value)
+  p :immutable => Header::IndexEntry.from_io(x)
 
 end

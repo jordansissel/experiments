@@ -16,8 +16,18 @@ echo "# > $0 $module"
 echo 
 echo "module $module"
 cat "${rpmtag_h}" | cc -E -o - - | grep '^ *RPMTAG.*= ' | sed -e 's/RPMTAG_//g; s/,$//' 2> /dev/null
+
+# Add the rpmSigTag_e entries into a separate namespace. 
+echo 
 echo "  module $module::Signature"
-cat "${rpmtag_h}" | cc -E -o - - | grep '^ *RPMSIGTAG.*= ' | sed -e 's/RPMSIGTAG_//g; s/,$//' | sed -e 's/^/  /'
+
+# For whatever reason, rpmSigTag_e doesn't declare HEADERSIGNATURES, so let's make it ourselves.
+echo "      HEADERSIGNATURES = ::${module}::HEADERSIGNATURES"
+
+cat "${rpmtag_h}" | cc -E -o - - | grep '^ *RPMSIGTAG.*= ' \
+  | sed -e 's/RPMSIGTAG_//g; s/,$//' \
+  | sed -e 's/RPMTAG_/'${module}::'/g; s/,$//' \
+  | sed -e 's/^/  /'
 echo "  end"
 echo "end"
 
