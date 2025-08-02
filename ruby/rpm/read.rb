@@ -79,8 +79,8 @@ class Header
     @tags = []
   end
 
-  def add_tag(entry, value)
-    @tags << [entry, value]
+  def add_tag(entry)
+    @tags << entry
   end
 
   attr_reader :tags
@@ -98,7 +98,7 @@ class Header
     INDEX_ENTRY_LENGTH = 16
     INDEX_ENTRY_FORMAT = "NNl>N"
 
-    attr_reader :tag, :type, :offset, :count
+    attr_reader :tag, :type, :offset, :count, :value
 
     # Make a hash of tag names to numbers
     module Tag
@@ -152,11 +152,30 @@ class Header
       end # def lookup
     end # module Type
 
-    def initialize(tag, type, offset, count)
+    def initialize(tag, type, offset, count, value=nil)
       @tag = tag
       @type = type
       @offset = offset
       @count = count
+      @value = nil
+    end
+
+    def value=(v)
+      case @type
+      when :string, :i18nstring, :binary
+        raise "Value must be a String for tag #{@tag}" unless v.is_a?(String)
+      when :string_array
+        raise "Value must be an Array of Strings for tag #{@tag}" unless v.is_a?(Array) && v.all? { |e| e.is_a?(String) }
+      when :char
+        raise "Value must be a single character for tag #{@tag}" unless v.is_a?(String) && v.length == 1
+      when :int8, :int16, :int32, :int64
+        # XXX: do bounds checking on integers?
+        raise "Value must be an Integer for tag #{@tag}" unless v.is_a?(Integer)
+      else
+        raise "Unknown tag type: #{@type} for tag #{@tag}"
+      end
+
+      @value = v
     end
 
     def self.from_io(io)
@@ -206,33 +225,33 @@ class Header
       case entry.type
       when :string, :i18nstring
         # Strings are null-terminated.
-        value = data[entry.offset ..].unpack1("Z*")
+        entry.value = data[entry.offset ..].unpack1("Z*")
         #puts "String tag #{entry.tag} at offset #{entry.offset}: [#{value.length}] #{value.inspect}"
       when :string_array
-        value = data[entry.offset ..].unpack("Z*" * entry.count)
+        entry.value = data[entry.offset ..].unpack("Z*" * entry.count)
       when :binary
-        value = data[entry.offset, entry.count]
+        entry.value = data[entry.offset, entry.count]
         #puts "Binary tag #{entry.tag} at offset #{entry.offset}: [#{entry.count}] #{value.inspect}"
       when :char
-        value = data[entry.offset].unpack1("C")
+        entry.value = data[entry.offset].unpack1("C")
         #puts "Char tag #{entry.tag} at offset #{entry.offset}: #{value.inspect}"
       when :int8
-        value = data[entry.offset].unpack1("c")
+        entry.value = data[entry.offset].unpack1("c")
         #puts "Int8 tag #{entry.tag} at offset #{entry.offset}: #{value.inspect}"
       when :int16
-        value = data[entry.offset, 2].unpack1("n")
+        entry.value = data[entry.offset, 2].unpack1("n")
         #puts "Int16 tag #{entry.tag} at offset #{entry.offset}: #{value.inspect}"
       when :int32
-        value = data[entry.offset, 4].unpack1("L>")
+        entry.value = data[entry.offset, 4].unpack1("L>")
         #puts "Int32 tag #{entry.tag} at offset #{entry.offset}: #{value.inspect}"
       when :int64
-        value = data[entry.offset, 8].unpack1("Q>")
+        entry.value = data[entry.offset, 8].unpack1("Q>")
         #puts "Int64 tag #{entry.tag} at offset #{entry.offset}: #{value.inspect}"
       else
         puts "Unknown tag type #{entry.type} for tag #{entry.tag} at offset #{entry.offset} with count #{entry.count}"
       end
 
-      header.add_tag(entry, value)
+      header.add_tag(entry)
     end
 
     # If this header is a Signature, then the length should be rounded up
@@ -273,16 +292,14 @@ File.open(file_path, "rb") do |file|
 
   header = Header.from_io(file)
   puts "----"
-  p signature
-  p header
-  puts "Name: " + header.tags.find { |tag, value| tag.tag == :NAME }[1]
+  #p signature
+  #p header
+
+  puts "Name: " + header.tags.find { |tag, value| tag.tag == :NAME }.value
 
   puts "Files"
-  #puts header.tags.map(&:first).map(&:tag).sort
-  puts header.tags.map(&:first).select { |tag| tag.type == :string_array }.map(&:tag)
-  
-  dirnames = header.tags.find { |tag, value| tag.tag == :DIRNAMES }.last
-  basenames = header.tags.find { |tag, value| tag.tag == :BASENAMES }.last
+  dirnames = header.tags.find { |tag, value| tag.tag == :DIRNAMES }.value
+  basenames = header.tags.find { |tag, value| tag.tag == :BASENAMES }.value
   dirnames.zip(basenames).each do |dirname, basename|
     puts File.join(dirname, basename)
   end
