@@ -1,0 +1,5 @@
+Package: example
+Version: 1.0
+Maintainer: nobody <foo@example.com>
+Architecture: all
+Description: OK
