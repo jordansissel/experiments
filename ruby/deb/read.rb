@@ -13,8 +13,16 @@ module IOFaker
       read(count)
       #p :seek => count
       @pos += count
+    elsif flag == IO::SEEK_SET && count >= @pos
+      return seek(count - @pos, IO::SEEK_CUR)
     else
-      raise Errno::ESPIPE
+      flagname = {
+        IO::SEEK_SET => "IO::SEEK_SET",
+        IO::SEEK_CUR => "IO::SEEK_CUR",
+        IO::SEEK_END => "IO::SEEK_END",
+      }
+      STDOUT.puts "Current position: #{@pos}"
+      raise Errno::ESPIPE, "Cannot seek(#{count}, #{flagname[flag]}) on #{self.class.name}"
     end
   end
 
@@ -273,6 +281,7 @@ class DebianPackage
 
     # XXX: Should we require the archive entries be in a specific order, like "debian-binary" first?
     LibraryArchive.new(io).each do |header, io|
+      header.name.chomp!("/")
       p header.name
       if header.name == "debian-binary"
         if header.size != 4
