@@ -1,12 +1,10 @@
 export default {
   clearMocks: true,
-  moduleFileExtensions: ['js', 'ts'],
-  //roots: ['<rootDir>/packages'],
+  //moduleFileExtensions: ['js', 'ts'],
   testEnvironment: 'node',
-  //testMatch: ['**/__tests__/*.test.ts'],
   testMatch: ['**/__tests__/*.test.ts', '**/*.test.ts'],
   transform: {
-    '^.+\\.ts$': 'ts-jest'
-  },
-  verbose: true
+    //'^.+\\.ts$': ['ts-jest', { useESM: true }]
+    '^.+\\.ts$': ['ts-jest']
+  }
 };

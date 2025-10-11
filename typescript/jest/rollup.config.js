@@ -4,7 +4,7 @@ import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 
 const config = {
-  input: "index.ts",
+  input: "main.ts",
   output: {
     file: "dist/index.js",
     format: "es",
@@ -14,11 +14,12 @@ const config = {
     json(),
     commonjs(),
     nodeResolve({ preferBuiltins: true }),
-    typescript({
-      esModuleInterop: true,
-      module: "node20",
-      target: "es2022"
-    })
+    typescript(),
+    //typescript({
+    //esModuleInterop: true,
+    //module: "node20",
+    //target: "es2022"
+    //})
   ],
 };
 
