@@ -1,0 +1,26 @@
+{
+  "type": "module",
+  "name": "jest-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm exec -- jest",
+    "build": "npm exec -- tsc",
+    "rollup": "npm exec -- rollup --config ./rollup.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "description": "",
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.2",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "jest": "^29.7.0",
+    "rollup": "^4.52.4",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3"
+  }
+}
