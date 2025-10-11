@@ -1,4 +1,5 @@
 import { jest, describe, it } from "@jest/globals"
+
 import * as foo from "./foo"
 
 describe("foo", () => {
