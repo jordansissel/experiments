@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "./build",
     //"module": "commonjs",
-    "module": "esnext",
-    //"moduleResolution": "node",
+    //"module": "nodenext",
+    //"moduleResolution": "nodenext",
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
 
@@ -12,7 +12,9 @@
   },
   "ts-node": {
     "compilerOptions": {
-      "module": "commonjs",
+      //"module": "nodenext",
+      //"moduleResolution": "nodenext",
+      //"allowImportingTsExtensions": true,
       "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
     }
   }
