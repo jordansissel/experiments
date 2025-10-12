@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import * as Foo from "../Foo.js";
+import * as Foo from "./Foo";
 
 describe("Foo", () => {
   describe("#Bar", () => {
