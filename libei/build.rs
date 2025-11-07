@@ -3,18 +3,22 @@ use std::path::PathBuf;
 
 fn main() {
     let liboeffis = pkg_config::probe_library("liboeffis-1.0").unwrap();
+    let libei = pkg_config::probe_library("libei-1.0").unwrap();
 
     for lib in liboeffis.libs {
         println!("cargo::rustc-link-lib={}", lib);
     }
-        //println!("cargo::rustc-link-search=/usr/lib64");
-        //println!("cargo::rustc-link-lib=oeffis");
 
-    let includes = liboeffis.include_paths.iter().map(|path| format!("-I{}", path.to_string_lossy()));
-    //let libs = liboeffis.ld_args.iter().flat_map(|path| path.iter());
+    for lib in libei.libs {
+        println!("cargo::rustc-link-lib={}", lib);
+    }
+
+    let oeffis_includes = liboeffis.include_paths.iter().map(|path| format!("-I{}", path.to_string_lossy()));
+    let ei_includes = libei.include_paths.iter().map(|path| format!("-I{}", path.to_string_lossy()));
 
     let bindings = bindgen::Builder::default()
-        .clang_args(includes)
+        .clang_args(oeffis_includes)
+        .clang_args(ei_includes)
         .header("src/wrapper.h")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
