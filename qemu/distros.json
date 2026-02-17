@@ -1,10 +1,18 @@
 {
   "ubuntu-noble": {
     "url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
-    "packages": [ "qemu-guest-agent", "ubuntu-gnome-desktop" ],
+    "packages": [ 
+      "qemu-guest-agent",
+      "ubuntu-gnome-desktop"
+    ],
     "runcmd": [ 
       "systemctl enable ssh",
-      "printf '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n' > /etc/gdm3/custom.conf'"
-    ]
+      "systemctl disable systemd-networkd-wait-online.service",
+      "printf '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n' > /etc/gdm3/custom.conf"
+    ],
+    "apt": {
+      "proxy": "http://192.168.12.67:3142",
+      "conf": "APT::Install-Recommends '0'; APT::Install-Suggests '0';"
+    }
   }
 }

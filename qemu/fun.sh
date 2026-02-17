@@ -36,6 +36,8 @@ chpasswd:
 
 ssh_pwauth: true
 
+apt: $(echo "$CONFIG" | jq -r '.apt | @json')
+
 package_update: true
 package_upgrade: true
 
@@ -59,8 +61,7 @@ EOF
         -nographic \
         -drive file="$BASE",if=virtio,format=qcow2 \
         -drive file="$WORKDIR/cloud-init.img",if=virtio,format=raw \
-        -net nic,model=virtio \
-        -net user,hostfwd=tcp::2222-:22 \
+        -nic user,model=virtio,hostfwd=tcp::2222-:22 \
         -name "cloud-init setup"
   fi
 }
@@ -75,15 +76,23 @@ run() {
     -drive file="$BASE",if=virtio,format=qcow2 \
     -snapshot \
     -virtfs local,path=$PWD,mount_tag=workdir,security_model=none \
-    -net nic,model=virtio \
-    -net user,hostfwd=tcp::2222-:22
+    -vga virtio \
+    -device virtio-gpu \
+    -display vnc=127.0.0.1:0 \
+    -chardev stdio,mux=on,id=char0 -serial chardev:char0 -mon chardev=char0,mode=readline \
+    -nic user,model=virtio,hostfwd=tcp::2222-:22 
+
   }
 
 set -e
 
-if [ -z "$1" ] ; then
-  echo "Usage: $0 prepare <target>"
+if [ -z "$1" -o -z "$2" ] ; then
+  echo "Usage: $0 <command> <target>"
   echo 
+  echo "Commands:"
+  echo "  prepare"
+  echo "  run"
+  echo
   echo "Where <target> is the name of an image to build."
   echo
   echo "Known names:"
