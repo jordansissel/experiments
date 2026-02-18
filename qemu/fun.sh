@@ -36,13 +36,13 @@ chpasswd:
 
 ssh_pwauth: true
 
-apt: $(echo "$CONFIG" | jq -r '.apt | @json')
-
 package_update: true
 package_upgrade: true
 
+apt: $(echo "$CONFIG" | jq -r '.apt | @json')
 packages: $(echo "$CONFIG" | jq -r '.packages | @json')
 runcmd: $(echo "$CONFIG" | jq -r '.runcmd | @json')
+write_files: $(echo "$CONFIG" | jq -r '.write_files | @json')
 
 power_state:
     delay: now
@@ -78,10 +78,11 @@ run() {
     -virtfs local,path=$PWD,mount_tag=workdir,security_model=none \
     -vga virtio \
     -device virtio-gpu \
-    -display vnc=127.0.0.1:0 \
+    -display sdl \
     -chardev stdio,mux=on,id=char0 -serial chardev:char0 -mon chardev=char0,mode=readline \
     -nic user,model=virtio,hostfwd=tcp::2222-:22 
 
+    #-display vnc=127.0.0.1:0 \
   }
 
 set -e

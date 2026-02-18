@@ -14,5 +14,24 @@
       "proxy": "http://192.168.12.67:3142",
       "conf": "APT::Install-Recommends '0'; APT::Install-Suggests '0';"
     }
+  },
+
+  "fedora-43": {
+    "url": "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2",
+    "packages": [
+      "qemu-guest-agent",
+      "gnome-initial-setup"
+    ],
+    "runcmd": [ 
+      "systemctl enable ssh",
+      "systemctl disable systemd-networkd-wait-online.service",
+      "printf '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n' > /etc/gdm/custom.conf"
+    ],
+    "write_files": [
+      { 
+        "content": "# Comment out until my proxy does ssl?\n#[main]\n#proxy=http://192.168.12.67:3142",
+        "path": "/etc/dnf/libdnf5.conf.d/10-proxy.conf"
+      }
+    ]
   }
 }
