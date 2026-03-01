@@ -20,10 +20,14 @@
     "url": "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2",
     "packages": [
       "qemu-guest-agent",
-      "gnome-initial-setup"
+      "gnome-initial-setup",
+      "openssh-server",
+      "ptyxis"
     ],
     "runcmd": [ 
       "systemctl enable ssh",
+      "systemctl enable gdm",
+      "systemctl set-default graphical.target",
       "systemctl disable systemd-networkd-wait-online.service",
       "printf '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n' > /etc/gdm/custom.conf"
     ],
