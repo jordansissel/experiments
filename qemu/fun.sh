@@ -8,7 +8,7 @@ prepare() {
     wget -O "$ORIGINAL" "$URL"
   fi
 
-  if [ ! -f "$BASE" -o "$0" -nt "$BASE" ] ; then
+  if [ ! -f "$BASE" -o "$0" -nt "$BASE" -o "distros.json" -nt "$BASE" ] ; then
     echo "Creating new base image"
     sleep 1
 
@@ -76,12 +76,14 @@ run() {
     -drive file="$BASE",if=virtio,format=qcow2 \
     -snapshot \
     -virtfs local,path=$PWD,mount_tag=workdir,security_model=none \
-    -vga virtio \
+    -parallel none \
     -device virtio-gpu \
-    -display sdl \
+    -vga none \
+    -display sdl,gl=on,window-close=on \
     -chardev stdio,mux=on,id=char0 -serial chardev:char0 -mon chardev=char0,mode=readline \
     -nic user,model=virtio,hostfwd=tcp::2222-:22 
 
+    #-vga virtio \
     #-display vnc=127.0.0.1:0 \
   }
 
