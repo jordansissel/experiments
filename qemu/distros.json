@@ -16,13 +16,37 @@
     }
   },
 
-  "fedora-43": {
+  "fedora-43-gnome": {
     "url": "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2",
     "packages": [
       "qemu-guest-agent",
-      "gnome-initial-setup",
+      "gdm",
       "openssh-server",
-      "ptyxis"
+      "ptyxis",
+      "gnome-desktop4"
+    ],
+    "runcmd": [ 
+      "systemctl enable ssh",
+      "systemctl enable gdm",
+      "systemctl set-default graphical.target",
+      "systemctl disable systemd-networkd-wait-online.service",
+      "printf '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n' > /etc/gdm/custom.conf"
+    ],
+    "write_files": [
+      { 
+        "content": "# Comment out until my proxy does ssl?\n#[main]\n#proxy=http://192.168.12.67:3142",
+        "path": "/etc/dnf/libdnf5.conf.d/10-proxy.conf"
+      }
+    ]
+  },
+  "fedora-43-kde": {
+    "url": "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2",
+    "packages": [
+      "qemu-guest-agent",
+      "gdm",
+      "openssh-server",
+      "ptyxis",
+      "plasma-desktop"
     ],
     "runcmd": [ 
       "systemctl enable ssh",

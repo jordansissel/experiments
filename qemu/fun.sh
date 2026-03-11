@@ -2,23 +2,9 @@
 #
 # ...
 
-prepare() {
-  if [ ! -f "$ORIGINAL" ]; then
-    echo "Downloading $URL"
-    wget -O "$ORIGINAL" "$URL"
-  fi
 
-  if [ ! -f "$BASE" -o "$0" -nt "$BASE" -o "distros.json" -nt "$BASE" ] ; then
-    echo "Creating new base image"
-    sleep 1
-
-    qemu-img create -f qcow2 -F qcow2 -b "$ORIGINAL" "$BASE" 20G
-
-    (
-      cd $WORKDIR
-      touch meta-data
-
-      cat > user-data <<EOF
+cloud_init() {
+      cat <<EOF
 #cloud-config
 users:
   - default
@@ -50,7 +36,27 @@ power_state:
     condition: true
 EOF
 
-      genisoimage  -output "cloud-init.img" -volid cidata -joliet -rock user-data meta-data
+}
+prepare() {
+  if [ ! -f "$ORIGINAL" ]; then
+    echo "Downloading $URL"
+    wget -O "$ORIGINAL" "$URL"
+  fi
+
+  BASE="$WORKDIR/$1.qcow2"
+
+  if [ ! -f "$BASE" -o "$0" -nt "$BASE" -o "$DISTROS_FILE" -nt "$BASE" ] ; then
+    echo "Creating new base image"
+    sleep 1
+
+    qemu-img create -f qcow2 -F qcow2 -b "$ORIGINAL" "$BASE" 20G
+
+    (
+      cd $WORKDIR
+      touch meta-data
+      cloud_init > user-data
+
+      genisoimage  -output "$1-cloud-init.img" -volid cidata -joliet -rock user-data meta-data
     )
 
     qemu-kvm \
@@ -60,13 +66,15 @@ EOF
         -m "2G" \
         -nographic \
         -drive file="$BASE",if=virtio,format=qcow2 \
-        -drive file="$WORKDIR/cloud-init.img",if=virtio,format=raw \
-        -nic user,model=virtio,hostfwd=tcp::2222-:22 \
+        -drive file="$WORKDIR/$1-cloud-init.img",if=virtio,format=raw \
+        -nic user,model=virtio,hostfwd=tcp::0-:22 \
         -name "cloud-init setup"
   fi
 }
 
 run() {
+  BASE="$WORKDIR/$1.qcow2"
+
   qemu-kvm \
     -machine accel=kvm,type=q35 \
     -name "Ready" \
@@ -79,12 +87,12 @@ run() {
     -parallel none \
     -device virtio-gpu \
     -vga none \
-    -display sdl,gl=on,window-close=on \
+    -display vnc=127.0.0.1:0 \
     -chardev stdio,mux=on,id=char0 -serial chardev:char0 -mon chardev=char0,mode=readline \
     -nic user,model=virtio,hostfwd=tcp::2222-:22 
 
+    #-display sdl,gl=on,window-close=on \
     #-vga virtio \
-    #-display vnc=127.0.0.1:0 \
   }
 
 set -e
@@ -99,7 +107,7 @@ if [ -z "$1" -o -z "$2" ] ; then
   echo "Where <target> is the name of an image to build."
   echo
   echo "Known names:"
-  jq -r 'keys[]' distros.json
+  jq -r 'keys[]' "$DISTROS_FILE"
   exit 1
 fi
 
@@ -116,21 +124,23 @@ fi
 cmd=$1
 shift
 
-CONFIG="$(jq --arg target "$1" '.[$target]'  < distros.json)"
+DISTROS_FILE="$(dirname $0)/distros.json"
+CONFIG="$(jq --arg target "$1" '.[$target]'  < "$DISTROS_FILE")"
+#CONFIG="$(jq --arg target "fedora-43-gnome" '.[$target] as $obj | if .[$target] | has("__parent__") then $obj * .[$obj.__parent__] else $obj end' "$DISTROS_FILE")"
 
 URL="$(echo "$CONFIG" | jq -r '.url')"
 
 ORIGINAL="$WORKDIR/$(basename "$URL")"
 
-BASE="${ORIGINAL%.img}.qcow2"
-
 case "$cmd" in
   prepare) prepare $1 ;;
   run) run $1 ;;
+  cloud-init) cloud_init $1 ;;
   *)
     echo "Usage: $0 command [args]"
     echo
     echo "Commands:"
+    echo "  cloud-init <template>"
     echo "  prepare <template>"
     echo "  run <template>"
     echo
