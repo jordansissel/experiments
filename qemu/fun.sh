@@ -91,7 +91,7 @@ run() {
 with_lock() {
   lockfile="$1"
   shift
-  if ! flock -Fn -E 91 "lockfile" "$@" ; then
+  if ! flock -Fn -E 91 "$lockfile" "$@" ; then
     code="$?"
     if [ "$code" -eq 91 ] ; then
       echo "Lock file seems busy. Is this process already running?"
