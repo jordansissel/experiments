@@ -6,7 +6,7 @@ module CloudInit
       users: [
         "default",
         {
-          name: "dev",
+          name: default_user,
           groups: "sudo",
           shell: "/bin/bash",
           "ssh-authorized-keys": %x(ssh-add -L).split("\n"),
@@ -15,7 +15,7 @@ module CloudInit
       ],
       chpasswd: {
         users: [
-          { name: "dev", password: "dev", type: "text" }
+          { name: default_user, password: "dev", type: "text" }
         ],
         expire: false,
       },
@@ -35,19 +35,43 @@ module CloudInit
     .merge(respond_to?(:misc) ? misc : {})
     .merge(respond_to?(:packages) ? { packages: packages } : {})
     .merge(respond_to?(:runcmd) ? { runcmd: runcmd } : {})
+    .merge(respond_to?(:write_files) ? { write_files: write_files } : {})
     .to_yaml(stringify_names: true)
   end
 
   def to_cloud_config
     return [ "#cloud-config", to_yaml ].join("\n")
   end
+
+  def default_user
+    "dev"
+  end
+
+  def default_gdm_session(session_name)
+    {
+      "content": "[User]\nSession=#{session_name}\n",
+      "path": "/var/lib/AccountService/users/#{default_user}"
+    }
+  end
+
+  def automatic_login
+    if self.class.ancestors.include?(Ubuntu)
+      path = "/etc/gdm3/custom.conf"
+    else
+      path = "/etc/gdm/custom.conf"
+    end
+    {
+      "content": "[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=#{default_user}\n",
+      "path": path
+    }
+  end
 end
 
-module Ubuntu; end
-
-class Ubuntu::Noble
+class Ubuntu
   include CloudInit
+end
 
+class Ubuntu::Noble < Ubuntu
   def url
     "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
   end
@@ -74,6 +98,10 @@ class Ubuntu::Noble
     }
   end
 
+  def write_files
+    []
+  end
+
 end
 
 class Ubuntu::Noble::GNOME < Ubuntu::Noble
@@ -82,11 +110,8 @@ class Ubuntu::Noble::GNOME < Ubuntu::Noble
   end
 
   def write_files
-    [
-      {
-        "content": "[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n",
-        "path": "/etc/gdm/custom.conf"
-      }
+    super + [
+      automatic_login 
     ]
   end
 end
@@ -98,23 +123,17 @@ class Ubuntu::Noble::KDE < Ubuntu::Noble
 
   def write_files
     super + [
-      {
-        "content": "[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n",
-        "path": "/etc/gdm/custom.conf"
-      },
-      {
-        "content": "[User]\nSession=plasma\n",
-        "path": "/var/lib/AccountService/users/dev"
-      },
+      automatic_login,
+      default_gdm_session("plasma"),
     ]
   end
 end
 
-module Fedora; end
-
-class Fedora::V43
+class Fedora
   include CloudInit
+end
 
+class Fedora::V43 < Fedora
   def url
     "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2"
   end
@@ -134,22 +153,16 @@ class Fedora::V43
       "systemctl enable gdm",
       "systemctl set-default graphical.target",
       "systemctl disable systemd-networkd-wait-online.service",
-      #"sed -i -e 's/^metalink=/#&/; s/^#baseurl=/baseurl=/' /etc/yum.repos.d/*.repo"
-      #rpmfusion-nonfree-updates.repo:metalink=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-updates-released-$releasever&arch=$basearch
-#rpmfusion-nonfree-updates.repo:#baseurl=http://download1.rpmfusion.org/nonfree/fedora/updates/$releasever/$basearch/debug/
     ]
   end
 
   def write_files 
     [
-      {
-        "content": "# Comment out until my proxy does ssl?\n#[main]\n#proxy=http://192.168.12.67:3142",
-        "path": "/etc/dnf/libdnf5.conf.d/10-proxy.conf"
-      },
-      {
-        "content": "[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=dev\n",
-        "path": "/etc/gdm/custom.conf"
-      }
+      #{
+        #"content": "# Comment out until my proxy does ssl?\n#[main]\n#proxy=http://192.168.12.67:3142",
+        #"path": "/etc/dnf/libdnf5.conf.d/10-proxy.conf"
+      #},
+      automatic_login
     ]
   end
 end
@@ -162,12 +175,15 @@ class Fedora::V43::GNOME < Fedora::V43
     ]
   end
 
+  def runcmd
+    super + [
+      "dnf remove -y gnome-tour"
+    ]
+  end
+
   def write_files 
-    [
-      {
-        "content": "[User]\nSession=plasma\n",
-        "path": "/var/lib/AccountService/users/dev"
-      },
+    super + [
+      default_gdm_session("gnome"),
     ]
   end
 end
@@ -181,11 +197,8 @@ class Fedora::V43::KDE < Fedora::V43
   end
 
   def write_files 
-    [
-      {
-        "content": "[User]\nSession=plasma\n",
-        "path": "/var/lib/AccountService/users/dev"
-      },
+    super + [
+      default_gdm_session("plasma"),
     ]
   end
 end
@@ -199,11 +212,8 @@ class Fedora::V43::COSMIC < Fedora::V43
   end
 
   def write_files 
-    [
-      {
-        "content": "[User]\nSession=cosmic\n",
-        "path": "/var/lib/AccountService/users/dev"
-      },
+    super + [
+      default_gdm_session("cosmic"),
     ]
   end
 end
@@ -228,8 +238,12 @@ if __FILE__ == $0
   if distros.has_key?(name)
     puts distros[name].new.send(method)
   else
-    $stderr.puts "Unknkown distro target: #{name.inspect}"
-    $stderr.puts distros.keys.sort.inspect
+    if name == "list"
+      puts distros.keys.sort.join("\n")
+    else
+      $stderr.puts "Unknown distro target: #{name.inspect}"
+      $stderr.puts distros.keys.sort.join(" ")
+    end
     exit 1
   end
 end

@@ -29,15 +29,26 @@ prepare() {
     genisoimage  -output "$WORKDIR/$1-cloud-init.img" -volid cidata -joliet -rock -graft-points user-data="$cidir/user-data" meta-data="$cidir/meta-data"
 
     qemu-kvm \
-        -machine accel=kvm,type=q35 \
-        -cpu host \
-        -smp "4" \
-        -m "2G" \
-        -nographic \
-        -drive file="$BASE",if=virtio,format=qcow2 \
-        -drive file="$WORKDIR/$1-cloud-init.img",if=virtio,format=raw \
-        -nic user,model=virtio,hostfwd=tcp::0-:22 \
-        -name "cloud-init setup"
+      -machine accel=kvm,type=q35 \
+      -cpu host \
+      -smp "4" \
+      -m "2G" \
+      -nographic \
+      -drive file="$BASE",if=virtio,format=qcow2 \
+      -drive file="$WORKDIR/$1-cloud-init.img",if=virtio,format=raw \
+      -nic user,model=virtio,hostfwd=tcp::0-:22 \
+      -name "cloud-init setup"
+
+    #virt-install -n "$1" \
+      #--osinfo ubuntu24.04 \
+      #--graphics spice,gl.enable=yes,listen=none \
+      #--ram 2048 \
+      #--vcpus 4 \
+      #--disk "$BASE" \
+      #--graphics none \
+      #--cloud-init "user-data=$cidir/user-data" \
+      #--network user
+      #--cdrom "$WORKDIR/$1-cloud-init.img" \
   fi
 }
 
@@ -45,14 +56,17 @@ run() {
   BASE="$WORKDIR/$1.qcow2"
 
   if [ -z "$WAYLAND_DISPLAY" ] ; then
-    display="vnc:127.0.0.1:0"
+    display="vnc=127.0.0.1:0"
   else
     display="sdl,gl=on,window-close=on"
   fi
 
-  qemu-kvm \
+  control="$WORKDIR/$1.qmp"
+
+
+  with_lock "$control" qemu-kvm \
     -machine accel=kvm,type=q35 \
-    -name "Ready" \
+    -name "$1" \
     -cpu host \
     -smp "6" \
     -m "8G" \
@@ -60,12 +74,31 @@ run() {
     -snapshot \
     -virtfs local,path=$PWD,mount_tag=workdir,security_model=none \
     -parallel none \
+    -qmp "unix:$control,server=on,wait=off" \
     -device virtio-gpu \
     -vga none \
     -display "$display" \
     -chardev stdio,mux=on,id=char0 -serial chardev:char0 -mon chardev=char0,mode=readline \
-    -nic user,model=virtio,hostfwd=tcp::2222-:22 
-  }
+    -nic user,model=virtio,hostfwd=tcp:127.0.0.1:0-:22 
+
+  code="$?"
+  if [ "$code" -eq 91 ] ; then
+    echo "VM lockfile seems to be in use. Is this vm already running?"
+    exit "$code"
+  fi
+}
+
+with_lock() {
+  lockfile="$1"
+  shift
+  if ! flock -Fn -E 91 "lockfile" "$@" ; then
+    code="$?"
+    if [ "$code" -eq 91 ] ; then
+      echo "Lock file seems busy. Is this process already running?"
+      return "$code"
+    fi
+  fi
+}
 
 set -e
 
