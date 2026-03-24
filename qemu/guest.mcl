@@ -1,0 +1,37 @@
+import "sys"
+import "fmt"
+
+class guest($dist) {
+  $config = {
+    "fedora-43" => struct {
+      packages => [ "qemu-guest-agent", "gdm", "gnome-control-center", "gnome-shell", "gnome-software", ],
+      services => [ "sshd", "gdm", ],
+    },
+    "debian-13" => struct {
+      packages => [ "qemu-guest-agent", "gdm", "gnome-desktop", ],
+      services => [ "ssh", "gdm" ]
+    }
+  }[$dist]
+
+  pkg $config->packages {
+    state => "installed",
+  }
+
+  svc $config->services {
+    state => "running",
+    startup => "enabled",
+  }
+
+  svc "systemd-networkd-wait-online" { startup => "disabled", state => "stopped", }
+
+  exec "enable-graphical" {
+    cmd => "systemctl",
+    args => [ "set-default", "graphical.target", ],
+  }
+
+  Pkg["gdm"] -> Svc["gdm"]
+  Pkg["gdm"] -> Exec["enable-graphical"]
+}
+
+$dist = sys.getenv("DIST")
+include guest(sys.getenv("DIST"))

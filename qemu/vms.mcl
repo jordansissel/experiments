@@ -1,0 +1,17 @@
+import "golang/os"
+
+$pwd = os.getwd()
+
+class vm($dist) {
+  virt:builder "/home/jls/.local/state/qemu/mgmt-${dist}.img" {
+    os_version => $dist,
+    size => 1024*1024*1024*20,
+
+    mkdir => [ "/etc/mgmt/", ],
+    copy_in => [ struct { path => "${pwd}/guest.mcl", dest => "/etc/mgmt/", }, ],
+    run_cmd => [ "env DIST=${dist} mgmt run lang /etc/mgmt/guest.mcl", ],
+  }
+}
+
+include vm("fedora-43")
+include vm("debian-13")
