@@ -71,6 +71,64 @@ class Ubuntu
   include CloudInit
 end
 
+class Ubuntu::Resolute < Ubuntu
+  def url
+    "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img"
+  end
+
+  def packages
+    [ "qemu-guest-agent", "gdm", "openssh-server" ]
+  end
+
+  def runcmd
+    [
+      "systemctl enable ssh",
+      "systemctl enable gdm",
+      "systemctl disable systemd-networkd-wait-online.service",
+      "systemctl set-default graphical.target",
+    ]
+  end
+
+  def misc
+    {
+      "apt": {
+        "proxy": "http://192.168.12.67:3142",
+        "conf": "APT::Install-Recommends '0'; APT::Install-Suggests '0';"
+      },
+    }
+  end
+
+  def write_files
+    []
+  end
+
+end
+
+class Ubuntu::Resolute::GNOME < Ubuntu::Resolute
+  def packages
+    super + [ "ubuntu-gnome-desktop" ]
+  end
+
+  def write_files
+    super + [
+      automatic_login 
+    ]
+  end
+end
+
+class Ubuntu::Resolute::KDE < Ubuntu::Resolute
+  def packages
+    super + [ "kde-plasma-desktop", "kubuntu-settings-desktop" ]
+  end
+
+  def write_files
+    super + [
+      automatic_login,
+      default_gdm_session("plasma"),
+    ]
+  end
+end
+
 class Ubuntu::Noble < Ubuntu
   def url
     "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
@@ -225,6 +283,8 @@ if __FILE__ == $0
     "fedora-43-gnome" => Fedora::V43::GNOME,
     "ubuntu-noble-gnome" => Ubuntu::Noble::GNOME,
     "ubuntu-noble-kde" => Ubuntu::Noble::KDE,
+    "ubuntu-resolute-gnome" => Ubuntu::Resolute::GNOME,
+    "ubuntu-resolute-kde" => Ubuntu::Resolute::KDE,
   }
 
   if ARGV[0] == "--url"
