@@ -8,9 +8,9 @@ class guest($dist) {
       services => [ "sshd", "gdm", ],
     },
     "debian-13" => struct {
-      packages => [ "qemu-guest-agent", "gdm", "gnome-desktop", ],
-      services => [ "ssh", "gdm" ]
-    }
+      packages => [ "qemu-guest-agent", "gdm3", "gnome-shell", ],
+      services => [ "ssh", "gdm3", ],
+    },
   }[$dist]
 
   pkg $config->packages {
@@ -29,8 +29,11 @@ class guest($dist) {
     args => [ "set-default", "graphical.target", ],
   }
 
-  Pkg["gdm"] -> Svc["gdm"]
-  Pkg["gdm"] -> Exec["enable-graphical"]
+  if $dist == "debian-13" {
+    Pkg["gdm3"] -> Svc["gdm3"] -> Exec["enable-graphical"]
+  } else {
+    Pkg["gdm"] -> Svc["gdm"] -> Exec["enable-graphical"]
+  }
 }
 
 $dist = sys.getenv("DIST")
