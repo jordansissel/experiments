@@ -1,0 +1,48 @@
+class pkg_install($packages []str) {
+	pkg $packages {
+		# On Ubuntu (and maybe elsewhere), Packagekit marks certain packages as "unsupported" ?
+		# Ubuntu's qemu-guest-agent, kde-plasma-desktop, etc, all will be  "not found" by mgmt
+		# if the allowunsupported is the default (false) value.
+		# This seems to correlate with Ubuntu package 'Section' fields prefixed with 'universe/'
+		allowunsupported => true,
+
+		state => "installed",
+	}
+}
+$defaults = struct {
+	basedir => "/var/www/html/moodle/",
+	source => "https://download.moodle.org/download.php/direct/stable502/moodle-5.2.2.tgz",
+}
+
+$dependencies = struct {
+	database => [ "postgresql", "postgresql-client" ],
+	frontend => [ "postgresql-client", "nginx", "php-fpm", "php-pgsql", "php-xml", "php-mbstring", "php-curl", "php-zip", "php-gd", "php-intl", "php-soap"],
+	installation => [ "wget" ],
+}
+
+
+class moodle {
+	include frontend($defaults->basedir, $defaults->source)
+}
+
+class frontend($basedir, $url) {
+	include pkg_install($dependencies->frontend)
+	include pkg_install($dependencies->installation)
+
+	file [$basedir] {
+		state => "exists",
+		recurse => true,
+		Depend => Pkg["nginx"],
+	}
+
+	exec "download moodle" {
+		creates => "${basedir}/config-dist.php",
+		cmd => "/bin/sh",
+		args => ["-c", "wget -qO- ${url} | tar -C '${basedir}' -zvx --strip-components 1" ],
+
+		Depend => Pkg["wget"],
+		Depend => File[[$basedir]],
+	}
+}
+
+include moodle
