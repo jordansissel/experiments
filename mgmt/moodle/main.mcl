@@ -62,7 +62,7 @@ class moodle($st) {
 
 class frontend($st) {
 	$is_supported_version = strings.has_prefix($version, "5.1") or strings.has_prefix($version, "5.2")
-	panic(not $is_supported_version, "I don't know how to download Moodle version ${version}")
+	panic(not $is_supported_version, "Moodle ${version} is not supported for this module. Only v5.1.x and 5.2.x are supported by this module.")
 
 	$basedir = $st->basedir <|> $defaults->basedir
 	$version = $st->version <|> $defaults->version
