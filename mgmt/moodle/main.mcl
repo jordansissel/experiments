@@ -21,11 +21,9 @@ $defaults = struct{
 
 	db_user => "moodle",
 	db_name => "moodle",
-}
 
-#$moodle_url_template = "https://download.moodle.org/download.php/direct/stable%s/moodle-%s.tgz"
-# For dev, using my local caching proxy.
-$moodle_url_template = "http://10.0.2.2:29145/moodle/stable%s/moodle-%s.tgz"
+	url_template => "https://download.moodle.org/download.php/direct/stable%s/moodle-%s.tgz",
+}
 
 # Compute the download url for a given moodle version.
 # Notes: Support different urls based on the version.
@@ -33,9 +31,9 @@ $moodle_url_template = "http://10.0.2.2:29145/moodle/stable%s/moodle-%s.tgz"
 # v5.1.6 is in 'stable501/' directory
 # v4.3.12 is in 'stable403/' directory
 # Pattern appears to be `stableX0Y` where X is the major and Y is the minor version.
-func moodle_url($version) {
+func moodle_url($url_template, $version) {
 	fmt.printf(
-		$moodle_url_template,
+		$url_template,
 
 		# Transform '1.2.3' into 'stable103'
 		# This becomes a subdirectory in the moodle download url.
@@ -70,8 +68,9 @@ class frontend($st) {
 	$version = $st->version <|> $defaults->version
 	$db_user = $st->db_user <|> $defaults->db_user
 	$db_name = $st->db_name <|> $defaults->db_name
+	$url_template = $st->url_template <|> $defaults->url_template
 
-	$url = moodle_url($version)
+	$url = moodle_url($url_template, $version)
 
 	user "nginx" {
 		state => "exists",
