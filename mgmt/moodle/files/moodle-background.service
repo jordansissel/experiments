@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 Type=oneshot
-User=www-data
-Group=www-data
+User=apache
+Group=apache
 ExecStart=/usr/bin/php /var/www/html/moodle/admin/cli/cron.php
 
 [Install]
