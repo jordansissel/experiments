@@ -2,6 +2,18 @@ import "fmt"
 import "deploy"
 import "os"
 import "value"
+import "strings"
+
+# Moodle is an open source learning management system (LMS).
+#
+# This module was written based on the Moodle installation guide:
+# https://docs.moodle.org/502/en/Installation_quick_guide
+#
+# It deploys nginx, php, and postgresql in order to run Moodle.
+#
+# The administrator account is 'admin' and an initial password 'changeme' 
+# Moodle will require you to change the password upon logging in the first time.
+#
 
 $defaults = struct{
 	basedir => "/var/www/html/moodle/",
@@ -11,18 +23,26 @@ $defaults = struct{
 	db_name => "moodle",
 }
 
-$moodle_url = func($version) {
-	# XXX: Support different urls based on the version.
-	# v5.2.2 is in 'stable502/' directory
-	# v5.1.6 is in 'stable501/' directory
-	# v4.3.12 is in 'stable403/' directory
-	#
-	# Pattern appears to be `stableX0Y` where X is the major and Y is the minor version.
-	#
-	#"https://download.moodle.org/download.php/direct/stable502/moodle-${version}.tgz"
+#$moodle_url_template = "https://download.moodle.org/download.php/direct/stable%s/moodle-%s.tgz"
+# For dev, using my local caching proxy.
+$moodle_url_template = "http://10.0.2.2:29145/moodle/stable%s/moodle-%s.tgz"
 
-	# For dev, using my local caching proxy.
-	"http://10.0.2.2:29145/moodle/stable502/moodle-${version}.tgz"
+# Compute the download url for a given moodle version.
+# Notes: Support different urls based on the version.
+# v5.2.2 is in 'stable502/' directory
+# v5.1.6 is in 'stable501/' directory
+# v4.3.12 is in 'stable403/' directory
+# Pattern appears to be `stableX0Y` where X is the major and Y is the minor version.
+func moodle_url($version) {
+	fmt.printf(
+		$moodle_url_template,
+
+		# Transform '1.2.3' into 'stable103'
+		# This becomes a subdirectory in the moodle download url.
+		strings.replace_all(strings.substr($version, 0, 3), ".", "0"),
+
+		$version,
+	)
 }
 
 $dependencies = struct{
@@ -33,19 +53,25 @@ $dependencies = struct{
 	selinux => ["policycoreutils-python-utils"],
 }
 
-# XXX: Document $st
+# Installs and manages Moodle with the given version.
+#
+# $st is a struct containing the following (optional) fields:
+# * version: the version of moodle to use
 class moodle($st) {
 	include frontend($st)
 	include backend($st)
 }
 
 class frontend($st) {
+	$is_supported_version = strings.has_prefix($version, "5.1") or strings.has_prefix($version, "5.2")
+	panic(not $is_supported_version, "I don't know how to download Moodle version ${version}")
+
 	$basedir = $st->basedir <|> $defaults->basedir
 	$version = $st->version <|> $defaults->version
 	$db_user = $st->db_user <|> $defaults->db_user
 	$db_name = $st->db_name <|> $defaults->db_name
 
-	$url = $moodle_url($version)
+	$url = moodle_url($version)
 
 	user "nginx" {
 		state => "exists",
@@ -107,15 +133,6 @@ class frontend($st) {
 
 		Before => Svc["nginx"],
 	}
-
-	#exec "selinux policy for $basedir" {
-	#cmd => "semanage",
-	#args => ["fcontext", "-a", "-t", "httpd_sys_rw_content_t", "${basedir}(.*)?"],
-	#
-	#creates => "/var/lib/.moodle_www_selinux",
-	#donecmd => "touch /var/lib/.moodle_www_selinux",
-	##Depend => File[$data_dir],
-	#}
 
 	Pkg["policycoreutils-python-utils"] -> Exec["selinux policy for $data_dir"]
 
@@ -230,6 +247,37 @@ class frontend($st) {
 		File[$data_dir] -> Exec["initial moodle setup"]
 		File[[$basedir]] -> Exec["initial moodle setup"]
 		Exec["set db user ${db_user} password"] -> Exec["initial moodle setup"]
+	}
+
+	file "/etc/systemd/system/moodle-background.service" {
+		content => deploy.readfile("/files/moodle-background.service"),
+		state => "exists",
+		Notify => Exec["systemctl daemon-reload"],
+		Notify => Svc["moodle-background"],
+	}
+
+	file "/etc/systemd/system/moodle-background.timer" {
+		content => deploy.readfile("/files/moodle-background.timer"),
+		state => "exists",
+		Notify => Exec["systemctl daemon-reload"],
+	}
+
+	exec "systemctl daemon-reload" {
+		cmd => "systemctl",
+		args => ["daemon-reload"],
+		Before => Svc["moodle-background"],
+		Before => Exec["enable moodle-background task"],
+	}
+
+	svc "moodle-background" {
+		startup => "enabled",
+	}
+
+	exec "enable moodle-background task" {
+		cmd => "systemctl",
+		args => ["enable", "--now", "moodle-background.timer"],
+		ifshell => "/bin/sh",
+		ifcmd => "systemctl show --output=export  moodle-background.timer | grep -q UnitFileState=disabled",
 	}
 }
 
