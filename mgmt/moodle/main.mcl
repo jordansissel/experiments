@@ -1,37 +1,36 @@
-# Testing:
-# mgmt run empty
-# rsync -av /work/ /tmp/moodle/ && sudo mgmt deploy lang --no-git --seed http://localhost:2380 /tmp/moodle/main.mcl
-
 import "fmt"
 import "deploy"
 import "os"
 import "value"
 
-$defaults = struct {
+$defaults = struct{
 	basedir => "/var/www/html/moodle/",
-  version => "5.2.2",
+	version => "5.2.2",
 
-  db_user => "moodle",
-  db_name => "moodle",
+	db_user => "moodle",
+	db_name => "moodle",
 }
 
 $moodle_url = func($version) {
-  # XXX: Support different urls based on the version.
-  # v5.2.2 is in 'stable502/' directory
-  # v5.1.6 is in 'stable501/' directory
-  # v4.3.12 is in 'stable403/' directory
-  #
-  # Pattern appears to be `stableX0Y` where X is the major and Y is the minor version.
-  #
-	"https://download.moodle.org/download.php/direct/stable502/moodle-${version}.tgz"
+	# XXX: Support different urls based on the version.
+	# v5.2.2 is in 'stable502/' directory
+	# v5.1.6 is in 'stable501/' directory
+	# v4.3.12 is in 'stable403/' directory
+	#
+	# Pattern appears to be `stableX0Y` where X is the major and Y is the minor version.
+	#
+	#"https://download.moodle.org/download.php/direct/stable502/moodle-${version}.tgz"
+
+	# For dev, using my local caching proxy.
+	"http://10.0.2.2:29145/moodle/stable502/moodle-${version}.tgz"
 }
 
-$dependencies = struct {
-	database => [ "postgresql-server", "postgresql" ],
+$dependencies = struct{
+	database => ["postgresql-server", "postgresql"],
 
-	frontend => [ "postgresql", "nginx", "php", "php-cli", "php-common", "php-fpm", "php-gd", "php-intl", "php-mbstring", "php-mysqlnd", "php-pdo", "php-xml", "php-pecl-xmlrpc", "php-pecl-zip", "php-soap", "php-pgsql" ],
+	frontend => ["postgresql", "nginx", "php", "php-cli", "php-common", "php-fpm", "php-gd", "php-intl", "php-mbstring", "php-mysqlnd", "php-pdo", "php-xml", "php-pecl-xmlrpc", "php-pecl-zip", "php-soap", "php-pgsql"],
 
-  selinux => [ "policycoreutils-python-utils" ],
+	selinux => ["policycoreutils-python-utils"],
 }
 
 # XXX: Document $st
@@ -41,20 +40,34 @@ class moodle($st) {
 }
 
 class frontend($st) {
-  $basedir = $st->basedir <|> $defaults->basedir
-  $version = $st->version <|> $defaults->version
-  $db_user = $st->db_user <|> $defaults->db_user
-  $db_name = $st->db_name <|> $defaults->db_name
+	$basedir = $st->basedir <|> $defaults->basedir
+	$version = $st->version <|> $defaults->version
+	$db_user = $st->db_user <|> $defaults->db_user
+	$db_name = $st->db_name <|> $defaults->db_name
 
-  $url = $moodle_url($version)
+	$url = $moodle_url($version)
+
+	user "nginx" {
+		state => "exists",
+		group => "nginx",
+	}
+
+	group "nginx" {
+		state => "exists",
+	}
+
+	user "apache" {
+		state => "exists",
+	}
 
 	include pkg_install($dependencies->frontend)
 	include pkg_install($dependencies->selinux)
 
-  $data_dir = "/var/www/data/"
+	$data_dir = "/var/www/data/"
+	$moodle_data_dir = "${data_dir}moodle/"
 
 	file [$basedir] {
-    owner => "nginx",
+		owner => "apache",
 		state => "exists",
 		recurse => true,
 		Depend => Pkg["nginx"],
@@ -62,241 +75,274 @@ class frontend($st) {
 
 	file $data_dir {
 		state => "exists",
-    owner => "nginx",
+		owner => "apache",
 		recurse => true,
-		Depend => Pkg["nginx"],
+		Depend => User["apache"],
 	}
-  
-  exec "selinux policy for $data_dir" {
-    cmd => "semanage",
-    args => [ "fcontext", "-a", "-t", "httpd_sys_rw_content_t", "${data_dir}(.*)?" ],
 
-    creates => "/var/lib/.moodle_selinux",
-    donecmd => "touch /var/lib/.moodle_selinux",
-    Depend => File[$data_dir],
-  }
-  Pkg["policycoreutils-python-utils"] -> Exec["selinux policy for $data_dir"]
+	file $moodle_data_dir {
+		state => "exists",
+		owner => "apache",
+		#group => "nginx",
+		mode => "u=wrx,g=wrx,o=x",
+		#Depend => User["nginx"],
+		Depend => User["apache"],
+		Depend => File[$data_dir],
+	}
 
-  exec "apply selinux for $data_dir" {
-    cmd => "restorecon",
-    args => [ "-Rv", $data_dir ],
-    creates => "/var/lib/.moodle_selinux_applied",
-    donecmd => "touch /var/lib/.moodle_selinux_applied",
+	exec "selinux policy for $data_dir" {
+		cmd => "semanage",
+		args => ["fcontext", "-a", "-t", "httpd_sys_rw_content_t", "${data_dir}(.*)?"],
 
-    Depend => Exec["selinux policy for $data_dir"],
-  }
+		creates => "/var/lib/.moodle_data_selinux",
+		donecmd => "touch /var/lib/.moodle_data_selinux",
+		Depend => File[$data_dir],
+	}
 
+	exec "selinux policy allow moodle to access postgres" {
+		cmd => "setsebool",
+		args => ["-P", "httpd_can_network_connect_db=on"],
+		ifshell => "/bin/sh",
+		ifcmd => "getsebool httpd_can_network_connect_db | grep 'off$'",
 
-  $download_path = "/var/tmp/moodle-${version}.tar.gz"
+		Before => Svc["nginx"],
+	}
 
-  file "/etc/nginx/conf.d/moodle.conf" {
-    content => deploy.readfile("/files/nginx.conf"),
-    state => "exists",
-    Depend => Pkg["nginx"],
-    Notify => Svc["nginx"],
-  }
+	#exec "selinux policy for $basedir" {
+	#cmd => "semanage",
+	#args => ["fcontext", "-a", "-t", "httpd_sys_rw_content_t", "${basedir}(.*)?"],
+	#
+	#creates => "/var/lib/.moodle_www_selinux",
+	#donecmd => "touch /var/lib/.moodle_www_selinux",
+	##Depend => File[$data_dir],
+	#}
 
-  file "/etc/php.d/50-moodle.ini" {
-    content => "max_input_vars = 5000",
-    state => "exists",
-    Depend => Pkg["php-common"],
-  }
+	Pkg["policycoreutils-python-utils"] -> Exec["selinux policy for $data_dir"]
 
-  svc "nginx" {
-    state => "running",
-    startup => "enabled",
-  }
+	exec "apply selinux for $data_dir" {
+		cmd => "restorecon",
+		args => ["-Rv", $data_dir],
+		creates => "/var/lib/.moodle_selinux_applied",
+		donecmd => "touch /var/lib/.moodle_selinux_applied",
 
-  File["/etc/php.d/50-moodle.ini"] -> Svc["nginx"]
-  File["/etc/nginx/conf.d/moodle.conf"] -> Svc["nginx"]
+		Depend => Exec["selinux policy for $data_dir"],
 
-  $password = value.get_str("moodle db password")
+		# Make sure restorecon also applies to the moodle data directory.
+		Depend => File[$moodle_data_dir],
+	}
 
-  if $password->ready {
-    $db_password = $password->value
+	$download_path = "/var/tmp/moodle-${version}.tar.gz"
 
-    if not os.file_exists("${basedir}/config-dist.php") {
-      http:client "download moodle ${version}" {
-        file => $download_path,
-        url => $url,
+	file "/etc/nginx/conf.d/moodle.conf" {
+		content => deploy.readfile("/files/nginx.conf"),
+		state => "exists",
+		Depend => Pkg["nginx"],
+		Notify => Svc["nginx"],
+	}
 
-        Meta:poll => -1,
-        Meta:retry => 5,
-        Meta:delay => 10,
-      }
+	file "/etc/php.d/50-moodle.ini" {
+		content => "max_input_vars = 5000",
+		state => "exists",
+		Depend => Pkg["php-common"],
+	}
 
-      exec "unpack moodle ${version}" {
-        user => "nginx"
+	svc "nginx" {
+		state => "running",
+		startup => "enabled",
+	}
 
-        creates => "${basedir}/config-dist.php",
-        cmd => "tar",
-        args => [ "-C", $basedir, "-zx", "--strip-components", "1", "-f", $download_path ],
+	File["/etc/php.d/50-moodle.ini"] -> Svc["nginx"]
 
-        Before => Exec["initial moodle setup"],
-        Listen => Http:Client["download moodle ${version}"],
-      }
+	$password = value.get_str("moodle db password")
 
-      Exec["unpack moodle ${version}"] -> Exec["initial moodle setup"]
-    }
+	if $password->ready {
+		$db_password = $password->value
 
-    exec "initial moodle setup" {
-      user => "apache", # php-fpm user
+		if not os.file_exists("${basedir}/config-dist.php") {
+			http:client "download moodle ${version}" {
+				file => $download_path,
+				url => $url,
 
-      env => {
-        "PATH" => "/usr/bin",
-      },
+				Meta:poll => -1,
+				Meta:retry => 5,
+				Meta:delay => 10,
+			}
 
-      creates => "${basedir}/config.php",
+			exec "unpack moodle ${version}" {
+				user => "apache",
 
-      cmd => "php",
-      args => [
-        "${basedir}/admin/cli/install.php",
-        "--non-interactive",
-        "--chmod=2750",
-        "--lang=en",
-        "--dbtype=pgsql",
-        "--dbhost=localhost",
-        "--dbuser=${db_user}",
-        "--dbpass=${db_password}",
-        "--dataroot=${data_dir}moodle",
+				creates => "${basedir}/config-dist.php",
+				cmd => "tar",
+				args => ["-C", $basedir, "-zx", "--strip-components", "1", "-f", $download_path],
 
-        "--wwwroot=http://localhost/moodle",
-        "--fullname=demo",
-        "--shortname=demo",
-        "--summary=demo",
-        "--agree-license",
-        "--adminpass=changeme",
-      ],
-    }
+				Depend => File[[$basedir]],
+				Depend => User["apache"],
+				Before => Exec["initial moodle setup"],
+				Listen => Http:Client["download moodle ${version}"],
+			}
 
-    file "${basedir}/config.php" {
-      # On Fedora, php-fpm runs as the user 'apache'
-      owner => "apache",
-      mode => "400",
+			Exec["unpack moodle ${version}"] -> Exec["initial moodle setup"]
+		}
 
-      Depend => Exec["initial moodle setup"],
-    }
+		exec "initial moodle setup" {
+			user => "apache", # php-fpm user
 
-    file "${data_dir}moodle" {
-      state => "exists",
-      owner => "apache",
-      group => "nginx",
-      mode => "u=wrx,g=wrx,o=x",
-      Depend => Exec["initial moodle setup"],
-    }
+			env => {
+				"PATH" => "/usr/bin",
+			},
 
-	  File[$data_dir] -> Exec["initial moodle setup"]
-	  File[[$basedir]] -> Exec["initial moodle setup"]
-    Exec["set db user ${db_user} password"] -> Exec["initial moodle setup"]
-  }
+			creates => "${basedir}/config.php",
+
+			cmd => "php",
+			args => [
+				"${basedir}/admin/cli/install.php",
+				"--non-interactive",
+				"--chmod=2750",
+				"--lang=en",
+				"--dbtype=pgsql",
+				"--dbhost=localhost",
+				"--dbuser=${db_user}",
+				"--dbpass=${db_password}",
+				"--dataroot=${moodle_data_dir}",
+				"--wwwroot=http://localhost:8080/",
+				"--fullname=Default Moodle Site Name",
+				"--shortname=Default Moodle",
+				"--summary=A basic Moodle site configured with mgmt!",
+				"--agree-license",
+				"--adminpass=changeme",
+			],
+			Depend => User["nginx"],
+			Depend => File[$moodle_data_dir],
+		}
+
+		# Make sure moodle's initial setup is done before nginx goes live
+		Exec["initial moodle setup"] -> Svc["nginx"]
+
+		file "${basedir}/config.php" {
+			# On Fedora, php-fpm runs as the user 'apache'
+			owner => "apache",
+			mode => "400",
+
+			Depend => Exec["initial moodle setup"],
+			Depend => User["apache"],
+		}
+
+		File[$data_dir] -> Exec["initial moodle setup"]
+		File[[$basedir]] -> Exec["initial moodle setup"]
+		Exec["set db user ${db_user} password"] -> Exec["initial moodle setup"]
+	}
 }
 
 class backend($st) {
 	include pkg_install($dependencies->database)
 
-  $basedir = $st->basedir <|> $defaults->basedir
-  $db_user = $st->db_user <|> $defaults->db_user
-  $db_name = $st->db_name <|> $defaults->db_name
+	$basedir = $st->basedir <|> $defaults->basedir
+	$db_user = $st->db_user <|> $defaults->db_user
+	$db_name = $st->db_name <|> $defaults->db_name
 
-  $db_script = "/var/lib/pgsql/db.sh"
+	$db_script = "/var/lib/pgsql/db.sh"
 
-  file $db_script {
-    content => deploy.readfile("/files/db.sh"),
-    state => "exists",
-    mode => "0755",
-    owner => "postgres",
+	file $db_script {
+		content => deploy.readfile("/files/db.sh"),
+		state => "exists",
+		mode => "0755",
+		owner => "postgres",
 
-    Depend => Pkg["postgresql-server"],
-  }
+		Depend => Pkg["postgresql-server"],
+	}
 
-  exec "setup postgres" {
-    cmd => $db_script,
-    args => [ "init" ],
+	exec "setup postgres" {
+		cmd => $db_script,
+		args => ["init"],
 
-    creates => "/var/lib/pgsql/data/postgresql.conf",
+		creates => "/var/lib/pgsql/data/postgresql.conf",
 
-    Notify => Svc["postgresql"],
+		Depend => File[$db_script],
+		Notify => Svc["postgresql"],
 
-    #env => {
-      #"PATH" => "/usr/bin",
-    #},
-  }
+		#env => {
+		#"PATH" => "/usr/bin",
+		#},
+	}
 
-  # Allow the $db_user to connect via network with password.
-  file "/var/lib/pgsql/data/pg_hba.conf" {
-    content => "local   all             all                                     peer
+	# Allow the $db_user to connect via network with password.
+	file "/var/lib/pgsql/data/pg_hba.conf" {
+		content => "local   all             all                                     peer
 local   replication     all                                     peer
 host        ${db_name}      ${db_user}      127.0.0.1/32        password
 host        ${db_name}      ${db_user}      ::1/128        password",
-    state => "exists",
-    owner => "postgres",
+		state => "exists",
+		owner => "postgres",
 
-    Depend => Exec["setup postgres"],
-    Notify => Svc["postgresql"],
-  }
+		Depend => Exec["setup postgres"],
+		Notify => Svc["postgresql"],
+	}
 
-  svc "postgresql" {
-    state => "running",
-    startup => "enabled",
-  }
+	svc "postgresql" {
+		state => "running",
+		startup => "enabled",
+	}
 
-  exec "create db user ${db_user}" {
-    user => "postgres",
-    env => {
-      "PATH" => "/usr/bin",
-    },
+	exec "create db user ${db_user}" {
+		user => "postgres",
+		env => {
+			"PATH" => "/usr/bin",
+		},
 
-    cmd => $db_script,
-    args => [ "user", "create", $db_user ],
+		cmd => $db_script,
+		args => ["user", "create", $db_user],
 
-    # Only create the user if it doesn't already exist.
-    nifcmd => "${db_script} user check ${db_user}",
+		# Only create the user if it doesn't already exist.
+		nifcmd => "${db_script} user check ${db_user}",
 
-    Depend => Svc["postgresql"],
-  }
+		Depend => Svc["postgresql"],
+	}
 
-  exec "create db database ${db_name} with owner ${db_user}" {
-    user => "postgres",
-    env => {
-      "PATH" => "/usr/bin",
-    },
+	exec "create db database ${db_name} with owner ${db_user}" {
+		user => "postgres",
+		env => {
+			"PATH" => "/usr/bin",
+		},
 
-    cmd => $db_script,
-    args => [ "db", "create", $db_name, $db_user ],
+		cmd => $db_script,
+		args => ["db", "create", $db_name, $db_user],
 
-    # Only create the user if it doesn't already exist.
-    nifcmd => "${db_script} db check ${db_name}",
+		# Only create the user if it doesn't already exist.
+		nifcmd => "${db_script} db check ${db_name}",
 
-    Depend => Exec["create db user ${db_user}"],
-  }
+		Depend => Exec["create db user ${db_user}"],
+	}
 
-  password "postgres ${db_user}" {
-    length => 8,
+	password "postgres ${db_user}" {
+		length => 8,
 
-    # Keep a memory of the password in mgmt.
-    saved => true,
-  }
+		# Keep a memory of the password in mgmt.
+		saved => true,
+	}
 
-  value "moodle db password" {
-  }
+	value "moodle db password" {}
 
-  Password["postgres ${db_user}"].password -> Value["moodle db password"].any
+	Password["postgres ${db_user}"].password -> Value["moodle db password"].any
 
-  $password = value.get_str("moodle db password")
+	$password = value.get_str("moodle db password")
 
-  if $password->ready {
-    exec "set db user ${db_user} password" {
-      user => "postgres",
-      env => {
-        "PATH" => "/usr/bin",
-      },
+	if $password->ready {
+		print "pass" {
+			msg => $password->value,
+		}
 
-      cmd => $db_script,
-      args => [ "user", "password", $db_user, $password->value ],
+		exec "set db user ${db_user} password" {
+			user => "postgres",
+			env => {
+				"PATH" => "/usr/bin",
+			},
 
-      Depend => Exec["create db user ${db_user}"],
-    }
-  }
+			cmd => $db_script,
+			args => ["user", "password", $db_user, $password->value],
+
+			Depend => Exec["create db user ${db_user}"],
+		}
+	}
 }
 
 class pkg_install($packages []str) {
