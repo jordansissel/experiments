@@ -298,6 +298,12 @@ class backend($st) {
 		Depend => Pkg["postgresql-server"],
 	}
 
+	# XXX: This step calls fedora's postgresql-setup script which has race conditions
+	# that are difficult to control. 
+	# The script itself will abort if systemd is out of sync with its config files
+	# which happens quite a lot when mgmt and package installations modify .service and
+	# other files. Ideally, we stop using this postgresql-setup script entirely and replace
+	# it with something that doesn't have race conditions.
 	exec "setup postgres" {
 		cmd => $db_script,
 		args => ["init"],
