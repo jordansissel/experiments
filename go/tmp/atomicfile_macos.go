@@ -1,4 +1,5 @@
 //go:build darwin
+
 package tmp
 
 import (
@@ -9,7 +10,7 @@ import (
 )
 
 func open(fspath string) (*os.File, error) {
-	f, err := os.CreateTemp(path.Dir(fspath), path.Base(fspath) + ".new*")
+	f, err := os.CreateTemp(path.Dir(fspath), path.Base(fspath)+".new*")
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +28,7 @@ func open(fspath string) (*os.File, error) {
 func (f *AtomicFile) commit() error {
 	//return os.Rename(f.File.Name(), f.path);
 	//return unix.Renameat(int(f.File.Fd()), f.File.Name(), unix.AT_FDCWD, f.path);
-	
-	fd := int(f.File.Fd())
-	return unix.Fclonefileat(fd, fd, f.path, 0);
-}
 
+	fd := int(f.File.Fd())
+	return unix.Fclonefileat(fd, fd, f.path, 0)
+}

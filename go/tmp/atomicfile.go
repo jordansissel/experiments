@@ -22,7 +22,7 @@ func New(fspath string) (*AtomicFile, error) {
 		return nil, err
 	}
 
-	return &AtomicFile { File: *f, path: fspath }, nil
+	return &AtomicFile{File: *f, path: fspath}, nil
 }
 
 // Commit acts upon the file to atomically replace it on disk.

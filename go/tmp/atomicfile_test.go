@@ -1,9 +1,10 @@
 package tmp
+
 import (
-	"testing"
-	"path"
-	"os"
 	"bytes"
+	"os"
+	"path"
+	"testing"
 )
 
 func TestAtomic(t *testing.T) {
