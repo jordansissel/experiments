@@ -7,6 +7,17 @@ import (
 // AtomicFile is an os.File-like struct which allows you to write data and modify metadata before committing it to a specific filename.
 //
 // The intended use is to ensure complete files are only ever available at the given path.
+//
+// If, for some reason, a Commit() never occurs, this module attempts to ensure that no temporary files are left around,
+//
+// Thus:
+// * If the program crashes before a Commit(), the temporary file shall be lost (on purpose)
+// * If the program calls Close() without a Commit(), the temporary file and its writes shall be lost (on purpose)
+// * If the computer fails before a Commit(), the temporary file shall be lost (on purpose).
+//
+// For any of the above scenarios, no disk space should be occupied by these lost files.
+//
+// This module focuses on delivering "whole files" and is not concerned with durability or serializability of operations.
 type AtomicFile struct {
 	os.File
 	path string
@@ -40,14 +51,14 @@ func (f *AtomicFile) Commit() error {
 }
 
 // Chmod -- see os.File.Chmod()
-func (f *AtomicFile) Chmod(mode os.FileMode) error {
-	return f.File.Chmod(mode)
-}
+//func (f *AtomicFile) Chmod(mode os.FileMode) error {
+//return f.File.Chmod(mode)
+//}
 
 // Chown -- see os.File.Chown()
-func (f *AtomicFile) Chown(uid, gid int) error {
-	return f.File.Chown(uid, gid)
-}
+//func (f *AtomicFile) Chown(uid, gid int) error {
+//return f.File.Chown(uid, gid)
+//}
 
 // Write -- see Writer interface
 func (f *AtomicFile) Write(data []byte) (n int, err error) {
