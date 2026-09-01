@@ -18,10 +18,22 @@ func TestAtomic(t *testing.T) {
 
 	filename := path.Join(workdir, "hello-world")
 
+	_, err = os.Stat(filename)
+	if err == nil {
+		t.Errorf("Test Bug: File shouldn't exist before we write to it")
+		return
+	}
+
 	// Test new file creation
 	check(t, filename, "Hello world!")
 
-	// Test atomci file overwriting
+	_, err = os.Stat(filename)
+	if err != nil {
+		t.Errorf("Test Bug: File should exist at this point: %s", err)
+		return
+	}
+
+	// Test atomic file replacement
 	check(t, filename, "Put on your fancy pants!")
 }
 
@@ -57,7 +69,6 @@ func check(t *testing.T, filename string, input string) {
 		t.Errorf("Bug: Commit() failed: %s", err)
 		return
 	}
-	defer os.Remove(filename)
 
 	data, err = os.ReadFile(filename)
 

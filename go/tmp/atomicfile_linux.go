@@ -14,6 +14,22 @@ func open(fspath string) (*os.File, error) {
 }
 
 func (f *AtomicFile) commit() error {
+	temp, err := os.CreateTemp(path.Dir(f.path), path.Base(f.path)+".new*")
+	if err != nil {
+		return err
+	}
+	defer temp.Close()
+	err = os.Remove(temp.Name())
+	if err != nil {
+		return err
+	}
+
 	// See linkat(2) and open(2)'s O_TMPFILE documentation on Linux for more information.
-	return unix.Linkat(int(f.File.Fd()), "", unix.AT_FDCWD, f.path, unix.AT_EMPTY_PATH)
+	err = unix.Linkat(int(f.File.Fd()), "", unix.AT_FDCWD, temp.Name(), unix.AT_EMPTY_PATH)
+	if err != nil {
+		return err
+	}
+	defer f.File.Close()
+
+	return os.Rename(temp.Name(), f.path)
 }
