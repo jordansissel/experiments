@@ -5,6 +5,8 @@ import (
 )
 
 // AtomicFile is an os.File-like struct which allows you to write data and modify metadata before committing it to a specific filename.
+//
+// The intended use is to ensure complete files are only ever available at the given path.
 type AtomicFile struct {
 	os.File
 	path string
