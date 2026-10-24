@@ -370,7 +370,7 @@ host        ${db_name}      ${db_user}      ::1/128        password",
 		length => 8,
 
 		# Keep a memory of the password in mgmt.
-		saved => true,
+		write => true,
 	}
 
 	value "moodle db password" {}
